@@ -1,0 +1,13 @@
+{
+    "name": "simple-react",
+    "private": true,
+    "version": "1.0.0",
+    "workspaces": [
+        "packages/*",
+        "apps/*"
+    ],
+    "scripts": {
+        "dev": "npm run dev --workspace=apps/app1",
+        "build": "npm run build --workspace=apps/app1"
+    }
+}
