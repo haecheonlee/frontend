@@ -1,0 +1,23 @@
+{
+    "name": "weather",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "A simple weather application that fetches and displays weather information for different locations",
+    "main": "index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.2",
+        "typescript": "^5.4.5",
+        "vite": "^5.2.13"
+    },
+    "keywords": [
+        "weather",
+        "typescript",
+        "vite"
+    ],
+    "license": "ISC"
+}
