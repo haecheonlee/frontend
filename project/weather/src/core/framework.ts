@@ -1,14 +1,25 @@
-export function html(
-    strings: TemplateStringsArray,
-    ...values: string[]
+export function createElement(
+    tag: string,
+    props: { [key: string]: any } = {},
+    ...children: (HTMLElement | string)[]
 ): HTMLElement {
-    const template = document.createElement("template");
-    template.content.append(
-        strings.reduce(
-            (value, accumulative, index) =>
-                value + accumulative + (values[index] || ""),
-            ""
-        )
-    );
-    return template.content.firstChild as HTMLElement;
+    const element = document.createElement(tag);
+
+    for (const [key, value] of Object.entries(props)) {
+        if (key.startsWith("on") && typeof value === "function") {
+            element.addEventListener(key.substring(2).toLowerCase(), value);
+        } else {
+            element.setAttribute(key, value);
+        }
+    }
+
+    for (const child of children) {
+        element.append(
+            child instanceof HTMLElement
+                ? child
+                : document.createTextNode(child)
+        );
+    }
+
+    return element;
 }
