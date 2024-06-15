@@ -16,7 +16,7 @@ export class ApiService {
 
     async get<T>(
         endpoint: ApiEndpoints,
-        params?: { [key: string]: string | number }
+        params?: { [key: string]: string }
     ): Promise<ApiResponse<T>> {
         try {
             const url = params ? buildUrl(endpoint, params) : endpoint;
