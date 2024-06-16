@@ -3,3 +3,20 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#main {
+    width: 30rem;
+    height: 30rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 1rem;
+}

@@ -2,8 +2,10 @@ import { createElement } from "@/core/framework";
 
 function App(): HTMLElement | DocumentFragment {
     const container = createElement(
-        "span",
-        {},
+        "div",
+        {
+            id: "main",
+        },
         "This is a component!",
         createElement("", {}, "Hello World")
     );
