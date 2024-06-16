@@ -1,8 +1,22 @@
 export function createElement(
     tag: string,
     props: { [key: string]: any } = {},
-    ...children: (HTMLElement | string)[]
-): HTMLElement {
+    ...children: (HTMLElement | DocumentFragment | string)[]
+): HTMLElement | DocumentFragment {
+    if (!tag) {
+        const fragment = document.createDocumentFragment();
+        for (const child of children) {
+            if (child !== null && child !== undefined) {
+                fragment.appendChild(
+                    typeof child === "string"
+                        ? document.createTextNode(child)
+                        : child
+                );
+            }
+        }
+        return fragment;
+    }
+
     const element = document.createElement(tag);
 
     for (const [key, value] of Object.entries(props)) {
@@ -14,11 +28,13 @@ export function createElement(
     }
 
     for (const child of children) {
-        element.append(
-            child instanceof HTMLElement
-                ? child
-                : document.createTextNode(child)
-        );
+        if (child !== null && child !== undefined) {
+            element.appendChild(
+                typeof child === "string"
+                    ? document.createTextNode(child)
+                    : child
+            );
+        }
     }
 
     return element;
