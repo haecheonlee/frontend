@@ -1,15 +1,20 @@
 import { createElement } from "@/core/framework";
+import { SearchBox } from "./SearchBox";
 
 function App(): HTMLElement | DocumentFragment {
-    const container = createElement(
+    return createElement(
         "div",
         {
             id: "main",
         },
-        "This is a component!",
-        createElement("", {}, "Hello World")
+        createElement(
+            "div",
+            {
+                class: "search-box-container",
+            },
+            SearchBox()
+        )
     );
-    return container;
 }
 
 export { App };
