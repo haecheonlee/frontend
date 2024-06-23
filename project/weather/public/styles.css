@@ -14,7 +14,7 @@ body {
 }
 
 body {
-    background: #000;
+    background-color: #000;
 }
 
 #main {
@@ -43,5 +43,43 @@ body {
                 outline: none;
             }
         }
+    }
+}
+
+.weather {
+    &.clear-sky {
+        background: linear-gradient(to top, #00c6ff, #0072ff);
+    }
+
+    &.few-clouds {
+        background: linear-gradient(to top, #a1c4fd, #c2e9fb);
+    }
+
+    &.scattered-clouds {
+        background: linear-gradient(to top, #d7d2cc, #304352);
+    }
+
+    &.broken-clouds {
+        background: linear-gradient(to top, #4b79a1, #283e51);
+    }
+
+    &.shower-rain {
+        background: linear-gradient(to top, #3a7bd5, #2b5876);
+    }
+
+    &.rain {
+        background: linear-gradient(to top, #4b6cb7, #182848);
+    }
+
+    &.thunderstorm {
+        background: linear-gradient(to top, #141e30, #243b55);
+    }
+
+    &.snow {
+        background: linear-gradient(to top, #e6e9f0, #eef1f5);
+    }
+
+    &.mist {
+        background: linear-gradient(to top, #606c88, #3f4c6b);
     }
 }
