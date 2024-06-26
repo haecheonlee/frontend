@@ -1,10 +1,7 @@
-import { createElement } from "@/core/framework";
+import { html } from "@/core/framework";
 
 function SearchBox() {
-    return createElement("input", {
-        id: "searchBox",
-        type: "text",
-    });
+    return html` <input id="searchBox" type="text" /> `;
 }
 
 export { SearchBox };

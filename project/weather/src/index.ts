@@ -7,4 +7,7 @@ if (!app) {
 }
 
 while (app.hasChildNodes()) app.firstChild?.remove();
-app.appendChild(App());
+
+const template = document.createElement("template");
+template.innerHTML = App().trim();
+app.appendChild(template.content);
