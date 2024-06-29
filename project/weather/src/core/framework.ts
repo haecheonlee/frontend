@@ -44,21 +44,23 @@ export function html(strings: TemplateStringsArray, ...values: string[]) {
     );
 
     const parsedHtml = parse(htmlString.trim());
+
+    if (!parsedHtml) {
+        return "";
+    }
+
     return generate(parsedHtml);
 }
 
-export function parse(html: string): DOMObject | TextObject {
+export function parse(html: string): DOMObject | TextObject | null {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
 
-    const result = [];
-    for (let child of doc.body.childNodes) {
-        const childObject = create(child);
-        if (childObject) {
-            result.push(childObject);
-        }
+    if (!doc.body.firstChild) {
+        throw new Error("The format of html string is invalid.");
     }
-    return result[0];
+
+    return create(doc.body.firstChild);
 }
 
 export function generate(obj: DOMObject | TextObject): string {
