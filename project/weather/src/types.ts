@@ -1,7 +1,8 @@
 interface DOMObject {
     tagName: string;
-    attributes: { [key: string]: string };
+    attributes: Record<string, string>;
     children: Array<DOMObject | TextObject>;
+    events: Record<string, (event: Event) => any>;
 }
 
 interface TextObject {

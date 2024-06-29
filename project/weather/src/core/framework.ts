@@ -20,10 +20,18 @@ function create(element: Node): DOMObject | TextObject | null {
         tagName: element.tagName.toLowerCase(),
         attributes: {},
         children: [],
+        events: {},
     };
 
     for (const attr of element.attributes) {
-        obj.attributes[attr.name] = attr.value;
+        if (attr.name.startsWith("on")) {
+            obj.events[attr.name.substring(2)] = new Function(
+                "event",
+                attr.value
+            ) as (event: Event) => any;
+        } else {
+            obj.attributes[attr.name] = attr.value;
+        }
     }
 
     for (const child of element.childNodes) {
@@ -36,23 +44,40 @@ function create(element: Node): DOMObject | TextObject | null {
     return obj;
 }
 
-export function html(strings: TemplateStringsArray, ...values: string[]) {
-    const htmlString = strings.reduce(
-        (accumulative, string, index) =>
-            accumulative + string + (values[index] || ""),
-        ""
-    );
-
-    const parsedHtml = parse(htmlString.trim());
-
-    if (!parsedHtml) {
-        return "";
+function convert(object: DOMObject | TextObject): HTMLElement | Text {
+    if ("textContent" in object) {
+        return document.createTextNode(object.textContent);
     }
 
-    return generate(parsedHtml);
+    const element = document.createElement(object.tagName);
+
+    for (const [key, value] of Object.entries(object.attributes)) {
+        element.setAttribute(key, value);
+    }
+
+    for (const [event, listener] of Object.entries(object.events)) {
+        console.log(element, event, listener);
+        element.addEventListener(event, (e) => listener(e));
+    }
+
+    for (const child of object.children) {
+        element.appendChild(convert(child));
+    }
+
+    return element;
 }
 
-export function parse(html: string): DOMObject | TextObject | null {
+export function html(strings: TemplateStringsArray, ...values: string[]) {
+    return strings
+        .reduce(
+            (accumulative, string, index) =>
+                accumulative + string + (values[index] || ""),
+            ""
+        )
+        .trim();
+}
+
+export function parse(html: string): HTMLElement | Text | null {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
 
@@ -60,31 +85,11 @@ export function parse(html: string): DOMObject | TextObject | null {
         throw new Error("The format of html string is invalid.");
     }
 
-    return create(doc.body.firstChild);
-}
+    const object = create(doc.body.firstChild);
 
-export function generate(obj: DOMObject | TextObject): string {
-    if ("textContent" in obj) {
-        return obj.textContent;
+    if (!object) {
+        return null;
     }
 
-    let html = `<${obj.tagName}`;
-
-    if (obj.attributes) {
-        for (const [key, value] of Object.entries(obj.attributes)) {
-            html += ` ${key}="${value}"`;
-        }
-    }
-
-    html += ">";
-
-    if (obj.children && obj.children.length > 0) {
-        for (const child of obj.children) {
-            html += generate(child);
-        }
-    }
-
-    html += `</${obj.tagName}>`;
-
-    return html;
+    return convert(object);
 }
