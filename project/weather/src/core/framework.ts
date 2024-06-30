@@ -56,8 +56,7 @@ function convert(object: DOMObject | TextObject): HTMLElement | Text {
     }
 
     for (const [event, listener] of Object.entries(object.events)) {
-        console.log(element, event, listener);
-        element.addEventListener(event, (e) => listener(e));
+        element.addEventListener(event, listener);
     }
 
     for (const child of object.children) {
