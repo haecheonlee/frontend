@@ -7,10 +7,13 @@ function HourlyWeatherComponent() {
                 <span>Hour</span>
             </div>
             <div class="hourly-weather-component__icon">
-                <span>Some Icon</span>
+                <img
+                    alt="hourly-weather-component-icon"
+                    src="/images/clear-sky.png"
+                />
             </div>
             <div>
-                <span>70</span>
+                <span>25</span>
             </div>
         </div>
     `;

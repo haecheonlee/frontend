@@ -95,10 +95,17 @@ body {
             text-align: center;
             flex: 1;
             gap: 0.5rem;
+            width: 100%;
+            padding: 0 25px;
 
             .hourly-weather-component {
                 .hourly-weather-component__icon {
                     margin: 5px 0;
+
+                    > img {
+                        width: 48px;
+                        height: 52px;
+                    }
                 }
             }
         }
