@@ -1,13 +1,13 @@
 import { html } from "@/core/framework";
 
-function SearchBox() {
+function SearchComponent() {
     return html`
         <input
-            id="searchBox"
+            id="search-component"
             type="text"
             onkeyup="console.log('this is the keyup event.')"
         />
     `;
 }
 
-export { SearchBox };
+export { SearchComponent };

@@ -1,10 +1,12 @@
 import { html } from "@/core/framework";
-import { SearchBox } from "./SearchBox";
+import { SearchComponent } from "./SearchComponent";
+import { WeatherComponent } from "./WeatherComponent";
 
 function App() {
     return html`
         <div id="main">
-            <div class="search-box-container">${SearchBox()}</div>
+            <div class="search-box-container">${SearchComponent()}</div>
+            ${WeatherComponent()}
         </div>
     `;
 }
