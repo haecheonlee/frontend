@@ -1,14 +1,18 @@
-import { html } from "@/core/framework";
+import { createElement } from "@/core/framework";
 import { SearchComponent } from "./SearchComponent";
 import { WeatherComponent } from "./WeatherComponent";
 
 function App() {
-    return html`
-        <div id="main">
-            <div class="search-box-container">${SearchComponent()}</div>
-            ${WeatherComponent()}
-        </div>
-    `;
+    return createElement(
+        "div",
+        { id: "main" },
+        createElement(
+            "div",
+            { class: "search-box-container" },
+            SearchComponent()
+        ),
+        WeatherComponent()
+    );
 }
 
 export { App };

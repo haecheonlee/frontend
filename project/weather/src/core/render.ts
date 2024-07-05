@@ -1,5 +1,4 @@
 import { App } from "@/component/App";
-import { parse } from "./framework";
 
 export function render() {
     const app = document.getElementById("app");
@@ -9,9 +8,5 @@ export function render() {
     }
 
     while (app.hasChildNodes()) app.firstChild?.remove();
-
-    const html = parse(App());
-    if (html) {
-        app.appendChild(html);
-    }
+    app.appendChild(App());
 }
