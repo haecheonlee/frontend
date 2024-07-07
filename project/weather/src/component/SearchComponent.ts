@@ -1,12 +1,19 @@
 import { createElement } from "@/core/framework";
+import { debounce } from "@/util/helper";
 
-function SearchComponent() {
+interface ISearchComponentProps {
+    onChangeCallback: (value: string) => void;
+}
+
+function SearchComponent(props: ISearchComponentProps) {
     return createElement("input", {
         id: "search-component",
         type: "text",
-        onkeyup: function () {
-            console.log("this is the keyup event");
-        },
+        onkeyup: debounce(function (event: Event) {
+            if (event.target instanceof HTMLInputElement) {
+                props.onChangeCallback(event.target.value);
+            }
+        }, 1000),
     });
 }
 
