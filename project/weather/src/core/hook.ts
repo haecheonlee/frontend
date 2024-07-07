@@ -21,3 +21,21 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
     currentIndex += 1;
     return [stateInstance.getState(), setState];
 }
+
+export function useEffect(fn: () => void, dependencies: any[]) {
+    let hasMounted = false;
+    let previousDependencies: typeof dependencies = [];
+
+    return function () {
+        const hasDependenciesHasChanged = dependencies.some(
+            (currentDependency, index) =>
+                currentDependency !== previousDependencies[index]
+        );
+
+        if (!hasMounted || hasDependenciesHasChanged) {
+            fn();
+            hasMounted = true;
+            previousDependencies = dependencies.slice();
+        }
+    };
+}
