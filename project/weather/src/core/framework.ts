@@ -1,7 +1,7 @@
 export function createElement(
     tag: string,
     props: { [key: string]: any } = {},
-    ...children: (HTMLElement | string)[]
+    ...children: (HTMLElement | string | null)[]
 ): HTMLElement {
     const element = document.createElement(tag);
 
@@ -13,7 +13,15 @@ export function createElement(
         }
     }
 
+    if (children == null) {
+        return element;
+    }
+
     for (const child of children) {
+        if (child == null) {
+            continue;
+        }
+
         element.append(
             child instanceof HTMLElement
                 ? child

@@ -41,7 +41,12 @@ function App() {
                 onChangeCallback: setCity,
             })
         ),
-        WeatherComponent()
+        forecast
+            ? WeatherComponent({
+                  city: forecast.city,
+                  weatherData: forecast.list,
+              })
+            : null
     );
 }
 

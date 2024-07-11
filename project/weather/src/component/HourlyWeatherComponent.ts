@@ -1,10 +1,18 @@
 import { createElement } from "@/core/framework";
 
-function HourlyWeatherComponent() {
+interface IHourlyWeatherComponentProps {
+    time: string;
+    temperature: number;
+}
+
+function HourlyWeatherComponent({
+    time,
+    temperature,
+}: IHourlyWeatherComponentProps) {
     return createElement(
         "div",
         { class: "hourly-weather-component" },
-        createElement("div", {}, createElement("span", {}, "Hour")),
+        createElement("div", {}, createElement("span", {}, time)),
         createElement(
             "div",
             { class: "hourly-weather-component__icon" },
@@ -13,7 +21,7 @@ function HourlyWeatherComponent() {
                 src: "/images/clear-sky.png",
             })
         ),
-        createElement("div", {}, createElement("span", {}, "25"))
+        createElement("div", {}, createElement("span", {}, String(temperature)))
     );
 }
 
