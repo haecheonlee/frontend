@@ -2,7 +2,7 @@ import { ApiEndpoints } from "@/api/endpoint";
 
 export function buildUrl(
     endpoint: ApiEndpoints | string,
-    params: { [key: string]: string }
+    params: Record<string, string>
 ): string {
     let url = endpoint;
     for (const key in params) {

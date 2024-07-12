@@ -1,6 +1,6 @@
 export function createElement(
     tag: string,
-    props: { [key: string]: any } = {},
+    props: Record<string, any> = {},
     ...children: (HTMLElement | string | null)[]
 ): HTMLElement {
     const element = document.createElement(tag);
