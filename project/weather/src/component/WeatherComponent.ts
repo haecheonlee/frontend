@@ -79,6 +79,7 @@ function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
                     HourlyWeatherComponent({
                         time: new Date(weather.dt_txt).getTime().toString(),
                         temperature: weather.main.temp,
+                        weatherDescription: weather.weather[0].description,
                     })
                 );
             })

@@ -3,11 +3,17 @@ import { createElement } from "@/core/framework";
 interface IHourlyWeatherComponentProps {
     time: string;
     temperature: number;
+    weatherDescription: WeatherDescription;
 }
+
+const getWeatherSource = (description: WeatherDescription) => {
+    return description.replaceAll(" ", "-").concat(".png");
+};
 
 function HourlyWeatherComponent({
     time,
     temperature,
+    weatherDescription,
 }: IHourlyWeatherComponentProps) {
     return createElement(
         "div",
@@ -18,7 +24,7 @@ function HourlyWeatherComponent({
             { class: "hourly-weather-component__icon" },
             createElement("img", {
                 alt: "hourly-weather-component-icon",
-                src: "/images/clear-sky.png",
+                src: `/images/${getWeatherSource(weatherDescription)}`,
             })
         ),
         createElement("div", {}, createElement("span", {}, String(temperature)))

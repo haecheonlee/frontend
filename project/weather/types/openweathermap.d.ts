@@ -44,12 +44,26 @@ interface Main {
 }
 
 /**
+ * The description of weather.
+ */
+type WeatherDescription =
+    | "clear sky"
+    | "few clouds"
+    | "scattered clouds"
+    | "broken clouds"
+    | "shower rain"
+    | "rain"
+    | "thunderstorm"
+    | "snow"
+    | "mist";
+
+/**
  * Weather conditions.
  */
 interface Weather {
     id: number;
     main: string;
-    description: string;
+    description: WeatherDescription;
     icon: string;
 }
 
