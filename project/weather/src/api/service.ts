@@ -12,11 +12,11 @@ export class ApiService {
     private static baseUrl: string = API_BASE_URL;
 
     public static async get<T>(
-        endpoint: ApiEndpoints,
+        apiUrl: string,
         params?: Record<string, string>
     ): Promise<ApiResponse<T>> {
         try {
-            const url = params ? buildUrl(endpoint, params) : endpoint;
+            const url = buildUrl(apiUrl, params || {});
             const response = await fetch(`${ApiService.baseUrl}${url}`);
             const data = await response.json();
             return {
@@ -34,11 +34,11 @@ export class ApiService {
     }
 
     public static async post<T>(
-        endpoint: ApiEndpoints,
+        apiUrl: string,
         body: any
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await fetch(`${ApiService.baseUrl}${endpoint}`, {
+            const response = await fetch(`${ApiService.baseUrl}${apiUrl}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

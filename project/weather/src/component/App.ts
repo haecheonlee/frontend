@@ -17,7 +17,7 @@ function App() {
             }
 
             const response = await ApiService.get<ForecastResponse>(
-                ApiEndpoints.GET_FORECAST,
+                ApiEndpoints.GET_FORECAST.url,
                 {
                     city: "Montreal",
                     count: "8",

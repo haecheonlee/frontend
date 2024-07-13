@@ -1,12 +1,6 @@
-import { ApiEndpoints } from "@/api/endpoint";
-
-export function buildUrl(
-    endpoint: ApiEndpoints | string,
-    params: Record<string, string>
-): string {
-    let url = endpoint;
-    for (const key in params) {
-        url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
+export function buildUrl(url: string, params: Record<string, string>): string {
+    for (const [key, value] of Object.entries(params)) {
+        url = url.replace(`{${key}}`, encodeURIComponent(value));
     }
     return url;
 }
