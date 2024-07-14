@@ -1,4 +1,4 @@
-import { createElement } from "@/core/framework";
+import { v } from "@/core/framework";
 import { SearchComponent } from "./SearchComponent";
 import { WeatherComponent } from "./WeatherComponent";
 import { useEffect, useState } from "@/core/hook";
@@ -19,7 +19,7 @@ function App() {
             const response = await ApiService.get<ForecastResponse>(
                 ApiEndpoints.GET_FORECAST.url,
                 {
-                    city: "Montreal",
+                    city,
                     count: "8",
                     apiKey: API_KEY,
                 }
@@ -31,10 +31,10 @@ function App() {
         fetchForecast;
     }, [city]);
 
-    return createElement(
+    return v(
         "div",
         { id: "main" },
-        createElement(
+        v(
             "div",
             { class: "search-box-container" },
             SearchComponent({

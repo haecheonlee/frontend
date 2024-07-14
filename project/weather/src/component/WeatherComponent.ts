@@ -1,4 +1,4 @@
-import { createElement } from "@/core/framework";
+import { v } from "@/core/framework";
 import { HourlyWeatherComponent } from "./HourlyWeatherComponent";
 
 interface IWeatherComponentProps {
@@ -35,45 +35,45 @@ function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
         null
     );
 
-    return createElement(
+    return v(
         "div",
         { class: "weather-component" },
-        createElement(
+        v(
             "div",
             { class: "weather-component__daily-weather" },
-            createElement(
+            v(
                 "div",
                 { class: "daily-weather__city" },
-                createElement("span", {}, city.name)
+                v("span", {}, city.name)
             ),
-            createElement(
+            v(
                 "div",
                 { class: "daily-weather__temperature" },
-                createElement("span", {}, String(currentWeather.main.temp))
+                v("span", {}, String(currentWeather.main.temp))
             ),
-            createElement("span", {}, currentWeather.weather[0]?.main ?? ""),
-            createElement(
+            v("span", {}, currentWeather.weather[0]?.main ?? ""),
+            v(
                 "div",
                 { class: "daily-weather__daily-temperature" },
-                createElement(
+                v(
                     "span",
                     { class: "daily-temperature__max" },
                     `{H: ${maxTemperature}`
                 ),
-                createElement(
+                v(
                     "span",
                     { class: "daily-temperature__min" },
                     `L: ${minTemperature}`
                 )
             )
         ),
-        createElement(
+        v(
             "div",
             { class: "weather-component__forecast" },
             ...Array.from({ length: 5 }).map((_, index) => {
                 const weather = weatherData[index * 2];
 
-                return createElement(
+                return v(
                     "div",
                     {},
                     HourlyWeatherComponent({

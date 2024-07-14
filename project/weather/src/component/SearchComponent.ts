@@ -1,4 +1,4 @@
-import { createElement } from "@/core/framework";
+import { v } from "@/core/framework";
 import { debounce } from "@/util/helper";
 
 interface ISearchComponentProps {
@@ -6,7 +6,7 @@ interface ISearchComponentProps {
 }
 
 function SearchComponent(props: ISearchComponentProps) {
-    return createElement("input", {
+    return v("input", {
         id: "search-component",
         type: "text",
         onkeyup: debounce(function (event: Event) {

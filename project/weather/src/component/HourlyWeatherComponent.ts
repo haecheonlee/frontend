@@ -1,4 +1,4 @@
-import { createElement } from "@/core/framework";
+import { createElement, v } from "@/core/framework";
 
 interface IHourlyWeatherComponentProps {
     time: string;
@@ -15,19 +15,19 @@ function HourlyWeatherComponent({
     temperature,
     weatherDescription,
 }: IHourlyWeatherComponentProps) {
-    return createElement(
+    return v(
         "div",
         { class: "hourly-weather-component" },
-        createElement("div", {}, createElement("span", {}, time)),
-        createElement(
+        v("div", {}, v("span", {}, time)),
+        v(
             "div",
             { class: "hourly-weather-component__icon" },
-            createElement("img", {
+            v("img", {
                 alt: "hourly-weather-component-icon",
                 src: `/images/${getWeatherSource(weatherDescription)}`,
             })
         ),
-        createElement("div", {}, createElement("span", {}, String(temperature)))
+        v("div", {}, v("span", {}, String(temperature)))
     );
 }
 
