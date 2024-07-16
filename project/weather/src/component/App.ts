@@ -38,6 +38,7 @@ function App() {
             "div",
             { class: "search-box-container" },
             SearchComponent({
+                value: city,
                 onChangeCallback: setCity,
             })
         ),

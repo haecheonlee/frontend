@@ -1,14 +1,16 @@
+import { App } from "@/component/App";
 import { createElement, diff, VNode } from "./framework";
 
 let oldNode: VNode | string;
 
-export function render(newNode: VNode | string) {
+export function render() {
     const app = document.getElementById("app");
 
     if (!app) {
         throw new Error("The document is not implemented.");
     }
 
+    const newNode = App();
     if (!oldNode) {
         app.appendChild(createElement(newNode));
     } else {
