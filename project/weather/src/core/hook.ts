@@ -28,19 +28,19 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
 }
 
 export function useEffect(fn: () => void, dependencies: any[]) {
-    const index = currentEffectIndex;
+    const currentIndex = currentEffectIndex;
 
-    if (currentEffect[index] === undefined) {
-        currentEffect[index] = { dependencies };
+    if (currentEffect[currentIndex] === undefined) {
+        currentEffect[currentIndex] = { dependencies };
     }
 
     const hasDependenciesChanged = dependencies.some(
         (dependency, index) =>
-            dependency[index] !== currentEffect[index].dependencies[index]
+            dependency !== currentEffect[currentIndex].dependencies[index]
     );
 
     if (hasDependenciesChanged) {
         fn();
-        currentEffect[index] = { dependencies };
+        currentEffect[currentIndex] = { dependencies };
     }
 }
