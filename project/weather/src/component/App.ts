@@ -16,6 +16,10 @@ function App() {
                 throw new Error("The api key is not provided.");
             }
 
+            if (!city) {
+                return;
+            }
+
             const response = await ApiService.get<ForecastResponse>(
                 ApiEndpoints.GET_FORECAST.url,
                 {
@@ -28,7 +32,7 @@ function App() {
             setForecast(response.data);
         }
 
-        fetchForecast;
+        fetchForecast();
     }, [city]);
 
     return v(

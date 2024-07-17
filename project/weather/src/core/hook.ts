@@ -1,7 +1,10 @@
+import { render } from "./render";
 import { State } from "./state";
 
 let currentState: any[] = [];
 let currentIndex = 0;
+let currentEffect: Array<{ dependencies: any[] }> = [];
+let currentEffectIndex = 0;
 
 export function useState<T>(initialState: T): [T, (newState: T) => void] {
     if (currentState.length === currentIndex) {
@@ -16,6 +19,8 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
 
         stateInstance.setState(newState);
         currentIndex = 0;
+        currentEffectIndex = 0;
+        render();
     };
 
     currentIndex += 1;
@@ -23,19 +28,19 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
 }
 
 export function useEffect(fn: () => void, dependencies: any[]) {
-    let hasMounted = false;
-    let previousDependencies: typeof dependencies = [];
+    const index = currentEffectIndex;
 
-    return function () {
-        const hasDependenciesHasChanged = dependencies.some(
-            (currentDependency, index) =>
-                currentDependency !== previousDependencies[index]
-        );
+    if (currentEffect[index] === undefined) {
+        currentEffect[index] = { dependencies };
+    }
 
-        if (!hasMounted || hasDependenciesHasChanged) {
-            fn();
-            hasMounted = true;
-            previousDependencies = dependencies.slice();
-        }
-    };
+    const hasDependenciesChanged = dependencies.some(
+        (dependency, index) =>
+            dependency[index] !== currentEffect[index].dependencies[index]
+    );
+
+    if (hasDependenciesChanged) {
+        fn();
+        currentEffect[index] = { dependencies };
+    }
 }
