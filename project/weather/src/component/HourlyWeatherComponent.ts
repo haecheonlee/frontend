@@ -1,4 +1,4 @@
-import { createElement, v } from "@/core/framework";
+import { v } from "@/core/framework";
 
 interface IHourlyWeatherComponentProps {
     time: string;

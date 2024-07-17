@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "./config";
-import { ApiEndpoints } from "./endpoint";
 import { buildUrl } from "@/util/helper";
 
 export interface ApiResponse<T> {
