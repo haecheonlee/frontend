@@ -7,13 +7,12 @@ interface IWeatherComponentProps {
 }
 
 function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
-    const currentWeather = weatherData.find((weather, index) => {
-        const now = new Date();
-        return (
-            new Date(weather.dt_txt) <= now &&
-            now < new Date(weatherData[index + 1]?.dt_txt)
-        );
-    })!;
+    const currentWeather = weatherData[0];
+
+    if (!currentWeather) {
+        return null;
+    }
+
     const maxTemperature = weatherData.reduce<number | null>(
         (temperature, weather) => {
             if (temperature == null) {
@@ -70,14 +69,12 @@ function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
         v(
             "div",
             { class: "weather-component__forecast" },
-            ...Array.from({ length: 5 }).map((_, index) => {
-                const weather = weatherData[index * 2];
-
+            ...weatherData.map((weather) => {
                 return v(
                     "div",
                     {},
                     HourlyWeatherComponent({
-                        time: new Date(weather.dt_txt).getTime().toString(),
+                        time: new Date(weather.dt * 1000).getHours().toString(),
                         temperature: weather.main.temp,
                         weatherDescription: weather.weather[0].description,
                     })

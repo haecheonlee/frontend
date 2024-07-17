@@ -24,7 +24,7 @@ function App() {
                 ApiEndpoints.GET_FORECAST.url,
                 {
                     city,
-                    count: "8",
+                    count: "5",
                     apiKey: API_KEY,
                 }
             );
@@ -49,7 +49,7 @@ function App() {
         forecast
             ? WeatherComponent({
                   city: forecast.city,
-                  weatherData: forecast.list,
+                  weatherData: forecast.list ?? [],
               })
             : null
     );
