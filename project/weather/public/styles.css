@@ -68,7 +68,7 @@ body {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex: 3;
+            flex: 2;
 
             .daily-weather__city {
                 > span {
@@ -77,9 +77,14 @@ body {
             }
 
             .daily-weather__temperature {
+                margin: 10px 0;
                 > span {
                     font-size: 5rem;
                 }
+            }
+
+            .daily-weather__daily-main {
+                margin-bottom: 10px;
             }
 
             .daily-weather__daily-temperature {

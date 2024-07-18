@@ -50,7 +50,11 @@ function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
                 { class: "daily-weather__temperature" },
                 v("span", {}, String(currentWeather.main.temp))
             ),
-            v("span", {}, currentWeather.weather[0]?.main ?? ""),
+            v(
+                "span",
+                { class: "daily-weather__daily-main" },
+                currentWeather.weather[0]?.main ?? ""
+            ),
             v(
                 "div",
                 { class: "daily-weather__daily-temperature" },
