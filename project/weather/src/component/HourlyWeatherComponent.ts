@@ -27,7 +27,12 @@ function HourlyWeatherComponent({
                 src: `/images/${getWeatherSource(main)}`,
             })
         ),
-        v("div", {}, v("span", {}, String(temperature)))
+        v(
+            "div",
+            { class: "hourly-weather-component__temperature" },
+            v("span", {}, String(temperature)),
+            v("sup", {}, "°")
+        )
     );
 }
 
