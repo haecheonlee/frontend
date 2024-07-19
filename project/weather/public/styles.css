@@ -120,24 +120,12 @@ body {
 }
 
 .weather {
-    &.clear-sky {
+    &.clear {
         background: linear-gradient(to top, #00c6ff, #0072ff);
     }
 
-    &.few-clouds {
-        background: linear-gradient(to top, #a1c4fd, #c2e9fb);
-    }
-
-    &.scattered-clouds {
-        background: linear-gradient(to top, #d7d2cc, #304352);
-    }
-
-    &.broken-clouds {
+    &.clouds {
         background: linear-gradient(to top, #4b79a1, #283e51);
-    }
-
-    &.shower-rain {
-        background: linear-gradient(to top, #3a7bd5, #2b5876);
     }
 
     &.rain {
