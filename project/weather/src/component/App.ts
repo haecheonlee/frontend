@@ -37,21 +37,32 @@ function App() {
 
     return v(
         "div",
-        { id: "main" },
+        {
+            id: "main",
+            class:
+                "weather " +
+                (forecast?.list[0].weather[0].main
+                    ? forecast.list[0].weather[0].main.toLowerCase()
+                    : "none"),
+        },
         v(
             "div",
-            { class: "search-box-container" },
-            SearchComponent({
-                value: city,
-                onChangeCallback: setCity,
-            })
-        ),
-        forecast
-            ? WeatherComponent({
-                  city: forecast.city,
-                  weatherData: forecast.list ?? [],
-              })
-            : null
+            { id: "container" },
+            v(
+                "div",
+                { class: "search-box-container" },
+                SearchComponent({
+                    value: city,
+                    onChangeCallback: setCity,
+                })
+            ),
+            forecast
+                ? WeatherComponent({
+                      city: forecast.city,
+                      weatherData: forecast.list ?? [],
+                  })
+                : null
+        )
     );
 }
 
