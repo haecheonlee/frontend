@@ -1,9 +1,10 @@
 import { App } from "@/component/App";
 import { createElement, diff, VNode } from "./framework";
+import { debounceByAnimationFrame } from "@/util/helper";
 
 let oldNode: VNode | string;
 
-export function render() {
+export const render = debounceByAnimationFrame(() => {
     const app = document.getElementById("app");
 
     if (!app) {
@@ -24,4 +25,4 @@ export function render() {
     }
 
     oldNode = newNode;
-}
+});
