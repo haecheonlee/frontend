@@ -17,6 +17,7 @@ function App() {
             }
 
             if (!city) {
+                setForecast(null);
                 return;
             }
 
@@ -29,7 +30,11 @@ function App() {
                 }
             );
 
-            setForecast(response.data);
+            if (response.status === 200) {
+                setForecast(response.data);
+            } else {
+                setForecast(null);
+            }
         }
 
         fetchForecast();
