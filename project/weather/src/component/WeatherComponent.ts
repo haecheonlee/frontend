@@ -62,12 +62,14 @@ function WeatherComponent({ city, weatherData }: IWeatherComponentProps) {
                 v(
                     "span",
                     { class: "daily-temperature__max" },
-                    `H: ${maxTemperature}`
+                    `H: ${maxTemperature}`,
+                    v("sup", {}, "°")
                 ),
                 v(
                     "span",
                     { class: "daily-temperature__min" },
-                    `L: ${minTemperature}`
+                    `L: ${minTemperature}`,
+                    v("sup", {}, "°")
                 )
             )
         ),
