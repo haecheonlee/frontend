@@ -34,3 +34,7 @@ A simple and intuitive weather forecasting application that provides current wea
 ## API
 
 This application uses the [OpenWeatherMap API](https://openweathermap.org/api) to fetch weather data.
+
+## DEMO
+
+https://github.com/user-attachments/assets/3cd1935b-0bc3-434d-87bb-7c9e72d01c93
