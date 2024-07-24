@@ -3,7 +3,8 @@ import { State } from "./state";
 
 let currentState: Array<State<any>> = [] as const;
 let currentIndex = 0;
-let currentEffect: Array<{ dependencies: any[] }> = [] as const;
+let currentEffect: Array<{ dependencies: any[]; cleanup?: () => void }> =
+    [] as const;
 let currentEffectIndex = 0;
 
 export function useState<T>(initialState: T): [T, (newState: T) => void] {
@@ -27,7 +28,7 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
     return [stateInstance.getState(), setState];
 }
 
-export function useEffect(fn: () => void, dependencies: any[]) {
+export function useEffect(fn: () => void | (() => void), dependencies: any[]) {
     const currentIndex = currentEffectIndex;
 
     if (currentEffect[currentIndex] === undefined) {
@@ -40,7 +41,10 @@ export function useEffect(fn: () => void, dependencies: any[]) {
     );
 
     if (hasDependenciesChanged) {
-        fn();
-        currentEffect[currentIndex] = { dependencies };
+        if (currentEffect[currentIndex].cleanup) {
+            currentEffect[currentIndex].cleanup();
+        }
+        const cleanup = fn() ?? undefined;
+        currentEffect[currentIndex] = { dependencies, cleanup };
     }
 }
