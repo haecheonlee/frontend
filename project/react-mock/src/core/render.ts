@@ -2,7 +2,7 @@ import { createElement, diff, VNode } from "./framework";
 import { debounceByAnimationFrame } from "@/util/helper";
 
 let entryPoint: null | (() => VNode) = null;
-let oldNode: VNode | string;
+let oldNode: VNode | string | null;
 
 export const register = (component: () => VNode) => {
     entryPoint = component;

@@ -1,9 +1,9 @@
 import { render } from "./render";
 import { State } from "./state";
 
-let currentState: any[] = [];
+let currentState: Array<State<any>> = [] as const;
 let currentIndex = 0;
-let currentEffect: Array<{ dependencies: any[] }> = [];
+let currentEffect: Array<{ dependencies: any[] }> = [] as const;
 let currentEffectIndex = 0;
 
 export function useState<T>(initialState: T): [T, (newState: T) => void] {

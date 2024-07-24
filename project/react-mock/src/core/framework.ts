@@ -1,13 +1,15 @@
+type NodeType = VNode | string | null;
+
 export type VNode = {
     tag: string;
     props: Record<string, any>;
-    children: (VNode | string | null)[];
+    children: NodeType[];
 };
 
 export function v(
-    tag: string,
-    props: Record<string, any> = {},
-    ...children: (VNode | string | null)[]
+    tag: VNode["tag"],
+    props: VNode["props"] = {},
+    ...children: VNode["children"]
 ): VNode {
     return { tag, props, children };
 }
@@ -30,8 +32,8 @@ export function createElement(node: VNode | string): HTMLElement | Text {
 }
 
 export function diff(
-    oldNode: VNode | string | null,
-    newNode: VNode | string | null
+    oldNode: NodeType,
+    newNode: NodeType
 ): HTMLElement | Text | null {
     if (!newNode) {
         return document.createTextNode("");
@@ -76,7 +78,7 @@ export function diff(
     return null;
 }
 
-function createElementWithProps(tag: string, props: Record<string, any>) {
+function createElementWithProps(tag: VNode["tag"], props: VNode["props"]) {
     const element = document.createElement(tag);
     for (const [key, value] of Object.entries(props)) {
         if (key.startsWith("on") && typeof value === "function") {
