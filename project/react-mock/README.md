@@ -32,3 +32,41 @@ This does not handle focus correctly for input elements. Typing in input fields 
 ### Animations
 
 Animations are not fully supported. While you can define CSS animations, the mock virtual DOM does not manage animation states or transitions after updating an state and it re-renders the application.
+
+## Example
+
+This section walks you through setting up and using this library.
+
+### 1. Setup root
+
+Create a root for the entry point and render a component:
+
+```bash
+import { App } from "./App";
+
+createRoot(document.getElementById("app")).render(App);
+```
+
+### 2. Create a component
+
+Set up a component with useState and useEffect:
+
+```bash
+import { useEffect, useState } from "@/core/hook";
+
+function App() {
+    const [value, setValue] = useState("");
+
+    useEffect(() => {
+        console.log(value);
+    }, [value]);
+
+    return v(
+        "div",
+        {},
+        v("div", {}, value)
+    );
+}
+
+export { App };
+```
