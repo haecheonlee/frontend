@@ -1,4 +1,4 @@
-import { render } from "./render";
+import { _render } from "./ui";
 import { State } from "./state";
 
 let currentState: Array<State<any>> = [] as const;
@@ -21,7 +21,7 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
         stateInstance.setState(newState);
         currentIndex = 0;
         currentEffectIndex = 0;
-        render();
+        _render();
     };
 
     currentIndex += 1;

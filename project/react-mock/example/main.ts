@@ -1,5 +1,4 @@
-import { register, render } from "../src/core/render";
+import { createRoot, _render } from "../src/core/ui";
 import { App } from "./component/App";
 
-register(App);
-render();
+createRoot(document.getElementById("app")!).render(App);
