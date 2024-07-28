@@ -14,7 +14,10 @@ export function v(
     return { tag, props, children };
 }
 
-export function createElement(node: VNode | string): HTMLElement | Text {
+export function createElement(node: string): Text;
+export function createElement(node: VNode): HTMLElement;
+export function createElement(node: string | VNode): Text | HTMLElement;
+export function createElement(node: string | VNode): Text | HTMLElement {
     if (typeof node === "string") {
         return document.createTextNode(node);
     }
