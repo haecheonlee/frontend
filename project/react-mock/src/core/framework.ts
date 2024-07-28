@@ -17,7 +17,7 @@ export function v(
 export function createElement(node: string): Text;
 export function createElement(node: VNode): HTMLElement;
 export function createElement(node: string | VNode): Text | HTMLElement;
-export function createElement(node: string | VNode): Text | HTMLElement {
+export function createElement<T extends VNode | string>(node: T) {
     if (typeof node === "string") {
         return document.createTextNode(node);
     }
