@@ -1,5 +1,5 @@
 import { createElement, diff, VNode } from "./framework";
-import { debounceByAnimationFrame } from "@/util/helper";
+import { debounceByAnimationFrame } from "../util/helper";
 
 let root: HTMLElement | null = null;
 let entryPoint: null | (() => VNode) = null;
