@@ -28,7 +28,10 @@ export function useState<T>(initialState: T): [T, (newState: T) => void] {
     return [stateInstance.getState(), setState];
 }
 
-export function useEffect(fn: () => void | (() => void), dependencies: any[]) {
+export function useEffect(
+    fn: () => undefined | (() => void),
+    dependencies: any[]
+) {
     const currentIndex = currentEffectIndex;
     let isFirst = false;
 
@@ -46,7 +49,7 @@ export function useEffect(fn: () => void | (() => void), dependencies: any[]) {
         if (currentEffect[currentIndex].cleanup) {
             currentEffect[currentIndex].cleanup();
         }
-        const cleanup = fn() ?? undefined;
+        const cleanup = fn();
         currentEffect[currentIndex] = { dependencies, cleanup };
     }
 }
