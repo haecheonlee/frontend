@@ -1,9 +1,9 @@
-import { createElement, diff, VNode } from "./framework";
+import { createElement, diff } from "./framework";
 import { debounceByAnimationFrame } from "../util/helper";
 
 let root: HTMLElement | null = null;
 let entryPoint: null | (() => VNode) = null;
-let oldNode: VNode | string | null;
+let oldNode: NodeType;
 
 export function createRoot(element: HTMLElement) {
     root = element;

@@ -1,11 +1,3 @@
-type NodeType = VNode | string | null;
-
-export type VNode = {
-    tag: string;
-    props: Record<string, any>;
-    children: NodeType[];
-};
-
 export function v(
     tag: VNode["tag"],
     props: VNode["props"] = {},
