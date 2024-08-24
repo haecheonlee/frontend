@@ -61,10 +61,10 @@ function App() {
         console.log(value);
     }, [value]);
 
-    return v(
+    return createElement(
         "div",
         {},
-        v("div", {}, value)
+        createElement("div", {}, value)
     );
 }
 

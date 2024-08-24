@@ -1,4 +1,4 @@
-import { createElement, diff } from "./framework";
+import { create, diff } from "./framework";
 import { debounceByAnimationFrame } from "../util/helper";
 
 let root: HTMLElement | null = null;
@@ -26,7 +26,7 @@ export const _render = debounceByAnimationFrame(() => {
 
     const newNode = entryPoint();
     if (!oldNode) {
-        root.appendChild(createElement(newNode));
+        root.appendChild(create(newNode));
     } else {
         const newChildren = diff(oldNode, newNode);
 

@@ -1,4 +1,4 @@
-import { v } from "../../src/core/framework";
+import { createElement } from "../../src/core/framework";
 import { useEffect, useState } from "../../src/core/hook";
 
 function App() {
@@ -8,10 +8,10 @@ function App() {
         alert("This is fired from useEffect: " + value);
     }, [value]);
 
-    return v(
+    return createElement(
         "div",
         {},
-        v("input", {
+        createElement("input", {
             type: "text",
             value: value,
             onkeyup: function (event) {
@@ -20,7 +20,7 @@ function App() {
                 }
             },
         }),
-        v("div", {}, `The value is ${value}`)
+        createElement("div", {}, `The value is ${value}`)
     );
 }
 

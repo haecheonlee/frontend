@@ -1,4 +1,4 @@
-export function v(
+export function createElement(
     tag: VNode["tag"],
     props: VNode["props"] = {},
     ...children: VNode["children"]
@@ -6,10 +6,10 @@ export function v(
     return { tag, props, children };
 }
 
-export function createElement(node: string): Text;
-export function createElement(node: VNode): HTMLElement;
-export function createElement(node: string | VNode): Text | HTMLElement;
-export function createElement<T extends VNode | string>(node: T) {
+export function create(node: string): Text;
+export function create(node: VNode): HTMLElement;
+export function create(node: string | VNode): Text | HTMLElement;
+export function create<T extends VNode | string>(node: T) {
     if (typeof node === "string") {
         return document.createTextNode(node);
     }
@@ -20,7 +20,7 @@ export function createElement<T extends VNode | string>(node: T) {
             continue;
         }
 
-        element.append(createElement(child));
+        element.append(create(child));
     }
 
     return element;
@@ -35,11 +35,11 @@ export function diff(
     }
 
     if (!oldNode) {
-        return createElement(newNode);
+        return create(newNode);
     }
 
     if (typeof oldNode !== typeof newNode) {
-        return createElement(newNode);
+        return create(newNode);
     }
 
     if (typeof oldNode === "string" && typeof newNode === "string") {
@@ -50,7 +50,7 @@ export function diff(
         }
     } else if (typeof oldNode !== "string" && typeof newNode !== "string") {
         if (oldNode.tag !== newNode.tag) {
-            return createElement(newNode);
+            return create(newNode);
         }
 
         const element = createElementWithProps(newNode.tag, newNode.props);
