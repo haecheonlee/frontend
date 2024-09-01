@@ -1,6 +1,10 @@
 import { Selector } from "@/component/Common";
 import { Action18 } from "@/component/React18";
-import { Action19, OptimisticComponent } from "@/component/React19";
+import {
+    Action19,
+    OptimisticComponent,
+    UseComponent,
+} from "@/component/React19";
 
 export default function Home() {
     return (
@@ -12,6 +16,10 @@ export default function Home() {
             <div>
                 <span>useOptimistic</span>
                 <OptimisticComponent />
+            </div>
+            <div>
+                <span>use</span>
+                <UseComponent />
             </div>
         </main>
     );
