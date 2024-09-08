@@ -44,7 +44,7 @@ export default function SideNav() {
                                 "font-bold": link.href === pathname,
                             })}
                         >
-                            <LinkIcon className="w-4 h-4 mr-2" />
+                            <LinkIcon className="w-4 h-4 mr-4" />
                             <TypographySmall>{link.name}</TypographySmall>
                         </Link>
                     );

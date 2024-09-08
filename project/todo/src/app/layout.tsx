@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SideNav from "@/app/ui/side-nav";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -14,7 +15,16 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className="w-full h-screen flex justify-center items-center">
-                {children}
+                <div className="flex items-center justify-center">
+                    <div className="min-w-[1400px] max-w-[1400px] min-h-[800px] max-h-[800px] flex gap-4">
+                        <div className="min-w-[350px] max-w-[350px]">
+                            <SideNav />
+                        </div>
+                        <div className="flex-auto rounded-md px-4">
+                            {children}
+                        </div>
+                    </div>
+                </div>
             </body>
         </html>
     );
