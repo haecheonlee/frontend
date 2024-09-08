@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export function TypographyH1({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -38,6 +40,13 @@ export function TypographySmall({
 
 export function TypographyXSmall({
     children,
-}: Readonly<{ children: React.ReactNode }>) {
-    return <span className="text-xs leading-none">{children}</span>;
+    isUppercase,
+}: Readonly<{ children: React.ReactNode; isUppercase?: boolean }>) {
+    return (
+        <span
+            className={clsx("text-xs leading-none", { uppercase: isUppercase })}
+        >
+            {children}
+        </span>
+    );
 }
