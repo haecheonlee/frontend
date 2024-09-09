@@ -3,11 +3,18 @@
 import { TypographyH1, TypographySmall } from "@/components/ui/typography";
 import Container from "@/app/ui/task/container";
 import View from "../ui/task/view";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "@/types/types";
+import { getTodoList } from "@/utils/local-storage";
 
 export default function Page() {
-    const [todoList] = useState<Todo[]>([]);
+    const [todoList, setTodoList] = useState<Todo[]>([]);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setTodoList(() => getTodoList());
+        }
+    }, []);
 
     return (
         <>
@@ -18,7 +25,6 @@ export default function Page() {
                 {todoList.length === 0 && (
                     <div className="text-center">
                         <TypographySmall>
-                            {" "}
                             You have no tasks at the moment! 🎉
                         </TypographySmall>
                     </div>
