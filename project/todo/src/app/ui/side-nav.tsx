@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/typography";
 import HorizontalDivider from "./horizontal-divider";
 import { usePathname } from "next/navigation";
-import { DoubleArrowRightIcon, ListBulletIcon } from "@radix-ui/react-icons";
+import { DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import clsx from "clsx";
 
@@ -16,11 +16,6 @@ const links = Object.freeze([
         name: "Upcoming",
         href: "/",
         icon: DoubleArrowRightIcon,
-    },
-    {
-        name: "Today",
-        href: "/today",
-        icon: ListBulletIcon,
     },
 ] as const);
 
