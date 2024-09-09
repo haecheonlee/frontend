@@ -40,9 +40,12 @@ export default function SideNav() {
                         <Link
                             key={link.name}
                             href={link.href}
-                            className={clsx("flex items-center px-1 py-2", {
-                                "font-bold": link.href === pathname,
-                            })}
+                            className={clsx(
+                                "flex items-center px-1 py-2 hover:bg-neutral-700",
+                                {
+                                    "font-bold": link.href === pathname,
+                                }
+                            )}
                         >
                             <LinkIcon className="w-4 h-4 mr-4" />
                             <TypographySmall>{link.name}</TypographySmall>
