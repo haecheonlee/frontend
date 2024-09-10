@@ -13,6 +13,19 @@ export type Tag = BaseEntity & {
 
 export type Todo = BaseEntity & {
     description: string;
+    dueDate: string;
     type?: Type;
     tags?: Tag[];
+};
+
+export type TaskActionState = {
+    errors?: {
+        id?: string[] | undefined;
+        title?: string[] | undefined;
+        type?: string[] | undefined;
+        description?: string[] | undefined;
+        dueDate?: string[] | undefined;
+        tags?: string[] | undefined;
+    };
+    message?: string | null;
 };
