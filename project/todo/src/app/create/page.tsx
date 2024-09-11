@@ -1,5 +1,5 @@
 import { TypographyH1 } from "@/components/ui/typography";
-import CreateForm from "../ui/task/create-form";
+import CreateForm from "@/app/ui/task/create-form";
 
 export default function Page() {
     return (

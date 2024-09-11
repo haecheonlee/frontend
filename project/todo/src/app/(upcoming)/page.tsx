@@ -2,7 +2,7 @@
 
 import { TypographyH1, TypographySmall } from "@/components/ui/typography";
 import Container from "@/app/ui/task/container";
-import View from "../ui/task/view";
+import TaskLink from "@/app/ui/task/task-link";
 import { useEffect, useState } from "react";
 import { Todo } from "@/types/types";
 import { getTodoList } from "@/utils/local-storage";
@@ -30,7 +30,9 @@ export default function Page() {
                     </div>
                 )}
                 {todoList.length !== 0 &&
-                    todoList.map((p) => <View key={p.id} title={p.title} />)}
+                    todoList.map((todo) => (
+                        <TaskLink key={todo.id} todo={todo} />
+                    ))}
             </Container>
         </>
     );

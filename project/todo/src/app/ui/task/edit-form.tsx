@@ -6,26 +6,35 @@ import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "../date-picker";
 import { Button } from "@/components/ui/button";
 import { TaskActionState } from "@/types/types";
-import { addTodo } from "@/utils/local-storage";
-import { useRouter } from "next/navigation";
+import { getTodoById, editTodo } from "@/utils/local-storage";
+import { notFound, useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
-export default function CreateForm() {
+export default function EditForm({ id }: { id: string }) {
+    const todo = getTodoById(id);
+
+    if (!todo) {
+        notFound();
+    }
+
     const router = useRouter();
 
     const [state, formAction, isPending] = useActionState(
-        addTodo,
+        editTodo,
         initialState
     );
-    const [date, setDate] = useState<Date | undefined>(() => new Date());
+    const [date, setDate] = useState<Date | undefined>(
+        () => new Date(todo.dueDate)
+    );
 
     const goBack = () => {
         router.push("/");
     };
 
     const handleSubmit = async (formData: FormData) => {
+        formData.set("id", id);
         formData.set("dueDate", date?.toString() ?? "");
         await formAction(formData);
     };
@@ -39,6 +48,7 @@ export default function CreateForm() {
                     placeholder="New task"
                     className="mb-2"
                     aria-describedby="title-error"
+                    defaultValue={todo.title}
                 />
                 <div id="title-error" aria-live="polite" aria-atomic="true">
                     {state.errors?.title &&
@@ -52,6 +62,7 @@ export default function CreateForm() {
                     name="description"
                     placeholder="Write your task in detail here."
                     aria-describedby="description-error"
+                    defaultValue={todo.description}
                 />
                 <div
                     id="description-error"
@@ -97,7 +108,7 @@ export default function CreateForm() {
                     disabled={isPending}
                     aria-disabled={isPending}
                 >
-                    Create
+                    Edit
                 </Button>
             </div>
         </form>
