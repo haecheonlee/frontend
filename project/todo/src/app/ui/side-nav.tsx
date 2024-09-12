@@ -12,6 +12,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import CreateList from "./list/create-list";
 import { getTypes } from "@/utils/local-storage";
+import { useEffect, useState } from "react";
+import { Type } from "@/types/types";
 
 const links = Object.freeze([
     {
@@ -23,7 +25,13 @@ const links = Object.freeze([
 
 export default function SideNav() {
     const pathname = usePathname();
-    const types = getTypes();
+    const [types, setTypes] = useState<Type[]>([]);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setTypes(getTypes());
+        }
+    }, []);
 
     return (
         <div className="bg-neutral-800 p-4 rounded-md">
