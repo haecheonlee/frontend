@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import clsx from "clsx";
+import CreateList from "./list/create-list";
 
 const links = Object.freeze([
     {
@@ -51,6 +52,7 @@ export default function SideNav() {
             <HorizontalDivider />
             <div>
                 <TypographyXSmall isUppercase>Lists</TypographyXSmall>
+                <CreateList />
             </div>
             <HorizontalDivider />
             <div>

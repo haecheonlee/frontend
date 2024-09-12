@@ -2,10 +2,11 @@
 
 import { z } from "zod";
 import { v4 } from "uuid";
-import { TaskActionState, Todo } from "@/types/types";
+import { ListActionState, TaskActionState, Todo, Type } from "@/types/types";
 import { redirect } from "next/navigation";
 
 const TODO_KEY = "todos";
+const TYPE_KEY = "type";
 
 const TypeSchema = z.object({
     id: z.string(),
@@ -84,6 +85,31 @@ export function editTodo(_: TaskActionState, formData: FormData) {
         return p;
     });
     localStorage.setItem(TODO_KEY, JSON.stringify(updatedList));
+
+    redirect("/");
+}
+
+export function getTypes(): Type[] {
+    const list = localStorage.getItem(TYPE_KEY);
+    return list ? JSON.parse(list) : [];
+}
+
+export function addType(_: ListActionState, formData: FormData) {
+    const validatedFields = TypeSchema.safeParse({
+        id: v4(),
+        title: formData.get("title"),
+        color: "#ffffff",
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Missing Fields. Failed to Create Type.",
+        };
+    }
+
+    const type = validatedFields.data;
+    localStorage.setItem(TYPE_KEY, JSON.stringify([...getTypes(), type]));
 
     redirect("/");
 }
