@@ -80,7 +80,7 @@ export default function EditForm({ id }: { id: string }) {
                     <DatePicker
                         date={date}
                         setDate={setDate}
-                        ariaDescribedby="due-date-error"
+                        aria-describedby="due-date-error"
                     />
                     <div
                         id="due-date-error"
