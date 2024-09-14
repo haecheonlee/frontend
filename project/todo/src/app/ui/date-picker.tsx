@@ -16,11 +16,9 @@ import {
 export default function DatePicker({
     date,
     setDate,
-    ariaDescribedby,
 }: Readonly<{
     date: Date | undefined;
     setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-    ariaDescribedby?: string;
 }>) {
     return (
         <Popover>
@@ -31,7 +29,6 @@ export default function DatePicker({
                         "w-[200px] justify-start text-left font-normal",
                         !date && "text-muted-foreground"
                     )}
-                    aria-describedby={ariaDescribedby}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "PPP") : <span>Pick a date</span>}
