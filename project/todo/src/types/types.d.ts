@@ -14,8 +14,8 @@ export type Tag = BaseEntity & {
 export type Todo = BaseEntity & {
     description: string;
     dueDate: string;
-    type?: Type;
-    tags?: Tag[];
+    type?: string;
+    tags?: string[];
 };
 
 export type TaskActionState = {

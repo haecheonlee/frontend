@@ -68,6 +68,7 @@ export function editTodo(_: TaskActionState, formData: FormData) {
         title: formData.get("title"),
         description: formData.get("description"),
         dueDate: formData.get("dueDate"),
+        type: formData.get("type"),
     });
 
     if (!validatedFields.success) {
