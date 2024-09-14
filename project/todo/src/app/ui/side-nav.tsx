@@ -77,7 +77,8 @@ export default function SideNav() {
                             )}
                         >
                             <span
-                                className={`w-4 h-4 mr-4 bg-[${type.color}] rounded-sm`}
+                                className={`w-4 h-4 mr-4 rounded-sm`}
+                                style={{ backgroundColor: type.color }}
                             />
                             <TypographySmall>{type.title}</TypographySmall>
                         </Link>

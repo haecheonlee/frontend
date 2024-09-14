@@ -4,6 +4,7 @@ import { z } from "zod";
 import { v4 } from "uuid";
 import { ListActionState, TaskActionState, Todo, Type } from "@/types/types";
 import { redirect } from "next/navigation";
+import chroma from "chroma-js";
 
 const TODO_KEY = "todos";
 const TYPE_KEY = "type";
@@ -100,7 +101,7 @@ export function addType(_: ListActionState, formData: FormData) {
     const validatedFields = TypeSchema.safeParse({
         id: v4(),
         title: formData.get("title"),
-        color: "#ffffff",
+        color: chroma.random().hex(),
     });
 
     if (!validatedFields.success) {
