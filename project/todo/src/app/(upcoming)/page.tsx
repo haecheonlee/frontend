@@ -12,7 +12,13 @@ export default function Page() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            setTodoList(() => getTodoList());
+            setTodoList(() =>
+                getTodoList().sort(
+                    (a, b) =>
+                        new Date(a.dueDate).getTime() -
+                        new Date(b.dueDate).getTime()
+                )
+            );
         }
     }, []);
 
