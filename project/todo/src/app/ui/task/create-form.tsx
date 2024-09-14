@@ -5,10 +5,18 @@ import ErrorLabel from "./error-label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "../date-picker";
 import { Button } from "@/components/ui/button";
-import { TaskActionState } from "@/types/types";
-import { addTodo } from "@/utils/local-storage";
+import { TaskActionState, Type } from "@/types/types";
+import { addTodo, getTypes } from "@/utils/local-storage";
 import { useRouter } from "next/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+} from "@/components/ui/select";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
@@ -20,6 +28,7 @@ export default function CreateForm() {
         initialState
     );
     const [date, setDate] = useState<Date | undefined>(() => new Date());
+    const [types, setTypes] = useState<Type[]>([]);
 
     const goBack = () => {
         router.push("/");
@@ -29,6 +38,10 @@ export default function CreateForm() {
         formData.set("dueDate", date?.toString() ?? "");
         await formAction(formData);
     };
+
+    useEffect(() => {
+        setTypes(getTypes());
+    }, []);
 
     return (
         <form action={handleSubmit}>
@@ -64,7 +77,7 @@ export default function CreateForm() {
                         ))}
                 </div>
             </div>
-            <div className="flex mt-2 mb-2">
+            <div className="flex mt-2 mb-2 gap-x-2">
                 <div>
                     <DatePicker
                         date={date}
@@ -78,6 +91,29 @@ export default function CreateForm() {
                     >
                         {state.errors?.dueDate &&
                             state.errors.dueDate.map((error: string) => (
+                                <ErrorLabel key={error} message={error} />
+                            ))}
+                    </div>
+                </div>
+                <div>
+                    <Select name="type" aria-describedby="type-error">
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="none">None</SelectItem>
+                                {types.map((type) => (
+                                    <SelectItem value={type.id} key={type.id}>
+                                        {type.title}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <div id="type-error" aria-live="polite" aria-atomic="true">
+                        {state.errors?.type &&
+                            state.errors.type.map((error: string) => (
                                 <ErrorLabel key={error} message={error} />
                             ))}
                     </div>

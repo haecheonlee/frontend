@@ -25,7 +25,7 @@ const CreateTodo = z.object({
     title: z.string(),
     description: z.string(),
     dueDate: z.string(),
-    type: TypeSchema.optional(),
+    type: z.string(),
     tags: z.array(TagSchema).optional(),
 });
 
@@ -45,6 +45,7 @@ export function addTodo(_: TaskActionState, formData: FormData) {
         title: formData.get("title"),
         description: formData.get("description"),
         dueDate: formData.get("dueDate"),
+        type: formData.get("type"),
     });
 
     if (!validatedFields.success) {
