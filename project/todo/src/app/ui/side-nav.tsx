@@ -11,7 +11,7 @@ import { DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import clsx from "clsx";
 import CreateList from "./list/create-list";
-import { getTypes } from "@/utils/local-storage";
+import { getTodoCountByTypes, getTypes } from "@/utils/local-storage";
 import { useEffect, useState } from "react";
 import { Type } from "@/types/types";
 
@@ -26,10 +26,14 @@ const links = Object.freeze([
 export default function SideNav() {
     const pathname = usePathname();
     const [types, setTypes] = useState<Type[]>([]);
-
+    const [todoCount, setTodoCount] = useState<{
+        [typeId: string]: number;
+    }>({});
     useEffect(() => {
         if (typeof window !== "undefined") {
-            setTypes(getTypes());
+            const types = getTypes();
+            setTypes(types);
+            setTodoCount(getTodoCountByTypes(types.map((type) => type.id)));
         }
     }, []);
 
@@ -70,17 +74,23 @@ export default function SideNav() {
                             key={type.id}
                             href={href}
                             className={clsx(
-                                "flex items-center px-1 py-2 hover:bg-neutral-700",
+                                "flex items-center px-1 py-2 hover:bg-neutral-700 justify-between",
                                 {
                                     "font-bold": href === pathname,
                                 }
                             )}
                         >
-                            <span
-                                className={`w-4 h-4 mr-4 rounded-sm`}
-                                style={{ backgroundColor: type.color }}
-                            />
-                            <TypographySmall>{type.title}</TypographySmall>
+                            <div className="flex">
+                                <span
+                                    className={`w-4 h-4 mr-2 rounded-sm`}
+                                    style={{ backgroundColor: type.color }}
+                                />
+                                <TypographySmall>{type.title}</TypographySmall>
+                            </div>
+
+                            <TypographyXSmall className="p-1 bg-neutral-600 rounded-sm">
+                                {todoCount[type.id] ?? 0}
+                            </TypographyXSmall>
                         </Link>
                     );
                 })}

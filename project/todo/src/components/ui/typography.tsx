@@ -35,16 +35,23 @@ export function TypographyLarge({
 export function TypographySmall({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
-    return <span className="text-sm leading-none">{children}</span>;
+    return <span className={clsx("text-sm leading-none")}>{children}</span>;
 }
 
 export function TypographyXSmall({
     children,
+    className,
     isUppercase,
-}: Readonly<{ children: React.ReactNode; isUppercase?: boolean }>) {
+}: Readonly<{
+    children: React.ReactNode;
+    className?: string;
+    isUppercase?: boolean;
+}>) {
     return (
         <span
-            className={clsx("text-xs leading-none", { uppercase: isUppercase })}
+            className={clsx("text-xs leading-none", className, {
+                uppercase: isUppercase,
+            })}
         >
             {children}
         </span>

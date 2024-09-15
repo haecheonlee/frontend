@@ -97,6 +97,19 @@ export function getTypes(): Type[] {
     return list ? JSON.parse(list) : [];
 }
 
+export function getTodoCountByTypes(typeIds: string[]): {
+    [typeId: string]: number;
+} {
+    const todos = getTodoList();
+
+    return typeIds.reduce((acc, id) => {
+        return {
+            ...acc,
+            [id]: todos.filter((todo) => todo.type === id).length,
+        };
+    }, {});
+}
+
 export function addType(_: ListActionState, formData: FormData) {
     const validatedFields = TypeSchema.safeParse({
         id: v4(),
@@ -115,4 +128,11 @@ export function addType(_: ListActionState, formData: FormData) {
     localStorage.setItem(TYPE_KEY, JSON.stringify([...getTypes(), type]));
 
     redirect("/");
+}
+
+export function getTypeById(id: string): [Type | undefined, Todo[]] {
+    const type = getTypes().find((type) => type.id === id);
+    const todos = getTodoList().filter((todo) => todo.type === id);
+
+    return [type, todos];
 }
