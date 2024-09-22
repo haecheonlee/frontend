@@ -18,7 +18,9 @@ export default function ViewList({ id }: { id: string }) {
             <div className="mb-10">
                 <div className="flex items-center">
                     <TypographyH1>
-                        <span style={{ color: type.color }}>{type.title}</span>
+                        <span
+                            style={{ color: type.color }}
+                        >{`List: ${type.title}`}</span>
                     </TypographyH1>
                 </div>
             </div>
