@@ -169,3 +169,10 @@ export function addTag(_: TagActionState, formData: FormData) {
 
     redirect("/");
 }
+
+export function getTagById(id: string): [Tag | undefined, Todo[]] {
+    const type = getTags().find((tag) => tag.id === id);
+    const todos = getTodoList().filter((todo) => todo.tags?.includes(id));
+
+    return [type, todos];
+}
