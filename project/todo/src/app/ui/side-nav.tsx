@@ -14,6 +14,7 @@ import CreateList from "./list/create-list";
 import { getTodoCountByTypes, getTypes } from "@/utils/local-storage";
 import { useEffect, useState } from "react";
 import { Type } from "@/types/types";
+import CreateTag from "./tag/create-tag";
 
 const links = Object.freeze([
     {
@@ -98,7 +99,10 @@ export default function SideNav() {
             </div>
             <HorizontalDivider />
             <div>
-                <TypographyXSmall isUppercase>Tags</TypographyXSmall>
+                <div>
+                    <TypographyXSmall isUppercase>Tags</TypographyXSmall>
+                </div>
+                <CreateTag />
             </div>
         </div>
     );

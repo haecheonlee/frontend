@@ -38,3 +38,12 @@ export type ListActionState = {
     };
     message?: string | null;
 };
+
+export type TagActionState = {
+    errors?: {
+        id?: string[] | undefined;
+        title?: string[] | undefined;
+        background?: string[] | undefined;
+    };
+    message?: string | null;
+};

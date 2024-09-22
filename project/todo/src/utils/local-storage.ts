@@ -2,12 +2,20 @@
 
 import { z } from "zod";
 import { v4 } from "uuid";
-import { ListActionState, TaskActionState, Todo, Type } from "@/types/types";
+import {
+    ListActionState,
+    Tag,
+    TagActionState,
+    TaskActionState,
+    Todo,
+    Type,
+} from "@/types/types";
 import { redirect } from "next/navigation";
 import chroma from "chroma-js";
 
 const TODO_KEY = "todos";
 const TYPE_KEY = "type";
+const TAG_KEY = "tag";
 
 const TypeSchema = z.object({
     id: z.string(),
@@ -27,7 +35,7 @@ const CreateTodo = z.object({
     description: z.string(),
     dueDate: z.string(),
     type: z.string(),
-    tags: z.array(TagSchema).optional(),
+    tags: z.array(z.string()).optional(),
 });
 
 export function getTodoList(): Todo[] {
@@ -135,4 +143,29 @@ export function getTypeById(id: string): [Type | undefined, Todo[]] {
     const todos = getTodoList().filter((todo) => todo.type === id);
 
     return [type, todos];
+}
+
+export function getTags(): Tag[] {
+    const list = localStorage.getItem(TAG_KEY);
+    return list ? JSON.parse(list) : [];
+}
+
+export function addTag(_: TagActionState, formData: FormData) {
+    const validatedFields = TagSchema.safeParse({
+        id: v4(),
+        title: formData.get("title"),
+        background: chroma.random().hex(),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Missing Fields. Failed to Create Tag.",
+        };
+    }
+
+    const tag = validatedFields.data;
+    localStorage.setItem(TAG_KEY, JSON.stringify([...getTags(), tag]));
+
+    redirect("/");
 }
