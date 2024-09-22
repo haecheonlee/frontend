@@ -25,8 +25,8 @@ export default function CreateTag() {
 
     return (
         <Dialog>
-            <DialogTrigger asChild className="inline-block">
-                <Button className="inline-flex items-center justify-center w-[90px] rounded-sm px-1 py-2 hover:bg-neutral-700">
+            <DialogTrigger asChild>
+                <Button className="inline-flex items-center justify-center rounded-sm px-4 py-2 hover:bg-neutral-700">
                     <PlusIcon className="w-4 h-4 mr-1" />
                     <TypographySmall>Add Tag</TypographySmall>
                 </Button>

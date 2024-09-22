@@ -11,9 +11,9 @@ import { DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import clsx from "clsx";
 import CreateList from "./list/create-list";
-import { getTodoCountByTypes, getTypes } from "@/utils/local-storage";
+import { getTags, getTodoCountByTypes, getTypes } from "@/utils/local-storage";
 import { useEffect, useState } from "react";
-import { Type } from "@/types/types";
+import { Tag, Type } from "@/types/types";
 import CreateTag from "./tag/create-tag";
 
 const links = Object.freeze([
@@ -27,14 +27,17 @@ const links = Object.freeze([
 export default function SideNav() {
     const pathname = usePathname();
     const [types, setTypes] = useState<Type[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
     const [todoCount, setTodoCount] = useState<{
         [typeId: string]: number;
     }>({});
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             const types = getTypes();
             setTypes(types);
             setTodoCount(getTodoCountByTypes(types.map((type) => type.id)));
+            setTags(getTags());
         }
     }, []);
 
@@ -88,7 +91,6 @@ export default function SideNav() {
                                 />
                                 <TypographySmall>{type.title}</TypographySmall>
                             </div>
-
                             <TypographyXSmall className="p-1 bg-neutral-600 rounded-sm">
                                 {todoCount[type.id] ?? 0}
                             </TypographyXSmall>
@@ -103,6 +105,25 @@ export default function SideNav() {
                     <TypographyXSmall isUppercase>Tags</TypographyXSmall>
                 </div>
                 <CreateTag />
+                {tags.map((tag) => {
+                    const href = `/tag/${tag.id}`;
+
+                    return (
+                        <Link
+                            key={tag.id}
+                            href={href}
+                            className={clsx(
+                                "ml-2 inline-block px-4 py-2 mb-3 text-center rounded-sm hover:bg-neutral-700 hover:opacity-90",
+                                {
+                                    "font-bold": href === pathname,
+                                }
+                            )}
+                            style={{ backgroundColor: tag.background }}
+                        >
+                            <TypographySmall>{tag.title}</TypographySmall>
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );
