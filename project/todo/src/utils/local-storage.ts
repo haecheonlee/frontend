@@ -48,13 +48,17 @@ export function getTodoById(id: string) {
     return todoList.find((p) => p.id === id);
 }
 
+const validateTags = (tags: FormDataEntryValue | null): tags is string =>
+    typeof tags === "string";
 export function addTodo(_: TaskActionState, formData: FormData) {
+    const tags = formData.get("tags");
     const validatedFields = CreateTodo.safeParse({
         id: v4(),
         title: formData.get("title"),
         description: formData.get("description"),
         dueDate: formData.get("dueDate"),
         type: formData.get("type"),
+        tags: validateTags(tags) ? JSON.parse(tags) : [],
     });
 
     if (!validatedFields.success) {
