@@ -76,12 +76,14 @@ export function addTodo(_: TaskActionState, formData: FormData) {
 }
 
 export function editTodo(_: TaskActionState, formData: FormData) {
+    const tags = formData.get("tags");
     const validatedFields = CreateTodo.safeParse({
         id: formData.get("id"),
         title: formData.get("title"),
         description: formData.get("description"),
         dueDate: formData.get("dueDate"),
         type: formData.get("type"),
+        tags: validateTags(tags) ? JSON.parse(tags) : [],
     });
 
     if (!validatedFields.success) {

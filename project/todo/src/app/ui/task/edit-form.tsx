@@ -5,8 +5,13 @@ import ErrorLabel from "./error-label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "../date-picker";
 import { Button } from "@/components/ui/button";
-import { TaskActionState, Type } from "@/types/types";
-import { getTodoById, editTodo, getTypes } from "@/utils/local-storage";
+import { Tag, TaskActionState, Type } from "@/types/types";
+import {
+    getTodoById,
+    editTodo,
+    getTypes,
+    getTags,
+} from "@/utils/local-storage";
 import { notFound, useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import {
@@ -17,6 +22,7 @@ import {
     SelectGroup,
     SelectItem,
 } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
@@ -37,6 +43,10 @@ export default function EditForm({ id }: { id: string }) {
         () => new Date(todo.dueDate)
     );
     const [types, setTypes] = useState<Type[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
+        () => todo.tags ?? []
+    );
 
     const goBack = () => {
         router.push("/");
@@ -45,11 +55,13 @@ export default function EditForm({ id }: { id: string }) {
     const handleSubmit = async (formData: FormData) => {
         formData.set("id", id);
         formData.set("dueDate", date?.toString() ?? "");
+        formData.set("tags", JSON.stringify(selectedTagIds));
         await formAction(formData);
     };
 
     useEffect(() => {
         setTypes(getTypes());
+        setTags(getTags());
     }, []);
 
     return (
@@ -127,6 +139,34 @@ export default function EditForm({ id }: { id: string }) {
                         </SelectContent>
                     </Select>
                     <div id="type-error" aria-live="polite" aria-atomic="true">
+                        {state.errors?.type &&
+                            state.errors.type.map((error: string) => (
+                                <ErrorLabel key={error} message={error} />
+                            ))}
+                    </div>
+                </div>
+                <div>
+                    <ToggleGroup
+                        type="multiple"
+                        variant="outline"
+                        size="sm"
+                        defaultValue={selectedTagIds}
+                        onValueChange={(value) => {
+                            setSelectedTagIds(value);
+                        }}
+                        aria-describedby="tag-error"
+                    >
+                        {tags.map((tag) => (
+                            <ToggleGroupItem
+                                value={tag.id}
+                                key={tag.id}
+                                style={{ backgroundColor: tag.background }}
+                            >
+                                {tag.title}
+                            </ToggleGroupItem>
+                        ))}
+                    </ToggleGroup>
+                    <div id="tag-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.type &&
                             state.errors.type.map((error: string) => (
                                 <ErrorLabel key={error} message={error} />
