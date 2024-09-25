@@ -104,7 +104,6 @@ export default function SideNav() {
                 <div>
                     <TypographyXSmall isUppercase>Tags</TypographyXSmall>
                 </div>
-                <CreateTag />
                 {tags.map((tag) => {
                     const href = `/tag/${tag.id}`;
 
@@ -124,6 +123,7 @@ export default function SideNav() {
                         </Link>
                     );
                 })}
+                <CreateTag />
             </div>
         </div>
     );
