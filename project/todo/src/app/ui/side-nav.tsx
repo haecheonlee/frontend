@@ -112,7 +112,7 @@ export default function SideNav() {
                             key={tag.id}
                             href={href}
                             className={clsx(
-                                "ml-2 inline-block px-4 py-2 mb-3 text-center rounded-sm hover:bg-neutral-700 hover:opacity-90",
+                                "mr-2 inline-block px-2 py-1 mb-3 text-center rounded-sm hover:bg-neutral-700 hover:opacity-90",
                                 {
                                     "font-bold": href === pathname,
                                 }
