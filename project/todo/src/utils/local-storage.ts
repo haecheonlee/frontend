@@ -19,19 +19,19 @@ const TAG_KEY = "tag";
 
 const TypeSchema = z.object({
     id: z.string(),
-    title: z.string(),
+    title: z.string().min(1, { message: "Title is required." }),
     color: z.string(),
 });
 
 const TagSchema = z.object({
     id: z.string(),
-    title: z.string(),
+    title: z.string().min(1, { message: "Title is required." }),
     background: z.string(),
 });
 
 const CreateTodo = z.object({
     id: z.string(),
-    title: z.string(),
+    title: z.string().min(1, { message: "Title is required." }),
     description: z.string(),
     dueDate: z.string(),
     type: z.string(),
