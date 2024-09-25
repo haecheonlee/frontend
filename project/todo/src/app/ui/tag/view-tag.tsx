@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import Container from "@/app/ui/task/container";
 import TaskLink from "@/app/ui/task/task-link";
 
-export default function ViewList({ id }: { id: string }) {
+export default function ViewTag({ id }: { id: string }) {
     const [tag, todoList] = getTagById(id);
 
     if (!tag) {
