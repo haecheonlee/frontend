@@ -22,7 +22,7 @@ import {
     SelectGroup,
     SelectItem,
 } from "@/components/ui/select";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Toggle } from "@/components/ui/toggle";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
@@ -146,26 +146,28 @@ export default function EditForm({ id }: { id: string }) {
                     </div>
                 </div>
                 <div>
-                    <ToggleGroup
-                        type="multiple"
-                        variant="outline"
-                        size="sm"
-                        defaultValue={selectedTagIds}
-                        onValueChange={(value) => {
-                            setSelectedTagIds(value);
-                        }}
-                        aria-describedby="tag-error"
-                    >
-                        {tags.map((tag) => (
-                            <ToggleGroupItem
-                                value={tag.id}
-                                key={tag.id}
-                                style={{ backgroundColor: tag.background }}
-                            >
-                                {tag.title}
-                            </ToggleGroupItem>
-                        ))}
-                    </ToggleGroup>
+                    {tags.map((tag) => (
+                        <Toggle
+                            value={tag.id}
+                            key={tag.id}
+                            style={{ backgroundColor: tag.background }}
+                            variant="outline"
+                            className="mr-1"
+                            onPressedChange={(pressed) => {
+                                if (pressed) {
+                                    setSelectedTagIds((ids) =>
+                                        ids.concat(tag.id)
+                                    );
+                                } else {
+                                    setSelectedTagIds((ids) =>
+                                        ids.filter((id) => id !== tag.id)
+                                    );
+                                }
+                            }}
+                        >
+                            {tag.title}
+                        </Toggle>
+                    ))}
                     <div id="tag-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.type &&
                             state.errors.type.map((error: string) => (
