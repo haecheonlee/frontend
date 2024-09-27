@@ -27,7 +27,7 @@ export default function Page() {
             <div className="mb-10">
                 <TypographyH1>Upcoming</TypographyH1>
             </div>
-            <Container title="Today">
+            <Container title="Tasks">
                 {todoList.length === 0 && (
                     <div className="text-center">
                         <TypographySmall>
