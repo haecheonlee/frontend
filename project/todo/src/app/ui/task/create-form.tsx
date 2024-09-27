@@ -107,7 +107,6 @@ export default function CreateForm() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="none">None</SelectItem>
                                 {types.map((type) => (
                                     <SelectItem value={type.id} key={type.id}>
                                         {type.title}
