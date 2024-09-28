@@ -31,7 +31,7 @@ export default function CreateTag() {
                     <TypographySmall>Add New Tag</TypographySmall>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="max-w-[350px] sm:max-w-[425px] bg-black">
                 <form action={formAction}>
                     <DialogHeader>
                         <DialogTitle>Add Tag</DialogTitle>

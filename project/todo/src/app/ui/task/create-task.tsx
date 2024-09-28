@@ -82,54 +82,63 @@ export default function CreateTask() {
                         ))}
                 </div>
             </div>
-            <div className="flex mt-2 mb-2 gap-x-2">
-                <div>
-                    <DatePicker
-                        date={date}
-                        setDate={setDate}
-                        aria-describedby="due-date-error"
-                    />
-                    <div
-                        id="due-date-error"
-                        aria-live="polite"
-                        aria-atomic="true"
-                    >
-                        {state.errors?.dueDate &&
-                            state.errors.dueDate.map((error: string) => (
-                                <ErrorLabel key={error} message={error} />
-                            ))}
-                    </div>
-                </div>
-                <div>
-                    <Select name="type" aria-describedby="type-error">
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select a type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                {types.map((type) => (
-                                    <SelectItem value={type.id} key={type.id}>
-                                        {type.title}
-                                    </SelectItem>
+            <div className="mt-2 mb-2 gap-x-2">
+                <div className="flex gap-x-2 mb-2">
+                    <div className="flex-1">
+                        <DatePicker
+                            date={date}
+                            setDate={setDate}
+                            aria-describedby="due-date-error"
+                        />
+                        <div
+                            id="due-date-error"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        >
+                            {state.errors?.dueDate &&
+                                state.errors.dueDate.map((error: string) => (
+                                    <ErrorLabel key={error} message={error} />
                                 ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <div id="type-error" aria-live="polite" aria-atomic="true">
-                        {state.errors?.type &&
-                            state.errors.type.map((error: string) => (
-                                <ErrorLabel key={error} message={error} />
-                            ))}
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        <Select name="type" aria-describedby="type-error">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    {types.map((type) => (
+                                        <SelectItem
+                                            value={type.id}
+                                            key={type.id}
+                                        >
+                                            {type.title}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <div
+                            id="type-error"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        >
+                            {state.errors?.type &&
+                                state.errors.type.map((error: string) => (
+                                    <ErrorLabel key={error} message={error} />
+                                ))}
+                        </div>
                     </div>
                 </div>
-                <div>
+                <div className="mb-2 lg:mb-0">
                     {tags.map((tag) => (
                         <Toggle
                             value={tag.id}
                             key={tag.id}
                             style={{ backgroundColor: tag.color }}
                             variant="outline"
-                            className="mr-1"
+                            className="mr-1 mb-1 truncate max-w-[100px] inline"
                             onPressedChange={(pressed) => {
                                 if (pressed) {
                                     setSelectedTagIds((ids) =>
