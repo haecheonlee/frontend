@@ -21,7 +21,7 @@ import { Toggle } from "@/components/ui/toggle";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
-export default function CreateForm() {
+export default function CreateTask() {
     const router = useRouter();
 
     const [state, formAction, isPending] = useActionState(
