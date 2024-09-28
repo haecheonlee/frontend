@@ -106,6 +106,13 @@ export function editTodo(_: TaskActionState, formData: FormData) {
     redirect("/");
 }
 
+export function removeTodo(id: string) {
+    const updatedList = getTodoList().filter((p) => p.id !== id);
+    localStorage.setItem(TODO_KEY, JSON.stringify(updatedList));
+
+    redirect("/");
+}
+
 export function getTypes(): Type[] {
     const list = localStorage.getItem(TYPE_KEY);
     return list ? JSON.parse(list) : [];
