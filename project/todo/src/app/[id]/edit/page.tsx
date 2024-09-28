@@ -1,4 +1,4 @@
-import EditForm from "@/app/ui/task/edit-form";
+import EditForm from "@/app/ui/task/edit-task";
 import { TypographyH1 } from "@/components/ui/typography";
 
 export default function Page({ params }: { params: { id: string } }) {
