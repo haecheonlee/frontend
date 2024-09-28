@@ -19,7 +19,7 @@ export default function ViewTag({ id }: { id: string }) {
                 <div className="flex items-center">
                     <TypographyH1>
                         <span
-                            style={{ color: tag.background }}
+                            style={{ color: tag.color }}
                         >{`Tag: ${tag.title}`}</span>
                     </TypographyH1>
                 </div>

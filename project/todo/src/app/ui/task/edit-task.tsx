@@ -26,7 +26,7 @@ import { Toggle } from "@/components/ui/toggle";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
-export default function EditForm({ id }: { id: string }) {
+export default function EditTask({ id }: { id: string }) {
     const todo = getTodoById(id);
 
     if (!todo) {
@@ -149,7 +149,7 @@ export default function EditForm({ id }: { id: string }) {
                         <Toggle
                             value={tag.id}
                             key={tag.id}
-                            style={{ backgroundColor: tag.background }}
+                            style={{ backgroundColor: tag.color }}
                             variant="outline"
                             className="mr-1"
                             onPressedChange={(pressed) => {

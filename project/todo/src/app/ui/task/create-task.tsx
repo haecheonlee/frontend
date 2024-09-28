@@ -127,7 +127,7 @@ export default function CreateTask() {
                         <Toggle
                             value={tag.id}
                             key={tag.id}
-                            style={{ backgroundColor: tag.background }}
+                            style={{ backgroundColor: tag.color }}
                             variant="outline"
                             className="mr-1"
                             onPressedChange={(pressed) => {

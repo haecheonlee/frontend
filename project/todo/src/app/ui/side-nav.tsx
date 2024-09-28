@@ -117,7 +117,7 @@ export default function SideNav() {
                                     "font-bold": href === pathname,
                                 }
                             )}
-                            style={{ backgroundColor: tag.background }}
+                            style={{ backgroundColor: tag.color }}
                         >
                             <TypographySmall>{tag.title}</TypographySmall>
                         </Link>

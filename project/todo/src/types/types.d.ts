@@ -8,7 +8,7 @@ export type Type = BaseEntity & {
 };
 
 export type Tag = BaseEntity & {
-    background: string;
+    color: string;
 };
 
 export type Todo = BaseEntity & {
