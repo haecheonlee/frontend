@@ -26,7 +26,7 @@ const TypeSchema = z.object({
 const TagSchema = z.object({
     id: z.string(),
     title: z.string().min(1, { message: "Title is required." }),
-    background: z.string(),
+    color: z.string(),
 });
 
 const CreateTodo = z.object({
@@ -167,7 +167,7 @@ export function addTag(_: TagActionState, formData: FormData) {
     const validatedFields = TagSchema.safeParse({
         id: v4(),
         title: formData.get("title"),
-        background: chroma.random().hex(),
+        color: chroma.random().hex(),
     });
 
     if (!validatedFields.success) {
