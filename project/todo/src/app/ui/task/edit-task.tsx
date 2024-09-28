@@ -73,6 +73,7 @@ export default function EditTask({ id }: { id: string }) {
                     placeholder="New task"
                     className="mb-2"
                     aria-describedby="title-error"
+                    defaultValue={todo.title}
                 />
                 <div id="title-error" aria-live="polite" aria-atomic="true">
                     {state.errors?.title &&
@@ -86,6 +87,7 @@ export default function EditTask({ id }: { id: string }) {
                     name="description"
                     placeholder="Write your task in detail here."
                     aria-describedby="description-error"
+                    defaultValue={todo.description}
                 />
                 <div
                     id="description-error"
@@ -118,7 +120,11 @@ export default function EditTask({ id }: { id: string }) {
                         </div>
                     </div>
                     <div className="flex-1">
-                        <Select name="type" aria-describedby="type-error">
+                        <Select
+                            name="type"
+                            aria-describedby="type-error"
+                            defaultValue={todo.type ?? "none"}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a type" />
                             </SelectTrigger>
