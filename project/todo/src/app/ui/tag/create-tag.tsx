@@ -43,7 +43,7 @@ export default function CreateTag() {
                         <div className="grid items-center gap-4">
                             <Input
                                 name="title"
-                                className="col-span-3"
+                                className="col-span-3 text-base md:text-sm"
                                 placeholder="Title"
                                 disabled={isPending}
                                 aria-disabled={isPending}
