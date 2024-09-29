@@ -172,6 +172,9 @@ export default function EditTask({ id }: { id: string }) {
                                     );
                                 }
                             }}
+                            defaultPressed={
+                                todo.tags?.includes(tag.id) ?? false
+                            }
                         >
                             {tag.title}
                         </Toggle>
