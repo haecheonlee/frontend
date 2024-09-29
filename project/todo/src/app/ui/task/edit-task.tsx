@@ -123,7 +123,7 @@ export default function EditTask({ id }: { id: string }) {
                         <Select
                             name="type"
                             aria-describedby="type-error"
-                            defaultValue={todo.type ?? "none"}
+                            defaultValue={todo.type ?? undefined}
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a type" />

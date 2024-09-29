@@ -34,7 +34,7 @@ const CreateTodo = z.object({
     title: z.string().min(1, { message: "Title is required." }),
     description: z.string(),
     dueDate: z.string(),
-    type: z.string(),
+    type: z.string().nullable(),
     tags: z.array(z.string()).optional(),
 });
 
