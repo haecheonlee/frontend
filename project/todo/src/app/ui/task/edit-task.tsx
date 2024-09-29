@@ -71,7 +71,7 @@ export default function EditTask({ id }: { id: string }) {
                     name="title"
                     type="text"
                     placeholder="New task"
-                    className="mb-2"
+                    className="mb-2 text-base md:text-sm"
                     aria-describedby="title-error"
                     defaultValue={todo.title}
                 />
@@ -85,6 +85,7 @@ export default function EditTask({ id }: { id: string }) {
             <div>
                 <Textarea
                     name="description"
+                    className="text-base md:text-sm"
                     placeholder="Write your task in detail here."
                     aria-describedby="description-error"
                     defaultValue={todo.description}

@@ -55,7 +55,7 @@ export default function CreateTask() {
                     name="title"
                     type="text"
                     placeholder="New task"
-                    className="mb-2"
+                    className="mb-2 text-base md:text-sm"
                     aria-describedby="title-error"
                 />
                 <div id="title-error" aria-live="polite" aria-atomic="true">
@@ -68,6 +68,7 @@ export default function CreateTask() {
             <div>
                 <Textarea
                     name="description"
+                    className="text-base md:text-sm"
                     placeholder="Write your task in detail here."
                     aria-describedby="description-error"
                 />
