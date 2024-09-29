@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     title: "Todo Application",
     description:
         "Create, manage, and track your tasks effortlessly with our user-friendly to-do list app. Boost productivity and stay organized every day.",
-    viewport: "width=device-width, initial-scale=1.0",
+    viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0",
 };
 
 export default function RootLayout({
