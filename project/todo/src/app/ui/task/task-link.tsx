@@ -1,17 +1,22 @@
+"use client";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { TypographySmall } from "@/components/ui/typography";
 import { Todo } from "@/types/types";
 import { removeTodo } from "@/utils/local-storage";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function TaskLink({ todo }: { todo: Todo }) {
+    const pathname = usePathname();
+
     return (
         <div className="flex items-center">
             <Checkbox
                 className="border-white mr-2 checked:bg-white"
                 onCheckedChange={(checked) =>
-                    checked ? removeTodo(todo.id) : null
+                    checked ? removeTodo(todo.id, pathname) : null
                 }
             />
             <Link

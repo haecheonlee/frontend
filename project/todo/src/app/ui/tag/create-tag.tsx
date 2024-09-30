@@ -17,11 +17,17 @@ import ErrorLabel from "../task/error-label";
 import { useActionState } from "react";
 import { TagActionState } from "@/types/types";
 import { addTag } from "@/utils/local-storage";
+import { usePathname } from "next/navigation";
 
 const initialState: TagActionState = { message: null, errors: {} };
 
 export default function CreateTag() {
-    const [state, formAction, isPending] = useActionState(addTag, initialState);
+    const pathname = usePathname();
+    const addTagWithPath = addTag.bind(null, pathname);
+    const [state, formAction, isPending] = useActionState(
+        addTagWithPath,
+        initialState
+    );
 
     return (
         <Dialog>

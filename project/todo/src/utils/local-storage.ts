@@ -106,11 +106,11 @@ export function editTodo(_: TaskActionState, formData: FormData) {
     redirect("/");
 }
 
-export function removeTodo(id: string) {
+export function removeTodo(id: string, pathname: string) {
     const updatedList = getTodoList().filter((p) => p.id !== id);
     localStorage.setItem(TODO_KEY, JSON.stringify(updatedList));
 
-    redirect("/");
+    redirect(pathname);
 }
 
 export function getTypes(): Type[] {
@@ -131,7 +131,11 @@ export function getTodoCountByTypes(typeIds: string[]): {
     }, {});
 }
 
-export function addType(_: ListActionState, formData: FormData) {
+export function addType(
+    pathname: string,
+    _: ListActionState,
+    formData: FormData
+) {
     const validatedFields = TypeSchema.safeParse({
         id: v4(),
         title: formData.get("title"),
@@ -148,7 +152,7 @@ export function addType(_: ListActionState, formData: FormData) {
     const type = validatedFields.data;
     localStorage.setItem(TYPE_KEY, JSON.stringify([...getTypes(), type]));
 
-    redirect("/");
+    redirect(pathname);
 }
 
 export function getTypeById(id: string): [Type | undefined, Todo[]] {
@@ -163,7 +167,11 @@ export function getTags(): Tag[] {
     return list ? JSON.parse(list) : [];
 }
 
-export function addTag(_: TagActionState, formData: FormData) {
+export function addTag(
+    pathname: string,
+    _: TagActionState,
+    formData: FormData
+) {
     const validatedFields = TagSchema.safeParse({
         id: v4(),
         title: formData.get("title"),
@@ -180,7 +188,7 @@ export function addTag(_: TagActionState, formData: FormData) {
     const tag = validatedFields.data;
     localStorage.setItem(TAG_KEY, JSON.stringify([...getTags(), tag]));
 
-    redirect("/");
+    redirect(pathname);
 }
 
 export function getTagById(id: string): [Tag | undefined, Todo[]] {

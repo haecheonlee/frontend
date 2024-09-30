@@ -17,12 +17,15 @@ import { addType } from "@/utils/local-storage";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useActionState } from "react";
 import ErrorLabel from "@/app/ui/task/error-label";
+import { usePathname } from "next/navigation";
 
 const initialState: ListActionState = { message: null, errors: {} };
 
 export default function CreateList() {
+    const pathname = usePathname();
+    const addTypeWithPathname = addType.bind(null, pathname);
     const [state, formAction, isPending] = useActionState(
-        addType,
+        addTypeWithPathname,
         initialState
     );
 
