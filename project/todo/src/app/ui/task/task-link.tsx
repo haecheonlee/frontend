@@ -26,7 +26,7 @@ export default function TaskLink({ todo }: { todo: Todo }) {
                 <div className="flex-auto">
                     <TypographySmall>{todo.title}</TypographySmall>
                 </div>
-                <div className="justify-self-end self-center w-[30px]">
+                <div className="justify-self-end self-center">
                     <ChevronRightIcon />
                 </div>
             </Link>
