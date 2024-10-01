@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 
+const MAX_SIZE = 3;
+
 export const AppContext = createContext<{ previousUrls: string[] }>({
     previousUrls: [],
 });
@@ -14,7 +16,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         setPreviousUrls((urls) => {
             const array = urls.at(-1) === pathname ? urls : [...urls, pathname];
-            return array.length === 10 ? array.slice(1) : array;
+            return array.length === MAX_SIZE ? array.slice(1) : array;
         });
     }, [pathname]);
 
