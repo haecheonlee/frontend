@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SideNav from "@/app/ui/side-nav";
+import { AppProvider } from "@/context/AppContext";
 
 export const metadata: Metadata = {
     title: "Todo Application",
@@ -24,7 +25,7 @@ export default function RootLayout({
                             <SideNav />
                         </div>
                         <div className="flex-auto rounded-md py-4 max-w-[350px] lg:px-4 lg:py-0 lg:min-w-[500px]">
-                            {children}
+                            <AppProvider>{children}</AppProvider>
                         </div>
                     </div>
                 </div>

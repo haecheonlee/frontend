@@ -75,7 +75,11 @@ export function addTodo(_: TaskActionState, formData: FormData) {
     redirect("/");
 }
 
-export function editTodo(_: TaskActionState, formData: FormData) {
+export function editTodo(
+    previousUrl: string,
+    _: TaskActionState,
+    formData: FormData
+) {
     const tags = formData.get("tags");
     const validatedFields = CreateTodo.safeParse({
         id: formData.get("id"),
@@ -103,7 +107,7 @@ export function editTodo(_: TaskActionState, formData: FormData) {
     });
     localStorage.setItem(TODO_KEY, JSON.stringify(updatedList));
 
-    redirect("/");
+    redirect(previousUrl);
 }
 
 export function removeTodo(id: string, pathname: string) {

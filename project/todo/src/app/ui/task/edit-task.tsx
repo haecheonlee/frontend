@@ -12,8 +12,8 @@ import {
     getTypes,
     getTags,
 } from "@/utils/local-storage";
-import { notFound, useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { notFound, usePathname, useRouter } from "next/navigation";
+import { useActionState, useContext, useEffect, useState } from "react";
 import {
     Select,
     SelectTrigger,
@@ -23,6 +23,7 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
+import { AppContext } from "@/context/AppContext";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
@@ -34,9 +35,14 @@ export default function EditTask({ id }: { id: string }) {
     }
 
     const router = useRouter();
+    const pathname = usePathname();
+    const context = useContext(AppContext);
+    const previousUrl =
+        context.previousUrls.findLast((p) => p !== pathname) ?? "/";
 
+    const editTodoWithPreviousUrl = editTodo.bind(null, previousUrl);
     const [state, formAction, isPending] = useActionState(
-        editTodo,
+        editTodoWithPreviousUrl,
         initialState
     );
     const [date, setDate] = useState<Date | undefined>(
@@ -49,7 +55,7 @@ export default function EditTask({ id }: { id: string }) {
     );
 
     const goBack = () => {
-        router.push("/");
+        router.push(previousUrl);
     };
 
     const handleSubmit = async (formData: FormData) => {
