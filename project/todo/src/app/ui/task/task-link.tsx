@@ -2,22 +2,28 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { TypographySmall } from "@/components/ui/typography";
+import { AppContext } from "@/context/AppContext";
 import { Todo } from "@/types/types";
 import { removeTodo } from "@/utils/local-storage";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useContext } from "react";
 
 export default function TaskLink({ todo }: { todo: Todo }) {
     const pathname = usePathname();
+    const context = useContext(AppContext);
 
     return (
         <div className="flex items-center">
             <Checkbox
                 className="border-white mr-2 checked:bg-white"
-                onCheckedChange={(checked) =>
-                    checked ? removeTodo(todo.id, pathname) : null
-                }
+                onCheckedChange={(checked) => {
+                    if (checked) {
+                        context.setForceToRenderSidebar((p) => !p);
+                        removeTodo(todo.id, pathname);
+                    }
+                }}
             />
             <Link
                 href={`/${todo.id}/edit`}

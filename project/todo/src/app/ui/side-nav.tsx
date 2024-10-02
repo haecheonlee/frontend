@@ -12,9 +12,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import CreateList from "./list/create-list";
 import { getTags, getTodoCountByTypes, getTypes } from "@/utils/local-storage";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Tag, Type } from "@/types/types";
 import CreateTag from "./tag/create-tag";
+import { AppContext } from "@/context/AppContext";
 
 const links = Object.freeze([
     {
@@ -25,6 +26,7 @@ const links = Object.freeze([
 ] as const);
 
 export default function SideNav() {
+    const context = useContext(AppContext);
     const pathname = usePathname();
     const [types, setTypes] = useState<Type[]>([]);
     const [tags, setTags] = useState<Tag[]>([]);
@@ -39,7 +41,7 @@ export default function SideNav() {
             setTodoCount(getTodoCountByTypes(types.map((type) => type.id)));
             setTags(getTags());
         }
-    }, []);
+    }, [context.forceToRenderSidebar]);
 
     return (
         <div className="bg-neutral-800 p-4 rounded-md">

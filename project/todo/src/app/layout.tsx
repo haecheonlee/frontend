@@ -21,12 +21,14 @@ export default function RootLayout({
             <body className="w-full lg:h-screen lg:py-0 py-2 flex justify-center items-center">
                 <div className="flex items-center justify-center">
                     <div className="lg:flex gap-4">
-                        <div className="min-w-[350px] max-w-[350px]">
-                            <SideNav />
-                        </div>
-                        <div className="flex-auto rounded-md py-4 max-w-[350px] lg:px-4 lg:py-0 lg:min-w-[500px]">
-                            <AppProvider>{children}</AppProvider>
-                        </div>
+                        <AppProvider>
+                            <div className="min-w-[350px] max-w-[350px]">
+                                <SideNav />
+                            </div>
+                            <div className="flex-auto rounded-md py-4 max-w-[350px] lg:px-4 lg:py-0 lg:min-w-[500px]">
+                                {children}
+                            </div>
+                        </AppProvider>
                     </div>
                 </div>
             </body>

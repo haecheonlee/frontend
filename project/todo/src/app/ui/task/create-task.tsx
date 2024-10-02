@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tag, TaskActionState, Type } from "@/types/types";
 import { addTodo, getTags, getTypes } from "@/utils/local-storage";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useContext, useEffect, useState } from "react";
 import {
     Select,
     SelectTrigger,
@@ -18,11 +18,13 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
+import { AppContext } from "@/context/AppContext";
 
 const initialState: TaskActionState = { message: null, errors: {} };
 
 export default function CreateTask() {
     const router = useRouter();
+    const context = useContext(AppContext);
 
     const [state, formAction, isPending] = useActionState(
         addTodo,
@@ -41,6 +43,7 @@ export default function CreateTask() {
         formData.set("dueDate", date?.toString() ?? "");
         formData.set("tags", JSON.stringify(selectedTagIds));
         await formAction(formData);
+        context.setForceToRenderSidebar((p) => !p);
     };
 
     useEffect(() => {

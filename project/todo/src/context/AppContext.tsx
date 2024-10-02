@@ -1,16 +1,29 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { createContext, useEffect, useState } from "react";
+import {
+    createContext,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useState,
+} from "react";
 
 const MAX_SIZE = 3;
 
-export const AppContext = createContext<{ previousUrls: string[] }>({
+export const AppContext = createContext<{
+    previousUrls: string[];
+    forceToRenderSidebar: boolean;
+    setForceToRenderSidebar: Dispatch<SetStateAction<boolean>>;
+}>({
     previousUrls: [],
+    forceToRenderSidebar: false,
+    setForceToRenderSidebar: () => null,
 });
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [previousUrls, setPreviousUrls] = useState<string[]>([]);
+    const [forceToRenderSidebar, setForceToRenderSidebar] = useState(false);
     const pathname = usePathname();
 
     useEffect(() => {
@@ -21,7 +34,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, [pathname]);
 
     return (
-        <AppContext.Provider value={{ previousUrls }}>
+        <AppContext.Provider
+            value={{
+                previousUrls,
+                forceToRenderSidebar,
+                setForceToRenderSidebar,
+            }}
+        >
             {children}
         </AppContext.Provider>
     );

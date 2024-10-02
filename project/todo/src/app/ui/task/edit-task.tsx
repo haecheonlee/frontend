@@ -63,6 +63,7 @@ export default function EditTask({ id }: { id: string }) {
         formData.set("dueDate", date?.toString() ?? "");
         formData.set("tags", JSON.stringify(selectedTagIds));
         await formAction(formData);
+        context.setForceToRenderSidebar((p) => !p);
     };
 
     useEffect(() => {
