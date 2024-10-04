@@ -142,7 +142,7 @@ export function addType(
 ) {
     const validatedFields = TypeSchema.safeParse({
         id: v4(),
-        title: formData.get("title"),
+        title: formData.get("title")?.toString().trim(),
         color: chroma.random().hex(),
     });
 
@@ -193,7 +193,7 @@ export function addTag(
 ) {
     const validatedFields = TagSchema.safeParse({
         id: v4(),
-        title: formData.get("title"),
+        title: formData.get("title")?.toString().trim(),
         color: chroma.random().hex(),
     });
 
