@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="w-full lg:h-screen lg:py-0 py-2 flex justify-center items-center">
+            <body className="w-full min-h-screen lg:py-0 py-2 flex justify-center items-center">
                 <div className="flex items-center justify-center">
                     <div className="lg:flex gap-4">
                         <AppProvider>
