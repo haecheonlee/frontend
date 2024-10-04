@@ -5,6 +5,7 @@ import { getTagById } from "@/utils/local-storage";
 import { notFound } from "next/navigation";
 import Container from "@/app/ui/task/container";
 import TaskLink from "@/app/ui/task/task-link";
+import { toTitleCase } from "@/lib/utils";
 
 export default function ViewTag({ id }: { id: string }) {
     const [tag, todoList] = getTagById(id);
@@ -18,9 +19,9 @@ export default function ViewTag({ id }: { id: string }) {
             <div className="mb-10">
                 <div className="flex items-center">
                     <TypographyH1>
-                        <span
-                            style={{ color: tag.color }}
-                        >{`Tag: ${tag.title}`}</span>
+                        <span style={{ color: tag.color }}>{`Tag: ${toTitleCase(
+                            tag.title
+                        )}`}</span>
                     </TypographyH1>
                 </div>
             </div>

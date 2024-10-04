@@ -5,6 +5,7 @@ import { getTypeById } from "@/utils/local-storage";
 import { notFound } from "next/navigation";
 import Container from "@/app/ui/task/container";
 import TaskLink from "@/app/ui/task/task-link";
+import { toTitleCase } from "@/lib/utils";
 
 export default function ViewList({ id }: { id: string }) {
     const [type, todoList] = getTypeById(id);
@@ -20,7 +21,7 @@ export default function ViewList({ id }: { id: string }) {
                     <TypographyH1>
                         <span
                             style={{ color: type.color }}
-                        >{`List: ${type.title}`}</span>
+                        >{`List: ${toTitleCase(type.title)}`}</span>
                     </TypographyH1>
                 </div>
             </div>

@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { Tag, Type } from "@/types/types";
 import CreateTag from "./tag/create-tag";
 import { AppContext } from "@/context/AppContext";
+import { toTitleCase } from "@/lib/utils";
 
 const links = Object.freeze([
     {
@@ -91,7 +92,9 @@ export default function SideNav() {
                                     className={`w-4 h-4 mr-2 rounded-sm`}
                                     style={{ backgroundColor: type.color }}
                                 />
-                                <TypographySmall>{type.title}</TypographySmall>
+                                <TypographySmall>
+                                    {toTitleCase(type.title)}
+                                </TypographySmall>
                             </div>
                             <TypographyXSmall className="p-1 bg-neutral-600 rounded-sm">
                                 {todoCount[type.id] ?? 0}
@@ -121,7 +124,9 @@ export default function SideNav() {
                             )}
                             style={{ backgroundColor: tag.color }}
                         >
-                            <TypographySmall>{tag.title}</TypographySmall>
+                            <TypographySmall>
+                                {toTitleCase(tag.title)}
+                            </TypographySmall>
                         </Link>
                     );
                 })}
