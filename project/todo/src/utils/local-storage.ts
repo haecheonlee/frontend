@@ -153,8 +153,23 @@ export function addType(
         };
     }
 
-    const type = validatedFields.data;
-    localStorage.setItem(TYPE_KEY, JSON.stringify([...getTypes(), type]));
+    const existingTypes = getTypes();
+    const newType = validatedFields.data;
+
+    if (
+        existingTypes.some(
+            (type) => type.title.toLowerCase() === newType.title.toLowerCase()
+        )
+    ) {
+        return {
+            errors: {
+                title: [`${newType.title} already exists.`],
+            },
+            message: "Failed to Create Type.",
+        };
+    }
+
+    localStorage.setItem(TYPE_KEY, JSON.stringify([...existingTypes, newType]));
 
     redirect(pathname);
 }
@@ -189,8 +204,23 @@ export function addTag(
         };
     }
 
-    const tag = validatedFields.data;
-    localStorage.setItem(TAG_KEY, JSON.stringify([...getTags(), tag]));
+    const existingTags = getTags();
+    const newTag = validatedFields.data;
+
+    if (
+        existingTags.some(
+            (tag) => tag.title.toLowerCase() === newTag.title.toLowerCase()
+        )
+    ) {
+        return {
+            errors: {
+                title: [`${newTag.title} already exists.`],
+            },
+            message: "Failed to Create Tag.",
+        };
+    }
+
+    localStorage.setItem(TAG_KEY, JSON.stringify([...existingTags, newTag]));
 
     redirect(pathname);
 }
