@@ -17,6 +17,7 @@ import {
 import { Toggle } from "@/components/ui/toggle";
 import { useEffect, useState } from "react";
 import { getTypes, getTags } from "@/utils/local-storage";
+import { toTitleCase } from "@/lib/utils";
 
 interface IFormTaskProps {
     state: TaskActionState;
@@ -127,7 +128,7 @@ export default function FormTask({
                                             value={type.id}
                                             key={type.id}
                                         >
-                                            {type.title}
+                                            {toTitleCase(type.title)}
                                         </SelectItem>
                                     ))}
                                 </SelectGroup>
@@ -168,7 +169,7 @@ export default function FormTask({
                                 initialTodo?.tags?.includes(tag.id) ?? false
                             }
                         >
-                            {tag.title}
+                            {toTitleCase(tag.title)}
                         </Toggle>
                     ))}
                     <div id="tag-error" aria-live="polite" aria-atomic="true">
