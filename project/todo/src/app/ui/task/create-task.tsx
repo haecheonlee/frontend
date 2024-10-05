@@ -37,6 +37,7 @@ export default function CreateTask() {
         <FormTask
             state={state}
             isPending={isPending}
+            submitLabel="Create"
             handleSubmit={handleSubmit}
             goBack={goBack}
         />

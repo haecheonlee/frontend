@@ -5,7 +5,7 @@ import ErrorLabel from "./error-label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "../date-picker";
 import { Button } from "@/components/ui/button";
-import { Tag, TaskActionState, Type } from "@/types/types";
+import { Tag, TaskActionState, Todo, Type } from "@/types/types";
 import {
     Select,
     SelectTrigger,
@@ -21,9 +21,8 @@ import { getTypes, getTags } from "@/utils/local-storage";
 interface IFormTaskProps {
     state: TaskActionState;
     isPending: boolean;
-    title?: string;
-    description?: string;
-    initialDate?: Date;
+    submitLabel: "Create" | "Edit";
+    initialTodo?: Todo;
     handleSubmit: (
         formData: FormData,
         date: Date,
@@ -35,14 +34,13 @@ interface IFormTaskProps {
 export default function FormTask({
     state,
     isPending,
-    title,
-    description,
-    initialDate,
+    submitLabel,
+    initialTodo,
     handleSubmit,
     goBack,
 }: IFormTaskProps) {
-    const [date, setDate] = useState<Date | undefined>(
-        () => initialDate ?? new Date()
+    const [date, setDate] = useState<Date | undefined>(() =>
+        initialTodo?.dueDate ? new Date(initialTodo?.dueDate) : new Date()
     );
     const [types, setTypes] = useState<Type[]>([]);
     const [tags, setTags] = useState<Tag[]>([]);
@@ -66,7 +64,7 @@ export default function FormTask({
                     placeholder="New task"
                     className="mb-2 text-base md:text-sm"
                     aria-describedby="title-error"
-                    defaultValue={title ?? ""}
+                    defaultValue={initialTodo?.title ?? ""}
                 />
                 <div id="title-error" aria-live="polite" aria-atomic="true">
                     {state.errors?.title &&
@@ -81,7 +79,7 @@ export default function FormTask({
                     className="text-base md:text-sm"
                     placeholder="Write your task in detail here."
                     aria-describedby="description-error"
-                    defaultValue={description ?? ""}
+                    defaultValue={initialTodo?.description ?? ""}
                 />
                 <div
                     id="description-error"
@@ -114,7 +112,11 @@ export default function FormTask({
                         </div>
                     </div>
                     <div className="flex-1">
-                        <Select name="type" aria-describedby="type-error">
+                        <Select
+                            name="type"
+                            aria-describedby="type-error"
+                            defaultValue={initialTodo?.type}
+                        >
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a type" />
                             </SelectTrigger>
@@ -162,6 +164,9 @@ export default function FormTask({
                                     );
                                 }
                             }}
+                            defaultPressed={
+                                initialTodo?.tags?.includes(tag.id) ?? false
+                            }
                         >
                             {tag.title}
                         </Toggle>
@@ -188,7 +193,7 @@ export default function FormTask({
                     disabled={isPending}
                     aria-disabled={isPending}
                 >
-                    Create
+                    {submitLabel}
                 </Button>
             </div>
         </form>
