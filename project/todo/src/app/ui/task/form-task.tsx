@@ -26,7 +26,7 @@ interface IFormTaskProps {
     initialDate?: Date;
     handleSubmit: (
         formData: FormData,
-        date: Date | undefined,
+        date: Date,
         selectedTagIds: string[]
     ) => void;
     goBack: () => void;
@@ -54,7 +54,7 @@ export default function FormTask({
     }, []);
 
     const submit = (formData: FormData) => {
-        handleSubmit(formData, date, selectedTagIds);
+        handleSubmit(formData, date ?? new Date(), selectedTagIds);
     };
 
     return (
