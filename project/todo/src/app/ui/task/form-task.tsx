@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
 import { useEffect, useState } from "react";
-import { getTypes, getTags } from "@/utils/local-storage";
+import { getCategories } from "@/utils/local-storage";
 import { toTitleCase } from "@/lib/utils";
 
 interface IFormTaskProps {
@@ -48,8 +48,8 @@ export default function FormTask({
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
     useEffect(() => {
-        setTypes(getTypes());
-        setTags(getTags());
+        setTypes(getCategories("TYPE"));
+        setTags(getCategories("TAG"));
     }, []);
 
     const submit = (formData: FormData) => {

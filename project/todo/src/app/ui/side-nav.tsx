@@ -11,12 +11,12 @@ import { DoubleArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import clsx from "clsx";
 import CreateList from "./list/create-list";
-import { getTags, getTodoCountByTypes, getTypes } from "@/utils/local-storage";
+import { getCategories, getTodoCountByTypes } from "@/utils/local-storage";
 import { useContext, useEffect, useState } from "react";
-import { Tag, Type } from "@/types/types";
 import CreateTag from "./tag/create-tag";
 import { AppContext } from "@/context/AppContext";
 import { toTitleCase } from "@/lib/utils";
+import { Category } from "@/types/types";
 
 const links = Object.freeze([
     {
@@ -29,18 +29,18 @@ const links = Object.freeze([
 export default function SideNav() {
     const context = useContext(AppContext);
     const pathname = usePathname();
-    const [types, setTypes] = useState<Type[]>([]);
-    const [tags, setTags] = useState<Tag[]>([]);
+    const [types, setTypes] = useState<Category[]>([]);
+    const [tags, setTags] = useState<Category[]>([]);
     const [todoCount, setTodoCount] = useState<{
         [typeId: string]: number;
     }>({});
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const types = getTypes();
+            const types = getCategories("TYPE");
             setTypes(types);
             setTodoCount(getTodoCountByTypes(types.map((type) => type.id)));
-            setTags(getTags());
+            setTags(getCategories("TAG"));
         }
     }, [context.forceToRenderSidebar]);
 

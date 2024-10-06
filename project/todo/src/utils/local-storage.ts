@@ -34,17 +34,6 @@ const CreateTodo = z.object({
 const validateTags = (tags: FormDataEntryValue | null): tags is string =>
     typeof tags === "string";
 
-const getCategoryGetter = (categoryType: CategoryType): Category[] => {
-    switch (categoryType) {
-        case "TYPE":
-            return getTypes();
-        case "TAG":
-            return getTags();
-        default:
-            return [];
-    }
-};
-
 export function getTodoList(): Todo[] {
     const todoList = localStorage.getItem(TODO_KEY);
     return todoList ? JSON.parse(todoList) : [];
@@ -122,8 +111,10 @@ export function removeTodo(id: string, pathname: string) {
     redirect(pathname);
 }
 
-export function getTypes(): Category[] {
-    const list = localStorage.getItem(TYPE_KEY);
+export function getCategories(categoryType: CategoryType): Category[] {
+    const list = localStorage.getItem(
+        categoryType === "TYPE" ? TYPE_KEY : TAG_KEY
+    );
     return list ? JSON.parse(list) : [];
 }
 
@@ -138,11 +129,6 @@ export function getTodoCountByTypes(typeIds: string[]): {
             [id]: todos.filter((todo) => todo.type === id).length,
         };
     }, {});
-}
-
-export function getTags(): Category[] {
-    const list = localStorage.getItem(TAG_KEY);
-    return list ? JSON.parse(list) : [];
 }
 
 export function addCategory(
@@ -165,7 +151,7 @@ export function addCategory(
         };
     }
 
-    const existingCategories = getCategoryGetter(categoryType);
+    const existingCategories = getCategories(categoryType);
     const newCategory = validatedFields.data;
 
     if (
@@ -193,7 +179,7 @@ export function getCategoryById(
     id: string,
     categoryType: CategoryType
 ): [Category | null, Todo[]] {
-    const category = getCategoryGetter(categoryType).find(
+    const category = getCategories(categoryType).find(
         (category) => category.id === id
     );
 
