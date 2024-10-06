@@ -13,16 +13,16 @@ export default function ViewCategory({
     todoList: Todo[];
     categoryType: CategoryType;
 }) {
-    const label = getLabelByCategoryType(categoryType).toLowerCase();
+    const label = getLabelByCategoryType(categoryType);
 
     return (
         <>
             <div className="mb-10">
                 <div className="flex items-center">
                     <TypographyH1>
-                        <span style={{ color: category.color }}>{`${toTitleCase(
-                            label
-                        )}: ${toTitleCase(category.title)}`}</span>
+                        <span
+                            style={{ color: category.color }}
+                        >{`${label}: ${toTitleCase(category.title)}`}</span>
                     </TypographyH1>
                 </div>
             </div>
@@ -30,7 +30,8 @@ export default function ViewCategory({
                 {todoList.length === 0 && (
                     <div className="text-center">
                         <TypographySmall>
-                            You have no tasks related to this {label}!
+                            You have no tasks related to this{" "}
+                            {label.toLowerCase()}!
                         </TypographySmall>
                     </div>
                 )}

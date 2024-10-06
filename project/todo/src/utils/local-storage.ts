@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { v4 } from "uuid";
 import {
-    TagActionState,
+    CategoryActionState,
     TaskActionState,
     Todo,
     Category,
@@ -135,7 +135,7 @@ export function getTodoCountByTypes(typeIds: string[]): {
 export function addCategory(
     pathname: string,
     categoryType: CategoryType,
-    _: TagActionState,
+    _: CategoryActionState,
     formData: FormData
 ) {
     const validatedFields = CategorySchema.safeParse({

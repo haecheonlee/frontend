@@ -26,16 +26,7 @@ export type TaskActionState = {
     message?: string | null;
 };
 
-export type ListActionState = {
-    errors?: {
-        id?: string[] | undefined;
-        title?: string[] | undefined;
-        color?: string[] | undefined;
-    };
-    message?: string | null;
-};
-
-export type TagActionState = {
+export type CategoryActionState = {
     errors?: {
         id?: string[] | undefined;
         title?: string[] | undefined;
