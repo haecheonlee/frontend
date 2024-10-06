@@ -3,7 +3,6 @@
 import { z } from "zod";
 import { v4 } from "uuid";
 import {
-    ListActionState,
     TagActionState,
     TaskActionState,
     Todo,
@@ -32,6 +31,20 @@ const CreateTodo = z.object({
     tags: z.array(z.string()).optional(),
 });
 
+const validateTags = (tags: FormDataEntryValue | null): tags is string =>
+    typeof tags === "string";
+
+const getCategoryGetter = (categoryType: CategoryType): Category[] => {
+    switch (categoryType) {
+        case "TYPE":
+            return getTypes();
+        case "TAG":
+            return getTags();
+        default:
+            return [];
+    }
+};
+
 export function getTodoList(): Todo[] {
     const todoList = localStorage.getItem(TODO_KEY);
     return todoList ? JSON.parse(todoList) : [];
@@ -42,8 +55,6 @@ export function getTodoById(id: string) {
     return todoList.find((p) => p.id === id);
 }
 
-const validateTags = (tags: FormDataEntryValue | null): tags is string =>
-    typeof tags === "string";
 export function addTodo(_: TaskActionState, formData: FormData) {
     const tags = formData.get("tags");
     const validatedFields = CreateTodo.safeParse({
@@ -129,52 +140,14 @@ export function getTodoCountByTypes(typeIds: string[]): {
     }, {});
 }
 
-export function addType(
-    pathname: string,
-    _: ListActionState,
-    formData: FormData
-) {
-    const validatedFields = CategorySchema.safeParse({
-        id: v4(),
-        title: formData.get("title")?.toString().trim(),
-        color: chroma.random().hex(),
-    });
-
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: "Missing Fields. Failed to Create Type.",
-        };
-    }
-
-    const existingTypes = getTypes();
-    const newType = validatedFields.data;
-
-    if (
-        existingTypes.some(
-            (type) => type.title.toLowerCase() === newType.title.toLowerCase()
-        )
-    ) {
-        return {
-            errors: {
-                title: [`${newType.title} already exists.`],
-            },
-            message: "Failed to Create Type.",
-        };
-    }
-
-    localStorage.setItem(TYPE_KEY, JSON.stringify([...existingTypes, newType]));
-
-    redirect(pathname);
-}
-
 export function getTags(): Category[] {
     const list = localStorage.getItem(TAG_KEY);
     return list ? JSON.parse(list) : [];
 }
 
-export function addTag(
+export function addCategory(
     pathname: string,
+    categoryType: CategoryType,
     _: TagActionState,
     formData: FormData
 ) {
@@ -184,44 +157,38 @@ export function addTag(
         color: chroma.random().hex(),
     });
 
+    const categoryLabel = categoryType === "TAG" ? "Tag" : "List";
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
-            message: "Missing Fields. Failed to Create Tag.",
+            message: `Missing Fields. Failed to Create ${categoryLabel}.`,
         };
     }
 
-    const existingTags = getTags();
-    const newTag = validatedFields.data;
+    const existingCategories = getCategoryGetter(categoryType);
+    const newCategory = validatedFields.data;
 
     if (
-        existingTags.some(
-            (tag) => tag.title.toLowerCase() === newTag.title.toLowerCase()
+        existingCategories.some(
+            (category) =>
+                category.title.toLowerCase() === newCategory.title.toLowerCase()
         )
     ) {
         return {
             errors: {
-                title: [`${newTag.title} already exists.`],
+                title: [`${newCategory.title} already exists.`],
             },
-            message: "Failed to Create Tag.",
+            message: `Failed to Create ${categoryLabel}.`,
         };
     }
 
-    localStorage.setItem(TAG_KEY, JSON.stringify([...existingTags, newTag]));
-
+    localStorage.setItem(
+        categoryType === "TAG" ? TAG_KEY : TYPE_KEY,
+        JSON.stringify([...existingCategories, newCategory])
+    );
     redirect(pathname);
 }
 
-const getCategoryGetter = (categoryType: CategoryType): Category[] => {
-    switch (categoryType) {
-        case "TYPE":
-            return getTypes();
-        case "TAG":
-            return getTags();
-        default:
-            return [];
-    }
-};
 export function getCategoryById(
     id: string,
     categoryType: CategoryType

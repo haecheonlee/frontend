@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { TypographySmall } from "@/components/ui/typography";
 import { ListActionState } from "@/types/types";
-import { addType } from "@/utils/local-storage";
+import { addCategory } from "@/utils/local-storage";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useActionState } from "react";
 import ErrorLabel from "@/app/ui/task/error-label";
@@ -23,7 +23,7 @@ const initialState: ListActionState = { message: null, errors: {} };
 
 export default function CreateList() {
     const pathname = usePathname();
-    const addTypeWithPathname = addType.bind(null, pathname);
+    const addTypeWithPathname = addCategory.bind(null, pathname, "TYPE");
     const [state, formAction, isPending] = useActionState(
         addTypeWithPathname,
         initialState
