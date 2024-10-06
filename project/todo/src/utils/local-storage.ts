@@ -11,6 +11,7 @@ import {
 } from "@/types/types";
 import { redirect } from "next/navigation";
 import chroma from "chroma-js";
+import { getLabelByCategoryType } from "@/lib/utils";
 
 const TODO_KEY = "todos";
 const TYPE_KEY = "type";
@@ -143,7 +144,7 @@ export function addCategory(
         color: chroma.random().hex(),
     });
 
-    const categoryLabel = categoryType === "TAG" ? "Tag" : "List";
+    const categoryLabel = getLabelByCategoryType(categoryType);
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,

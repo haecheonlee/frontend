@@ -1,5 +1,5 @@
 import { TypographyH1, TypographySmall } from "@/components/ui/typography";
-import { toTitleCase } from "@/lib/utils";
+import { getLabelByCategoryType, toTitleCase } from "@/lib/utils";
 import Container from "../task/container";
 import TaskLink from "../task/task-link";
 import { Category, CategoryType, Todo } from "@/types/types";
@@ -13,7 +13,7 @@ export default function ViewCategory({
     todoList: Todo[];
     categoryType: CategoryType;
 }) {
-    const label = categoryType === "TAG" ? "tag" : "list";
+    const label = getLabelByCategoryType(categoryType).toLowerCase();
 
     return (
         <>
