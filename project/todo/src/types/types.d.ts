@@ -3,11 +3,7 @@ export type BaseEntity = {
     title: string;
 };
 
-export type Type = BaseEntity & {
-    color: string;
-};
-
-export type Tag = BaseEntity & {
+export type Category = BaseEntity & {
     color: string;
 };
 
@@ -47,3 +43,5 @@ export type TagActionState = {
     };
     message?: string | null;
 };
+
+export type CategoryType = "TYPE" | "TAG";

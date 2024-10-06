@@ -1,14 +1,14 @@
 "use client";
 
 import { TypographyH1, TypographySmall } from "@/components/ui/typography";
-import { getTagById } from "@/utils/local-storage";
+import { getCategoryById } from "@/utils/local-storage";
 import { notFound } from "next/navigation";
 import Container from "@/app/ui/task/container";
 import TaskLink from "@/app/ui/task/task-link";
 import { toTitleCase } from "@/lib/utils";
 
 export default function ViewTag({ id }: { id: string }) {
-    const [tag, todoList] = getTagById(id);
+    const [tag, todoList] = getCategoryById(id, "TAG");
 
     if (!tag) {
         notFound();

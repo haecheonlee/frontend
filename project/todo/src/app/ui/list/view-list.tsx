@@ -1,14 +1,14 @@
 "use client";
 
 import { TypographyH1, TypographySmall } from "@/components/ui/typography";
-import { getTypeById } from "@/utils/local-storage";
+import { getCategoryById } from "@/utils/local-storage";
 import { notFound } from "next/navigation";
 import Container from "@/app/ui/task/container";
 import TaskLink from "@/app/ui/task/task-link";
 import { toTitleCase } from "@/lib/utils";
 
 export default function ViewList({ id }: { id: string }) {
-    const [type, todoList] = getTypeById(id);
+    const [type, todoList] = getCategoryById(id, "TYPE");
 
     if (!type) {
         notFound();

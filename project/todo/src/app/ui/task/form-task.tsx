@@ -5,7 +5,7 @@ import ErrorLabel from "./error-label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "../date-picker";
 import { Button } from "@/components/ui/button";
-import { Tag, TaskActionState, Todo, Type } from "@/types/types";
+import { Category, TaskActionState, Todo } from "@/types/types";
 import {
     Select,
     SelectTrigger,
@@ -43,8 +43,8 @@ export default function FormTask({
     const [date, setDate] = useState<Date | undefined>(() =>
         initialTodo?.dueDate ? new Date(initialTodo?.dueDate) : new Date()
     );
-    const [types, setTypes] = useState<Type[]>([]);
-    const [tags, setTags] = useState<Tag[]>([]);
+    const [types, setTypes] = useState<Category[]>([]);
+    const [tags, setTags] = useState<Category[]>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
     useEffect(() => {

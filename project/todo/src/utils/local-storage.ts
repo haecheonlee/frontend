@@ -4,11 +4,11 @@ import { z } from "zod";
 import { v4 } from "uuid";
 import {
     ListActionState,
-    Tag,
     TagActionState,
     TaskActionState,
     Todo,
-    Type,
+    Category,
+    CategoryType,
 } from "@/types/types";
 import { redirect } from "next/navigation";
 import chroma from "chroma-js";
@@ -17,13 +17,7 @@ const TODO_KEY = "todos";
 const TYPE_KEY = "type";
 const TAG_KEY = "tag";
 
-const TypeSchema = z.object({
-    id: z.string(),
-    title: z.string().min(1, { message: "Title is required." }),
-    color: z.string(),
-});
-
-const TagSchema = z.object({
+const CategorySchema = z.object({
     id: z.string(),
     title: z.string().min(1, { message: "Title is required." }),
     color: z.string(),
@@ -117,7 +111,7 @@ export function removeTodo(id: string, pathname: string) {
     redirect(pathname);
 }
 
-export function getTypes(): Type[] {
+export function getTypes(): Category[] {
     const list = localStorage.getItem(TYPE_KEY);
     return list ? JSON.parse(list) : [];
 }
@@ -140,7 +134,7 @@ export function addType(
     _: ListActionState,
     formData: FormData
 ) {
-    const validatedFields = TypeSchema.safeParse({
+    const validatedFields = CategorySchema.safeParse({
         id: v4(),
         title: formData.get("title")?.toString().trim(),
         color: chroma.random().hex(),
@@ -174,14 +168,7 @@ export function addType(
     redirect(pathname);
 }
 
-export function getTypeById(id: string): [Type | undefined, Todo[]] {
-    const type = getTypes().find((type) => type.id === id);
-    const todos = getTodoList().filter((todo) => todo.type === id);
-
-    return [type, todos];
-}
-
-export function getTags(): Tag[] {
+export function getTags(): Category[] {
     const list = localStorage.getItem(TAG_KEY);
     return list ? JSON.parse(list) : [];
 }
@@ -191,7 +178,7 @@ export function addTag(
     _: TagActionState,
     formData: FormData
 ) {
-    const validatedFields = TagSchema.safeParse({
+    const validatedFields = CategorySchema.safeParse({
         id: v4(),
         title: formData.get("title")?.toString().trim(),
         color: chroma.random().hex(),
@@ -225,9 +212,33 @@ export function addTag(
     redirect(pathname);
 }
 
-export function getTagById(id: string): [Tag | undefined, Todo[]] {
-    const type = getTags().find((tag) => tag.id === id);
-    const todos = getTodoList().filter((todo) => todo.tags?.includes(id));
+const getCategoryGetter = (categoryType: CategoryType): Category[] => {
+    switch (categoryType) {
+        case "TYPE":
+            return getTypes();
+        case "TAG":
+            return getTags();
+        default:
+            return [];
+    }
+};
+export function getCategoryById(
+    id: string,
+    categoryType: CategoryType
+): [Category | null, Todo[]] {
+    const category = getCategoryGetter(categoryType).find(
+        (category) => category.id === id
+    );
 
-    return [type, todos];
+    if (!category) {
+        return [null, []];
+    }
+
+    const todos = getTodoList();
+    const filteredTodos =
+        categoryType === "TYPE"
+            ? todos.filter((todo) => todo.type === id)
+            : todos.filter((todo) => todo.tags?.includes(id));
+
+    return [category, filteredTodos];
 }
