@@ -56,6 +56,9 @@ export default {
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
             },
+            flex: {
+                "3": "3 3 0%",
+            },
         },
     },
     plugins: [tailwindAnimate],
