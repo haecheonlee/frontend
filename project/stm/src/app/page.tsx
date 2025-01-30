@@ -1,3 +1,4 @@
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
 export default function Home() {
@@ -12,8 +13,13 @@ export default function Home() {
                         height={64}
                     />
                 </header>
-                <main className="w-full flex-1 flex flex-row items-center">
-                    <div className="flex-1 bg-blue-200">Left</div>
+                <main className="w-full flex-1 flex flex-row items-center gap-4">
+                    <div className="flex-1">
+                        <div className="flex flex-col gap-4">
+                            <Input type="text" placeholder="from" />
+                            <Input type="text" placeholder="to" />
+                        </div>
+                    </div>
                     <div className="flex-3 bg-red-200 overflow-hidden">
                         Right
                     </div>
