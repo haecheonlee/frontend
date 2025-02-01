@@ -7,9 +7,23 @@ export async function stmClient(
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const url = `${process.env.BASE_URL}${endpoint}`;
+        const { BASE_URL, API_KEY } = process.env;
+
+        if (!BASE_URL) {
+            throw new Error("Missing Url");
+        }
+
+        if (!API_KEY) {
+            throw new Error("Missing STM Api Key");
+        }
+
+        const url = `${BASE_URL}${endpoint}`;
+
         const response = await fetch(url, {
             ...options,
+            headers: {
+                apiKey: API_KEY,
+            },
             signal: controller.signal,
         });
 
