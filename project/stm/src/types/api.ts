@@ -3,3 +3,5 @@ export interface ApiResponse<T> {
     success: boolean;
     message?: string;
 }
+
+export type GtfsJsonFileType = "stops";

@@ -1,5 +1,5 @@
-import { ApiResponse } from "@/types/api";
-import { stmClient } from "./client";
+import { ApiResponse, GtfsJsonFileType } from "@/types/api";
+import { gtfsJsonFileClient, stmClient } from "./client";
 import { STM_ENDPOINTS } from "./endpoints";
 import path from "path";
 import protobuf from "protobufjs";
@@ -10,7 +10,10 @@ type StmClientRequestParameters = {
     timeout?: number;
 };
 
-const processProto = async (arrayBuffer: ArrayBuffer, fileName: string) => {
+async function processProto(
+    arrayBuffer: ArrayBuffer,
+    fileName: string
+): Promise<Record<string, unknown>> {
     const protoPath = path.join(process.cwd(), "src/data", fileName);
     const root = await protobuf.load(protoPath);
 
@@ -23,23 +26,19 @@ const processProto = async (arrayBuffer: ArrayBuffer, fileName: string) => {
         bytes: String,
         defaults: true,
     });
-};
+}
 
-export const fetchStmClientRequest = async <T>({
+export async function fetchStmClientRequest<T>({
     endpoint,
     options,
     timeout,
-}: StmClientRequestParameters): Promise<ApiResponse<T>> => {
+}: StmClientRequestParameters): Promise<ApiResponse<T>> {
     try {
         const response = await stmClient(
             STM_ENDPOINTS[endpoint],
             options,
             timeout
         );
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
 
         const decodedProtobufObject = await processProto(
             await response.arrayBuffer(),
@@ -59,4 +58,25 @@ export const fetchStmClientRequest = async <T>({
                     : "An unexpected error occurred",
         };
     }
-};
+}
+
+export async function fetchGtfsJsonFile(
+    fileName: GtfsJsonFileType
+): Promise<ApiResponse<unknown>> {
+    try {
+        const response = await gtfsJsonFileClient(fileName);
+
+        return {
+            data: await response.json(),
+            success: true,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "An unexpected error occurred",
+        };
+    }
+}
