@@ -1,5 +1,5 @@
 import { ApiResponse, GtfsJsonFileType } from "@/types/api";
-import { gtfsJsonFileClient, stmClient } from "./client";
+import { gtfsJsonFileClient, stmClient } from "./clients";
 import { STM_ENDPOINTS } from "./endpoints";
 import path from "path";
 import protobuf from "protobufjs";
