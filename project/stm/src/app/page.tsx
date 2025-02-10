@@ -31,7 +31,7 @@ export default function Home() {
                         rel="noopener noreferrer"
                     >
                         github
-                    </a>{" "}
+                    </a>
                 </footer>
             </div>
         </div>
