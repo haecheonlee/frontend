@@ -9,10 +9,10 @@ import "leaflet-defaulticon-compatibility";
 export default function Map() {
     return (
         <MapContainer
+            className="w-[750px] h-[450px]"
             center={[45.5019, -73.5674]}
             zoom={13}
             scrollWheelZoom
-            style={{ width: "765px", height: "450px" }}
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

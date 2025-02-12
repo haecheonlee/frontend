@@ -20,8 +20,8 @@ export default function Home() {
                             <Input type="text" placeholder="to" />
                         </div>
                     </div>
-                    <div className="flex-3 bg-red-200 overflow-hidden">
-                        Right
+                    <div className="flex-3 overflow-hidden h-[450px]">
+                        <Map />
                     </div>
                 </main>
                 <footer className="flex flex-wrap items-center justify-center">
