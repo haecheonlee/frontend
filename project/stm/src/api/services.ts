@@ -60,14 +60,14 @@ export async function fetchStmClientRequest<T>({
     }
 }
 
-export async function fetchGtfsJsonFile(
+export async function fetchGtfsJsonFile<T>(
     fileName: GtfsJsonFileType
-): Promise<ApiResponse<unknown>> {
+): Promise<ApiResponse<T>> {
     try {
         const response = await gtfsJsonFileClient(fileName);
 
         return {
-            data: await response.json(),
+            data: (await response.json()).value,
             success: true,
         };
     } catch (error) {
