@@ -13,3 +13,18 @@ export interface GtfsStop {
     parent_station: string;
     wheelchair_boarding: string;
 }
+
+/**
+ * GTFS Static Routes Reference:
+ * https://gtfs.org/documentation/schedule/reference/#routestxt
+ */
+export interface Routes {
+    route_id: string;
+    agency_id: string;
+    route_short_name: string;
+    route_long_name?: string;
+    route_type: string;
+    route_url?: string;
+    route_color?: string;
+    route_text_color?: string;
+}
