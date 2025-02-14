@@ -28,3 +28,19 @@ export interface Routes {
     route_color?: string;
     route_text_color?: string;
 }
+
+/**
+ * GTFS Static Trips Reference:
+ * https://gtfs.org/documentation/schedule/reference/#tripstxt
+ */
+export interface Trips {
+    route_id: string;
+    service_id: string;
+    trip_id: string;
+    trip_headsign?: string;
+    direction_id?: string;
+    shape_id?: string;
+    wheelchair_accessible?: string;
+    note_fr?: string;
+    note_en?: string;
+}
