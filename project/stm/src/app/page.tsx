@@ -1,5 +1,5 @@
+import Map from "@/components/map";
 import { Input } from "@/components/ui/input";
-import { Stops } from "@/types/gtfs";
 import Image from "next/image";
 
 export default function Home() {
