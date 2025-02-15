@@ -2,7 +2,7 @@
  * GTFS Static Schedule Stop Reference:
  * https://gtfs.org/documentation/schedule/reference/#stopstxt
  */
-export interface GtfsStop {
+export interface Stops {
     stop_id: string;
     stop_code?: string;
     stop_name?: string;
