@@ -1,4 +1,84 @@
 /**
+ * GTFS Static Schedule Agency Reference:
+ * https://gtfs.org/documentation/schedule/reference/#agencytxt
+ */
+export interface Agency {
+    agency_id?: string;
+    agency_name: string;
+    agency_url: string;
+    agency_timezone: string;
+    agency_lang?: string;
+    agency_phone?: string;
+    agency_fare_url?: string;
+    agency_email?: string;
+}
+
+/**
+ * GTFS Static Calendar Reference:
+ * https://gtfs.org/documentation/schedule/reference/#calendartxt
+ */
+export interface Calendar {
+    service_id: string;
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+    start_date: string;
+    end_date: string;
+}
+
+/**
+ * GTFS Static Calendar Dates Reference:
+ * https://gtfs.org/documentation/schedule/reference/#calendar_datestxt
+ */
+export interface CalendarDates {
+    service_id: string;
+    date: string;
+    exception_type: string;
+}
+
+/**
+ * GTFS Static Feed Info Reference:
+ * https://gtfs.org/documentation/schedule/reference/#feed_infotxt
+ */
+export interface FeedInfo {
+    feed_publisher_name: string;
+    feed_publisher_url: string;
+    feed_lang: string;
+    feed_start_date?: string;
+    feed_end_date?: string;
+}
+
+/**
+ * GTFS Static Routes Reference:
+ * https://gtfs.org/documentation/schedule/reference/#routestxt
+ */
+export interface Routes {
+    route_id: string;
+    agency_id?: string;
+    route_short_name?: string;
+    route_long_name?: string;
+    route_type: string;
+    route_url?: string;
+    route_color?: string;
+    route_text_color?: string;
+}
+
+/**
+ * GTFS Static Shapes Reference:
+ * https://gtfs.org/documentation/schedule/reference/#shapestxt
+ */
+export interface Shapes {
+    shape_id: string;
+    shape_pt_lat: string;
+    shape_pt_lon: string;
+    shape_pt_sequence: string;
+}
+
+/**
  * GTFS Static Schedule Stop Reference:
  * https://gtfs.org/documentation/schedule/reference/#stopstxt
  */
@@ -15,18 +95,15 @@ export interface Stops {
 }
 
 /**
- * GTFS Static Routes Reference:
- * https://gtfs.org/documentation/schedule/reference/#routestxt
+ * GTFS Static Stop Times Reference:
+ * https://gtfs.org/documentation/schedule/reference/#stop_timestxt
  */
-export interface Routes {
-    route_id: string;
-    agency_id: string;
-    route_short_name: string;
-    route_long_name?: string;
-    route_type: string;
-    route_url?: string;
-    route_color?: string;
-    route_text_color?: string;
+export interface StopTimes {
+    trip_id: string;
+    arrival_time?: string;
+    departure_time?: string;
+    stop_id?: string;
+    stop_sequence: string;
 }
 
 /**
