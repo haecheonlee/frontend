@@ -4,7 +4,7 @@ export interface ApiResponse<T> {
     message?: string;
 }
 
-export type GtfsJsonFileType =
+export type GtfsFileType =
     | "agency"
     | "calendar_dates"
     | "calendar"

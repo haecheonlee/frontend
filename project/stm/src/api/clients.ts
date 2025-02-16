@@ -1,4 +1,4 @@
-import { GtfsJsonFileType } from "@/types/api";
+import { GtfsFileType } from "@/types/api";
 
 export async function stmClient(
     endpoint: string,
@@ -44,8 +44,8 @@ export async function stmClient(
     }
 }
 
-export async function gtfsJsonFileClient(
-    fileName: GtfsJsonFileType,
+export async function gtfsFileClient(
+    fileName: GtfsFileType,
     options: RequestInit = {},
     timeout: number = 10_000
 ): Promise<Response> {

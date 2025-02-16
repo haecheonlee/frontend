@@ -1,5 +1,5 @@
-import { ApiResponse, GtfsJsonFileType } from "@/types/api";
-import { gtfsJsonFileClient, stmClient } from "./clients";
+import { ApiResponse, GtfsFileType } from "@/types/api";
+import { gtfsFileClient, stmClient } from "./clients";
 import { STM_ENDPOINTS } from "./endpoints";
 import path from "path";
 import protobuf from "protobufjs";
@@ -60,11 +60,11 @@ export async function fetchStmClientRequest<T>({
     }
 }
 
-export async function fetchGtfsJsonFile<T>(
-    fileName: GtfsJsonFileType
+export async function fetchGtfsFile<T>(
+    fileName: GtfsFileType
 ): Promise<ApiResponse<T>> {
     try {
-        const response = await gtfsJsonFileClient(fileName);
+        const response = await gtfsFileClient(fileName);
 
         return {
             data: (await response.json()).value,
