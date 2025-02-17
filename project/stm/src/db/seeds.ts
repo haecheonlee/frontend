@@ -2,9 +2,9 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
 import fs from "fs";
 import zlib from "zlib";
-import { GtfsFileType } from "./types/api";
+import { GtfsFileType } from "@/types/api";
 import { parse } from "csv-parse/sync";
-import * as schema from "./db/schema";
+import * as schema from "./schema";
 import path from "path";
 import { SQLiteTable, TableConfig } from "drizzle-orm/sqlite-core";
 
