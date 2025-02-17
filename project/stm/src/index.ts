@@ -69,7 +69,7 @@ async function seedData(
     try {
         const filePath = path.join(
             process.cwd(),
-            "src/db/data",
+            "src/data",
             `${seed.fileName}.txt.br`
         );
 
