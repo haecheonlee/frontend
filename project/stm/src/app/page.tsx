@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Home() {
     return (
         <div className="flex items-center justify-center min-h-screen p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
-            <div className="flex flex-col w-[1024px]">
+            <div className="flex flex-col w-[1024px] h-[450px]">
                 <header className="flex flex-row items-center justify-between">
                     <Image
                         src="/stm-logo.png"
@@ -21,7 +21,7 @@ export default function Home() {
                             <Input type="text" placeholder="to" />
                         </div>
                     </div>
-                    <div className="flex-3 overflow-hidden h-[450px]">
+                    <div className="flex-3 overflow-hidden">
                         <Map />
                     </div>
                 </main>
