@@ -19,10 +19,10 @@ export default async function Home() {
                     />
                 </header>
                 <main className="w-full flex-1 flex flex-row gap-4 w-[1024px] h-[405px]">
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                         <RoutesList routesList={routes} />
                     </div>
-                    <div className="flex-3">
+                    <div className="flex-3 h-full">
                         <Map />
                     </div>
                 </main>
