@@ -9,7 +9,7 @@ import "leaflet-defaulticon-compatibility";
 export default function Map() {
     return (
         <MapContainer
-            className="max-w-[750px] h-[450px]"
+            className="w-full h-full rounded-sm"
             center={[45.5019, -73.5674]}
             zoom={13}
             scrollWheelZoom

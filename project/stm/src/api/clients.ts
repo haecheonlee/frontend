@@ -44,11 +44,11 @@ export async function stmClient(
     }
 }
 
-export async function gtfsFileClient(
+export async function gtfsFileClient<T>(
     fileName: GtfsFileType,
     options: RequestInit = {},
     timeout: number = 10_000
-): Promise<Response> {
+): Promise<ReadonlyArray<T>> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
@@ -72,7 +72,7 @@ export async function gtfsFileClient(
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        return response;
+        return (await response.json())?.value ?? [];
     } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
             throw new Error("Request timed out");
