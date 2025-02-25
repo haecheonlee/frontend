@@ -16,7 +16,9 @@ export default function RoutesList({ routesList }: Readonly<RouteListProps>) {
     const filteredRoutes = routesList.filter(
         (p) =>
             !searchText ||
-            p.route_long_name?.toLowerCase().includes(searchText.toLowerCase())
+            p.route_long_name
+                ?.toLowerCase()
+                .includes(searchText.toLowerCase().trim())
     );
 
     return (
