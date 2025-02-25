@@ -10,7 +10,7 @@ export default async function Home() {
 
     return (
         <div className="flex items-center justify-center min-h-screen p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
-            <div className="flex flex-col w-[1024px] h-[450px]">
+            <div className="flex flex-col w-[1024px] h-[468px]">
                 <header className="flex flex-row items-center justify-between">
                     <Image
                         src="/stm-logo.png"
@@ -19,7 +19,7 @@ export default async function Home() {
                         height={64}
                     />
                 </header>
-                <main className="w-full flex-1 flex flex-row gap-4 w-[1024px] h-[405px]">
+                <main className="w-full flex-1 flex flex-row gap-4 w-[1024px] h-[415px]">
                     <RoutesProvider>
                         <div className="flex-1 h-full">
                             <RoutesList routesList={routes} />
