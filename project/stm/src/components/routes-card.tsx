@@ -22,7 +22,7 @@ export default function RoutesCard({ routes }: Readonly<RoutesCardProps>) {
 
     return (
         <Card
-            className={clsx("my-2", {
+            className={clsx("my-2 w-[215px]", {
                 "bg-gray-100": isRoutesSelected,
                 "cursor-pointer hover:bg-gray-100": !isRoutesSelected,
             })}
