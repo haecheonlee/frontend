@@ -1,5 +1,5 @@
-import { ApiResponse, GtfsFileType } from "@/types/api";
-import { gtfsFileClient, stmClient } from "./clients";
+import { ApiResponse } from "@/types/api";
+import { stmClient } from "./clients";
 import { STM_ENDPOINTS } from "./endpoints";
 import path from "path";
 import protobuf from "protobufjs";
@@ -47,27 +47,6 @@ export async function fetchStmClientRequest<T>({
 
         return {
             data: decodedProtobufObject as T,
-            success: true,
-        };
-    } catch (error) {
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : "An unexpected error occurred",
-        };
-    }
-}
-
-export async function fetchGtfsFile<T>(
-    fileName: GtfsFileType
-): Promise<ApiResponse<T>> {
-    try {
-        const response = await gtfsFileClient(fileName);
-
-        return {
-            data: (await response.json()).value,
             success: true,
         };
     } catch (error) {
