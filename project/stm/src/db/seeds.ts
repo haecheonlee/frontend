@@ -2,52 +2,10 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
 import fs from "fs";
 import zlib from "zlib";
-import { GtfsFileType } from "@/types/api";
 import { parse } from "csv-parse/sync";
 import * as schema from "./schema";
 import path from "path";
 import { SQLiteTable, TableConfig } from "drizzle-orm/sqlite-core";
-
-const seeds: Array<
-    Readonly<{ fileName: GtfsFileType; tableType: SQLiteTable<TableConfig> }>
-> = [
-    {
-        fileName: "agency",
-        tableType: schema.agencies,
-    },
-    {
-        fileName: "calendar",
-        tableType: schema.calendar,
-    },
-    {
-        fileName: "calendar_dates",
-        tableType: schema.calendar_dates,
-    },
-    {
-        fileName: "feed_info",
-        tableType: schema.feed_info,
-    },
-    {
-        fileName: "routes",
-        tableType: schema.routes,
-    },
-    {
-        fileName: "shapes",
-        tableType: schema.shapes,
-    },
-    {
-        fileName: "stops",
-        tableType: schema.stops,
-    },
-    {
-        fileName: "stop_times",
-        tableType: schema.stop_times,
-    },
-    {
-        fileName: "trips",
-        tableType: schema.trips,
-    },
-] as const;
 
 async function main() {
     const db = drizzle({
@@ -57,20 +15,19 @@ async function main() {
         },
     });
 
-    for (const seed of seeds) {
-        await seedData(db, seed);
-    }
+    await seedData(db, "stop_times", schema.stop_times);
 }
 
 async function seedData(
     db: ReturnType<typeof drizzle>,
-    seed: (typeof seeds)[0]
+    fileName: string,
+    tableType: SQLiteTable<TableConfig>
 ) {
     try {
         const filePath = path.join(
             process.cwd(),
             "src/data",
-            `${seed.fileName}.txt.br`
+            `${fileName}.txt.br`
         );
 
         if (!fs.existsSync(filePath)) {
@@ -93,17 +50,17 @@ async function seedData(
 
             if (startIndex >= records.length) break;
             console.log(
-                `Inserting ${seed.fileName} from ${startIndex} to ${
+                `Inserting ${fileName} from ${startIndex} to ${
                     endIndex - 1
                 } out of ${records.length}`
             );
             await db
-                .insert(seed.tableType)
+                .insert(tableType)
                 .values(records.slice(startIndex, endIndex))
                 .run();
         }
 
-        console.log("Seeding completed successfully: ", seed.fileName);
+        console.log("Seeding completed successfully: ", fileName);
     } catch (error) {
         console.error("Error seeding data:", error);
     }
