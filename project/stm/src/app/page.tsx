@@ -2,11 +2,56 @@ import { gtfsFileClient } from "@/api/clients";
 import Map from "@/components/map";
 import RoutesList from "@/components/routes-list";
 import { RoutesProvider } from "@/context/RoutesContext";
-import { Routes } from "@/types/gtfs";
+import { GtfsFileType } from "@/types/api";
+import {
+    Agency,
+    Calendar,
+    CalendarDates,
+    FeedInfo,
+    Routes,
+    Shapes,
+    Stops,
+    Trips,
+} from "@/types/gtfs";
 import Image from "next/image";
 
+type GtfsFileMapping = {
+    agency: Agency;
+    calendar_dates: CalendarDates;
+    calendar: Calendar;
+    feed_info: FeedInfo;
+    routes: Routes;
+    shapes: Shapes;
+    stops: Stops;
+    trips: Trips;
+};
+
+const fileNames: ReadonlyArray<Exclude<GtfsFileType, "stop_times">> = [
+    "agency",
+    "calendar_dates",
+    "calendar",
+    "feed_info",
+    "routes",
+    "shapes",
+    "stops",
+    "trips",
+];
+
 export default async function Home() {
-    const routes = await gtfsFileClient<Routes>("routes");
+    const gtfsPromises = fileNames.map((fileName) =>
+        gtfsFileClient<GtfsFileMapping[typeof fileName]>(fileName)
+    );
+    const data = await Promise.all(gtfsPromises);
+    const [, , , , routes, , , ,] = data as [
+        ReadonlyArray<Agency>,
+        ReadonlyArray<CalendarDates>,
+        ReadonlyArray<Calendar>,
+        ReadonlyArray<FeedInfo>,
+        ReadonlyArray<Routes>,
+        ReadonlyArray<Shapes>,
+        ReadonlyArray<Stops>,
+        ReadonlyArray<Trips>
+    ];
 
     return (
         <div className="flex items-center justify-center min-h-screen p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">

@@ -8,13 +8,13 @@ interface ResponseType {
     error?: string;
 }
 
-const decompressAndParseBrotliFile = (
-    filePath: string
-): Record<string, string>[] => {
+const decompressBrotliFile = (filePath: string) => {
     const compressedData = fs.readFileSync(filePath);
     const decompressedData = zlib.brotliDecompressSync(compressedData);
-    const fileContent = decompressedData.toString("utf-8");
+    return decompressedData.toString("utf-8");
+};
 
+const parseBrotliFile = (fileContent: string): Record<string, string>[] => {
     const lines = fileContent.trim().split("\n");
     const headers = lines[0].split(",");
 
@@ -28,10 +28,12 @@ const decompressAndParseBrotliFile = (
     });
 };
 
-/**
- * API handler to serve dynamic JSON files from the `data/` directory.
- * @returns Returns a JSON response with the file's contents or an error message.
- **/
+export const config = {
+    api: {
+        responseLimit: false,
+    },
+};
+
 export default function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseType>
@@ -50,7 +52,9 @@ export default function handler(
     }
 
     try {
-        const data = decompressAndParseBrotliFile(filePath);
+        const rawData = decompressBrotliFile(filePath);
+        const data = parseBrotliFile(rawData);
+
         res.status(200).json({ value: data });
     } catch {
         res.status(500).json({ error: "Error reading the file" });
