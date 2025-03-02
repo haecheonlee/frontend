@@ -45,7 +45,7 @@ export default function handler(
         return;
     }
 
-    const filePath = path.join(process.cwd(), "data", `${file}.txt.br`);
+    const filePath = path.join(process.cwd(), "src/data", `${file}.txt.br`);
     if (!fs.existsSync(filePath)) {
         res.status(404).json({ error: "File not found" });
         return;
