@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
 import fs from "fs";
 import zlib from "zlib";
@@ -6,15 +5,9 @@ import { parse } from "csv-parse/sync";
 import * as schema from "./schema";
 import path from "path";
 import { SQLiteTable, TableConfig } from "drizzle-orm/sqlite-core";
+import { db } from "./drizzle";
 
 async function main() {
-    const db = drizzle({
-        connection: {
-            url: process.env.TURSO_DATABASE_URL!,
-            authToken: process.env.TURSO_AUTH_TOKEN!,
-        },
-    });
-
     await seedData(db, "stop_times", schema.stop_times);
 }
 
