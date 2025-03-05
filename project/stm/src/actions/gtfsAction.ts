@@ -1,14 +1,12 @@
 import { db } from "@/db/drizzle";
-import { stop_times, stops } from "@/db/schema";
-import { Stops } from "@/types/gtfs";
-import { eq, getTableColumns } from "drizzle-orm";
+import { stop_times } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-export const getStopsByTripId = async (
+export const getStopTimesByTripId = async (
     tripId: string
-): Promise<ReadonlyArray<Readonly<Stops>>> => {
+): Promise<ReadonlyArray<{ stop_id: string }>> => {
     return await db
-        .select({ ...getTableColumns(stops) })
-        .from(stops)
-        .innerJoin(stop_times, eq(stops.stop_id, stop_times.stop_id))
+        .select({ stop_id: stop_times.stop_id })
+        .from(stop_times)
         .where(eq(stop_times.trip_id, tripId));
 };
