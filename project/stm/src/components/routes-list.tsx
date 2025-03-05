@@ -1,19 +1,17 @@
 "use client";
 
-import { Routes } from "@/types/gtfs";
 import RoutesCard from "./routes-card";
 import { ScrollArea } from "./ui/scroll-area";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { useGtfs } from "@/context/GtfsContext";
 
-interface RouteListProps {
-    readonly routesList: readonly Routes[];
-}
+export default function RoutesList() {
+    const { routes } = useGtfs();
 
-export default function RoutesList({ routesList }: Readonly<RouteListProps>) {
     const [searchText, setSearchText] = useState("");
 
-    const filteredRoutes = routesList.filter(
+    const filteredRoutes = routes.filter(
         (p) =>
             !searchText ||
             p.route_long_name

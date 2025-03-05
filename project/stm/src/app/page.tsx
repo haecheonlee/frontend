@@ -1,6 +1,7 @@
 import { gtfsFileClient } from "@/api/clients";
 import Map from "@/components/map";
 import RoutesList from "@/components/routes-list";
+import { GtfsProvider } from "@/context/GtfsContext";
 import { RoutesProvider } from "@/context/RoutesContext";
 import { GtfsFileType } from "@/types/api";
 import {
@@ -42,7 +43,16 @@ export default async function Home() {
         gtfsFileClient<GtfsFileMapping[typeof fileName]>(fileName)
     );
     const data = await Promise.all(gtfsPromises);
-    const [, , , , routes, , , ,] = data as [
+    const [
+        agency,
+        calendarDate,
+        calendar,
+        feedInfo,
+        routes,
+        shapes,
+        stops,
+        trips,
+    ] = data as [
         ReadonlyArray<Agency>,
         ReadonlyArray<CalendarDates>,
         ReadonlyArray<Calendar>,
@@ -65,14 +75,27 @@ export default async function Home() {
                     />
                 </header>
                 <main className="w-full flex-1 flex flex-row gap-4 w-[1024px] h-[415px]">
-                    <RoutesProvider>
-                        <div className="flex-1 h-full">
-                            <RoutesList routesList={routes} />
-                        </div>
-                        <div className="flex-3 h-full">
-                            <Map />
-                        </div>
-                    </RoutesProvider>
+                    <GtfsProvider
+                        data={{
+                            agency,
+                            calendarDate,
+                            calendar,
+                            feedInfo,
+                            routes,
+                            shapes,
+                            stops,
+                            trips,
+                        }}
+                    >
+                        <RoutesProvider>
+                            <div className="flex-1 h-full">
+                                <RoutesList />
+                            </div>
+                            <div className="flex-3 h-full">
+                                <Map />
+                            </div>
+                        </RoutesProvider>
+                    </GtfsProvider>
                 </main>
                 <footer className="flex flex-wrap items-center justify-center">
                     <a
