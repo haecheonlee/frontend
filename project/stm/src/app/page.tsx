@@ -1,8 +1,7 @@
 import { gtfsFileClient } from "@/api/clients";
 import Map from "@/components/map";
-import RoutesList from "@/components/routes-list";
+import { Input } from "@/components/ui/input";
 import { GtfsProvider } from "@/context/GtfsContext";
-import { RoutesProvider } from "@/context/RoutesContext";
 import { GtfsFileType } from "@/types/api";
 import {
     Agency,
@@ -87,14 +86,13 @@ export default async function Home() {
                             trips,
                         }}
                     >
-                        <RoutesProvider>
-                            <div className="flex-1 h-full">
-                                <RoutesList />
-                            </div>
-                            <div className="flex-3 h-full">
-                                <Map />
-                            </div>
-                        </RoutesProvider>
+                        <div className="flex-1 h-full">
+                            <Input placeholder="From" className="mb-[5px]" />
+                            <Input placeholder="To" />
+                        </div>
+                        <div className="flex-3 h-full">
+                            <Map />
+                        </div>
                     </GtfsProvider>
                 </main>
                 <footer className="flex flex-wrap items-center justify-center">
