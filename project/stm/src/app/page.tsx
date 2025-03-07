@@ -1,7 +1,7 @@
 import { gtfsFileClient } from "@/api/clients";
 import Map from "@/components/map";
 import { Input } from "@/components/ui/input";
-import { GtfsProvider } from "@/context/GtfsContext";
+import { GtfsProvider } from "@/context/gtfs-context";
 import { GtfsFileType } from "@/types/api";
 import {
     Agency,

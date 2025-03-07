@@ -5,7 +5,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
-import { useGtfs } from "@/context/GtfsContext";
+import { useGtfs } from "@/context/gtfs-context";
 import { Stops } from "@/types/gtfs";
 
 export default function Map() {
