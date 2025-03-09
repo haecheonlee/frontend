@@ -80,3 +80,34 @@ export async function gtfsFileClient<T>(
         throw error;
     }
 }
+
+export async function dbClient<T>(
+    stopId: string,
+    options: RequestInit = {},
+    timeout: number = 10_000
+): Promise<ReadonlyArray<T>> {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const url = `${window.location.origin}/api/stops?stopId=${stopId}`;
+
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+        });
+
+        clearTimeout(id);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return (await response.json())?.value ?? [];
+    } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+            throw new Error("Request timed out");
+        }
+        throw error;
+    }
+}

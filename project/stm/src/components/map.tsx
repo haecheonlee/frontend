@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
 import { Stops } from "@/types/gtfs";
+import { dbClient } from "@/api/clients";
 
 export default function Map() {
     return (
@@ -29,6 +30,9 @@ function Markers() {
     const map = useMap();
     const { stops } = useGtfs();
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
+    const [selectedStop, setSelectedStop] = useState<Readonly<Stops> | null>(
+        null
+    );
 
     useEffect(() => {
         const updateMarkers = () => {
@@ -44,13 +48,40 @@ function Markers() {
             );
         };
 
-        map.on("moveend", updateMarkers);
-        updateMarkers();
+        if (!selectedStop) {
+            map.on("moveend", updateMarkers);
+            updateMarkers();
+        }
 
         return () => {
             map.off("moveend", updateMarkers);
         };
-    }, [map, stops]);
+    }, [map, stops, selectedStop]);
+
+    useEffect(() => {
+        let active = true;
+
+        const fetchAllRelatedStops = async () => {
+            if (!selectedStop) {
+                return;
+            }
+
+            const relatedStopIds = await dbClient<string>(selectedStop.stop_id);
+            if (!active) {
+                return;
+            }
+
+            setVisibleStops(
+                stops.filter((p) => relatedStopIds.includes(p.stop_id))
+            );
+        };
+
+        fetchAllRelatedStops();
+
+        return () => {
+            active = false;
+        };
+    }, [stops, selectedStop]);
 
     return (
         <>
@@ -58,6 +89,9 @@ function Markers() {
                 <Marker
                     key={stop.stop_id}
                     position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
+                    eventHandlers={{
+                        click: () => setSelectedStop(stop),
+                    }}
                 >
                     <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
                 </Marker>
