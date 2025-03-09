@@ -1,5 +1,5 @@
 import { gtfsFileClient } from "@/api/clients";
-import Map from "@/components/map";
+import DynamicMap from "@/components/dynamic-map";
 import { Input } from "@/components/ui/input";
 import { GtfsProvider } from "@/context/gtfs-context";
 import { GtfsFileType } from "@/types/api";
@@ -91,7 +91,7 @@ export default async function Home() {
                             <Input placeholder="To" />
                         </div>
                         <div className="flex-3 h-full">
-                            <Map />
+                            <DynamicMap />
                         </div>
                     </GtfsProvider>
                 </main>
