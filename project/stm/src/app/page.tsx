@@ -36,10 +36,11 @@ const fileNames: ReadonlyArray<Exclude<GtfsFileType, "stop_times">> = [
     "trips",
 ];
 
+const gtfsPromises = fileNames.map((fileName) =>
+    gtfsFileClient<GtfsFileMapping[typeof fileName]>(fileName)
+);
+
 export default async function Home() {
-    const gtfsPromises = fileNames.map((fileName) =>
-        gtfsFileClient<GtfsFileMapping[typeof fileName]>(fileName)
-    );
     const data = await Promise.all(gtfsPromises);
     const [
         agency,
