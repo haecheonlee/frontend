@@ -8,6 +8,7 @@ import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
 import { Stops } from "@/types/gtfs";
 import { dbClient } from "@/api/clients";
+import { useStop } from "@/context/stop-context";
 
 export default function Map() {
     return (
@@ -29,10 +30,10 @@ export default function Map() {
 function Markers() {
     const map = useMap();
     const { stops } = useGtfs();
+    const { value, setValue } = useStop();
+
+    const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
-    const [selectedStop, setSelectedStop] = useState<Readonly<Stops> | null>(
-        null
-    );
 
     useEffect(() => {
         const updateMarkers = () => {
@@ -48,7 +49,7 @@ function Markers() {
             );
         };
 
-        if (!selectedStop) {
+        if (!value.stop) {
             map.on("moveend", updateMarkers);
             updateMarkers();
         }
@@ -56,32 +57,29 @@ function Markers() {
         return () => {
             map.off("moveend", updateMarkers);
         };
-    }, [map, stops, selectedStop]);
+    }, [map, stops, value]);
 
-    useEffect(() => {
-        let active = true;
+    const click = async (stopId: string) => {
+        setIsClickInProgress(true);
 
-        const fetchAllRelatedStops = async () => {
-            if (!selectedStop) {
+        try {
+            const stop = stops.find((p) => p.stop_id === stopId);
+
+            if (!stop) {
                 return;
             }
 
-            const relatedStopIds = await dbClient<string>(selectedStop.stop_id);
-            if (!active) {
-                return;
-            }
-
-            setVisibleStops(
-                stops.filter((p) => relatedStopIds.includes(p.stop_id))
+            const relatedStopIds = await dbClient<string>(stop.stop_id);
+            const relatedStops = stops.filter((p) =>
+                relatedStopIds.includes(p.stop_id)
             );
-        };
 
-        fetchAllRelatedStops();
-
-        return () => {
-            active = false;
-        };
-    }, [stops, selectedStop]);
+            setValue({ stop, relatedStops });
+            setVisibleStops([...relatedStops]);
+        } finally {
+            setIsClickInProgress(false);
+        }
+    };
 
     return (
         <>
@@ -89,9 +87,13 @@ function Markers() {
                 <Marker
                     key={stop.stop_id}
                     position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
-                    eventHandlers={{
-                        click: () => setSelectedStop(stop),
-                    }}
+                    eventHandlers={
+                        isClickInProgress
+                            ? undefined
+                            : {
+                                  click: () => click(stop.stop_id),
+                              }
+                    }
                 >
                     <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
                 </Marker>

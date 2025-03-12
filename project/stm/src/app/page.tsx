@@ -1,6 +1,8 @@
 import { gtfsFileClient } from "@/api/clients";
 import DynamicMap from "@/components/dynamic-map";
+import StopMenu from "@/components/stop-menu";
 import { GtfsProvider } from "@/context/gtfs-context";
+import { StopProvider } from "@/context/stop-context";
 import { GtfsFileType } from "@/types/api";
 import {
     Agency,
@@ -86,10 +88,14 @@ export default async function Home() {
                             trips,
                         }}
                     >
-                        <div className="flex-1 h-full"></div>
-                        <div className="flex-3 h-full">
-                            <DynamicMap />
-                        </div>
+                        <StopProvider>
+                            <div className="flex-1 h-full">
+                                <StopMenu />
+                            </div>
+                            <div className="flex-3 h-full">
+                                <DynamicMap />
+                            </div>
+                        </StopProvider>
                     </GtfsProvider>
                 </main>
                 <footer className="flex flex-wrap items-center justify-center">
