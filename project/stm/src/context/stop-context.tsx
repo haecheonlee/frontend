@@ -11,7 +11,6 @@ import {
 
 type StopsContextType = {
     stop: Readonly<Stops> | null;
-    relatedStops: ReadonlyArray<Stops>;
 };
 
 interface StopsContextValue {
@@ -24,7 +23,6 @@ const StopContext = createContext<StopsContextValue | undefined>(undefined);
 export function StopProvider({ children }: React.PropsWithChildren) {
     const [value, setValue] = useState<StopsContextType>({
         stop: null,
-        relatedStops: [],
     });
 
     return (

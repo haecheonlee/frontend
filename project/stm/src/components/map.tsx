@@ -74,8 +74,8 @@ function Markers() {
                 relatedStopIds.includes(p.stop_id)
             );
 
-            setValue({ stop, relatedStops });
-            setVisibleStops([...relatedStops]);
+            setValue({ stop });
+            setVisibleStops(relatedStops);
         } finally {
             setIsClickInProgress(false);
         }
