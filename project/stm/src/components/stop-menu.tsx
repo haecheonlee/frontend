@@ -2,9 +2,10 @@
 
 import { useStop } from "@/context/stop-context";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
 
 export default function StopMenu() {
-    const { value } = useStop();
+    const { value, setValue } = useStop();
 
     if (!value.stop) {
         return (
@@ -16,11 +17,20 @@ export default function StopMenu() {
         );
     }
 
+    const reset = () => {
+        setValue({ stop: null });
+    };
+
     return (
         <div className="h-full overflow-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>{value.stop.stop_code}</CardTitle>
+                    <CardTitle className="flex justify-between items-center">
+                        {value.stop.stop_code}
+                        <Button variant="outline" onClick={reset}>
+                            Reset
+                        </Button>
+                    </CardTitle>
                     <CardDescription>{value.stop.stop_name}</CardDescription>
                 </CardHeader>
             </Card>
