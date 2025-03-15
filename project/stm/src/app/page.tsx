@@ -3,6 +3,7 @@ import DynamicMap from "@/components/dynamic-map";
 import StopMenu from "@/components/stop-menu";
 import { GtfsProvider } from "@/context/gtfs-context";
 import { StopProvider } from "@/context/stop-context";
+import { VehicleProvider } from "@/context/vehicle-context";
 import { GtfsFileType } from "@/types/api";
 import {
     Agency,
@@ -89,12 +90,14 @@ export default async function Home() {
                         }}
                     >
                         <StopProvider>
-                            <div className="flex-1 h-full">
-                                <StopMenu />
-                            </div>
-                            <div className="flex-3 h-full">
-                                <DynamicMap />
-                            </div>
+                            <VehicleProvider>
+                                <div className="flex-1 h-full">
+                                    <StopMenu />
+                                </div>
+                                <div className="flex-3 h-full">
+                                    <DynamicMap />
+                                </div>
+                            </VehicleProvider>
                         </StopProvider>
                     </GtfsProvider>
                 </main>

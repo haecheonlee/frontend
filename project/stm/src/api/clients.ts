@@ -1,31 +1,19 @@
 import { GtfsFileType } from "@/types/api";
+import { VehiclePosition } from "@/types/vehicle-position";
 
 export async function stmClient(
-    endpoint: string,
+    endpoint: "tripUpdates" | "vehiclePositions",
     options: RequestInit = {},
     timeout: number = 10_000
-): Promise<Response> {
+): Promise<ReadonlyArray<VehiclePosition>> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
-        const { STM_API_URL, API_KEY } = process.env;
-
-        if (!STM_API_URL) {
-            throw new Error("Missing Url");
-        }
-
-        if (!API_KEY) {
-            throw new Error("Missing STM Api Key");
-        }
-
-        const url = `${STM_API_URL}${endpoint}`;
+        const url = `${window.location.origin}/api/stm?endpoint=${endpoint}`;
 
         const response = await fetch(url, {
             ...options,
-            headers: {
-                apiKey: API_KEY,
-            },
             signal: controller.signal,
         });
 
@@ -35,7 +23,7 @@ export async function stmClient(
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        return response;
+        return (await response.json())?.value ?? [];
     } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
             throw new Error("Request timed out");

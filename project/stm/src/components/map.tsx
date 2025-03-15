@@ -1,14 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import {
+    Circle,
+    MapContainer,
+    Marker,
+    Popup,
+    SVGOverlay,
+    TileLayer,
+    useMap,
+} from "react-leaflet";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
 import { Stops } from "@/types/gtfs";
-import { dbClient } from "@/api/clients";
+import { dbClient, stmClient } from "@/api/clients";
 import { useStop } from "@/context/stop-context";
+import { useVehicle } from "@/context/vehicle-context";
 
 export default function Map() {
     return (
@@ -23,6 +32,7 @@ export default function Map() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Markers />
+            <VehicleMarkers />
         </MapContainer>
     );
 }
@@ -31,6 +41,7 @@ function Markers() {
     const map = useMap();
     const { stops } = useGtfs();
     const { value, setValue } = useStop();
+    const { setVehicles } = useVehicle();
 
     const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
@@ -69,11 +80,14 @@ function Markers() {
                 return;
             }
 
-            const relatedStopIds = await dbClient<string>(stop.stop_id);
+            const relatedStopIds = ["1", "2", "3", "4", "5", "6", "7"]; // await dbClient<string>(stop.stop_id);
             const relatedStops = stops.filter((p) =>
                 relatedStopIds.includes(p.stop_id)
             );
 
+            const vehicles = await stmClient("vehiclePositions");
+
+            setVehicles(vehicles);
             setValue({ stop });
             setVisibleStops(relatedStops);
         } finally {
@@ -97,6 +111,32 @@ function Markers() {
                 >
                     <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
                 </Marker>
+            ))}
+        </>
+    );
+}
+
+function VehicleMarkers() {
+    const { vehicles } = useVehicle();
+
+    if (!vehicles.length) {
+        return null;
+    }
+
+    console.log(vehicles);
+
+    return (
+        <>
+            {vehicles.map((vehicle) => (
+                <Circle
+                    key={vehicle.vehicle!.id}
+                    center={[
+                        Number(vehicle.position!.latitude),
+                        Number(vehicle.position!.longitude),
+                    ]}
+                    radius={20}
+                    pathOptions={{ color: "red" }}
+                ></Circle>
             ))}
         </>
     );
