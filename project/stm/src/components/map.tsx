@@ -14,7 +14,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
 import { Stops } from "@/types/gtfs";
-import { dbClient, stmClient } from "@/api/clients";
+import { dbClient } from "@/api/clients";
 import { useStop } from "@/context/stop-context";
 import { useVehicle } from "@/context/vehicle-context";
 
@@ -40,7 +40,6 @@ function Markers() {
     const map = useMap();
     const { stops } = useGtfs();
     const { value, setValue } = useStop();
-    const { setVehicles } = useVehicle();
 
     const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
@@ -84,9 +83,6 @@ function Markers() {
                 relatedStopIds.includes(p.stop_id)
             );
 
-            const vehicles = await stmClient("vehiclePositions");
-
-            setVehicles(vehicles);
             setValue({ stop });
             setVisibleStops(relatedStops);
         } finally {
@@ -116,9 +112,10 @@ function Markers() {
 }
 
 function VehicleMarkers() {
+    const { value } = useStop();
     const { vehicles } = useVehicle();
 
-    if (!vehicles.length) {
+    if (!value.stop || !vehicles.length) {
         return null;
     }
 

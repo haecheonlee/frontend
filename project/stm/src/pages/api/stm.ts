@@ -39,9 +39,6 @@ export default async function handler(
             headers: {
                 apiKey: API_KEY,
             },
-            next: {
-                revalidate: 60 * 5, // 5 min
-            },
         });
 
         const arrayBuffer = await response.arrayBuffer();

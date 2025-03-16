@@ -1,11 +1,13 @@
 "use client";
 
+import { stmClient } from "@/api/clients";
 import { VehiclePosition } from "@/types/vehicle-position";
 import React, {
     createContext,
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
     useState,
 } from "react";
 
@@ -24,6 +26,20 @@ export function VehicleProvider({
     const [vehicles, setVehicles] = useState<ReadonlyArray<VehiclePosition>>(
         []
     );
+
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            const data = await stmClient("vehiclePositions");
+            setVehicles(data ?? []);
+        };
+
+        fetchVehicles();
+
+        const delayInMs = 1000 * 60; // 1 minute;
+        const intervalId = setInterval(fetchVehicles, delayInMs);
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     return (
         <VehicleContext.Provider value={{ vehicles, setVehicles }}>
