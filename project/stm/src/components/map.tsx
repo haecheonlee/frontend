@@ -6,7 +6,6 @@ import {
     MapContainer,
     Marker,
     Popup,
-    SVGOverlay,
     TileLayer,
     useMap,
 } from "react-leaflet";
@@ -80,7 +79,7 @@ function Markers() {
                 return;
             }
 
-            const relatedStopIds = ["1", "2", "3", "4", "5", "6", "7"]; // await dbClient<string>(stop.stop_id);
+            const relatedStopIds = await dbClient<string>(stop.stop_id);
             const relatedStops = stops.filter((p) =>
                 relatedStopIds.includes(p.stop_id)
             );
@@ -122,8 +121,6 @@ function VehicleMarkers() {
     if (!vehicles.length) {
         return null;
     }
-
-    console.log(vehicles);
 
     return (
         <>
