@@ -14,6 +14,8 @@ import React, {
 type VehicleContextValue = {
     vehicles: ReadonlyArray<VehiclePosition>;
     setVehicles: Dispatch<SetStateAction<VehicleContextValue["vehicles"]>>;
+    routeId: string | undefined;
+    setRouteId: Dispatch<SetStateAction<VehicleContextValue["routeId"]>>;
 };
 
 const VehicleContext = createContext<VehicleContextValue | undefined>(
@@ -26,6 +28,7 @@ export function VehicleProvider({
     const [vehicles, setVehicles] = useState<ReadonlyArray<VehiclePosition>>(
         []
     );
+    const [routeId, setRouteId] = useState<string | undefined>();
 
     useEffect(() => {
         const fetchVehicles = async () => {
@@ -35,14 +38,16 @@ export function VehicleProvider({
 
         fetchVehicles();
 
-        const delayInMs = 1000 * 60; // 1 minute;
+        const delayInMs = 1000 * 60 * 10; // 10 minutes;
         const intervalId = setInterval(fetchVehicles, delayInMs);
 
         return () => clearInterval(intervalId);
     }, []);
 
     return (
-        <VehicleContext.Provider value={{ vehicles, setVehicles }}>
+        <VehicleContext.Provider
+            value={{ vehicles, setVehicles, routeId, setRouteId }}
+        >
             {children}
         </VehicleContext.Provider>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Circle,
     MapContainer,
@@ -38,8 +38,9 @@ export default function Map() {
 
 function Markers() {
     const map = useMap();
-    const { stops } = useGtfs();
+    const { stops, trips } = useGtfs();
     const { value, setValue } = useStop();
+    const { setRouteId } = useVehicle();
 
     const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
@@ -78,13 +79,26 @@ function Markers() {
                 return;
             }
 
-            const relatedStopIds = await dbClient<string>(stop.stop_id);
-            const relatedStops = stops.filter((p) =>
-                relatedStopIds.includes(p.stop_id)
-            );
+            const fetchedStops = await dbClient<
+                Readonly<{
+                    stopIds: ReadonlyArray<string>;
+                    tripId: string;
+                }>
+            >(stop.stop_id);
+
+            const stopIds: Record<string, boolean> =
+                fetchedStops.stopIds.reduce(
+                    (acc, value) => ({ ...acc, [value]: true }),
+                    {}
+                );
+            const relatedStops = stops.filter((p) => stopIds[p.stop_id]);
+            const routeId = trips.find(
+                (p) => p.trip_id === fetchedStops.tripId
+            )?.route_id;
 
             setValue({ stop });
             setVisibleStops(relatedStops);
+            setRouteId(routeId);
         } finally {
             setIsClickInProgress(false);
         }
@@ -113,7 +127,15 @@ function Markers() {
 
 function VehicleMarkers() {
     const { value } = useStop();
-    const { vehicles } = useVehicle();
+    const { vehicles, routeId } = useVehicle();
+
+    const vehiclesByRouteId = useMemo(() => {
+        if (!routeId) {
+            return [];
+        }
+
+        return vehicles.filter((p) => p.trip?.routeId === routeId);
+    }, [vehicles, routeId]);
 
     if (!value.stop || !vehicles.length) {
         return null;
@@ -121,7 +143,7 @@ function VehicleMarkers() {
 
     return (
         <>
-            {vehicles.map((vehicle) => (
+            {vehiclesByRouteId.map((vehicle) => (
                 <Circle
                     key={vehicle.vehicle!.id}
                     center={[

@@ -19,8 +19,8 @@ export default async function handler(
     }
 
     try {
-        const stopIds = await getRelatedStopIdsByStopId(stopId);
-        res.status(200).json({ value: stopIds.map((p) => p.stop_id) });
+        const stops = await getRelatedStopIdsByStopId(stopId);
+        res.status(200).json({ value: stops });
     } catch {
         res.status(500).json({ error: "Error to get related stop ids." });
     }
