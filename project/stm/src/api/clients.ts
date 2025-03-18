@@ -73,7 +73,7 @@ export async function dbClient<T>(
     stopId: string,
     options: RequestInit = {},
     timeout: number = 10_000
-): Promise<ReadonlyArray<T>> {
+): Promise<T> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 

@@ -1,12 +1,9 @@
 import { loadEnvConfig } from "@next/env";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
 
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
 
-export const db = drizzle({
-    connection: {
-        url: process.env.TURSO_DATABASE_URL as string,
-        authToken: process.env.TURSO_AUTH_TOKEN as string,
-    },
-});
+const sqlite = new Database(process.env.DB_FILE_NAME);
+export const db = drizzle({ client: sqlite });
