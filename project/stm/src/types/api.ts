@@ -4,13 +4,13 @@ export interface ApiResponse<T> {
     message?: string;
 }
 
-export type GtfsFileType =
+export type GtfsType =
     | "agency"
-    | "calendar_dates"
     | "calendar"
-    | "feed_info"
+    | "calendarDates"
+    | "feedInfo"
     | "routes"
     | "shapes"
-    | "stop_times"
+    | "stopTimes"
     | "stops"
     | "trips";

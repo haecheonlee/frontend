@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import fs from "fs";
 import zlib from "zlib";
-import { GtfsFileType } from "@/types/api";
+import { GtfsType } from "@/types/api";
 import { parse } from "csv-parse/sync";
 import * as schema from "./schema";
 import path from "path";
@@ -9,7 +9,7 @@ import { SQLiteTable, TableConfig } from "drizzle-orm/sqlite-core";
 import { db } from "./drizzle";
 
 const seeds: Array<
-    Readonly<{ fileName: GtfsFileType; tableType: SQLiteTable<TableConfig> }>
+    Readonly<{ fileName: GtfsType; tableType: SQLiteTable<TableConfig> }>
 > = [
     {
         fileName: "agency",
@@ -20,11 +20,11 @@ const seeds: Array<
         tableType: schema.calendar,
     },
     {
-        fileName: "calendar_dates",
+        fileName: "calendarDates",
         tableType: schema.calendar_dates,
     },
     {
-        fileName: "feed_info",
+        fileName: "feedInfo",
         tableType: schema.feed_info,
     },
     {
@@ -40,7 +40,7 @@ const seeds: Array<
         tableType: schema.stops,
     },
     {
-        fileName: "stop_times",
+        fileName: "stopTimes",
         tableType: schema.stop_times,
     },
     {

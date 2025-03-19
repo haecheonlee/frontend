@@ -1,5 +1,6 @@
 "use client";
 
+import { dbClient } from "@/api/clients";
 import {
     Agency,
     Calendar,
@@ -10,12 +11,12 @@ import {
     Stops,
     Trips,
 } from "@/types/gtfs";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface GtfsContextType {
     agency: ReadonlyArray<Agency>;
-    calendarDate: ReadonlyArray<CalendarDates>;
     calendar: ReadonlyArray<Calendar>;
+    calendarDate: ReadonlyArray<CalendarDates>;
     feedInfo: ReadonlyArray<FeedInfo>;
     routes: ReadonlyArray<Routes>;
     shapes: ReadonlyArray<Shapes>;
@@ -25,23 +26,28 @@ interface GtfsContextType {
 
 const GtfsContext = createContext<GtfsContextType | undefined>(undefined);
 
-export function GtfsProvider({
-    data,
-    children,
-}: React.PropsWithChildren<{ data: Readonly<GtfsContextType> }>) {
-    const contextValue = useMemo<GtfsContextType>(
-        () =>
-            Object.freeze({
-                ...data,
-            }),
-        [data]
-    );
+export function GtfsProvider({ children }: React.PropsWithChildren) {
+    const [data, setData] = useState<GtfsContextType>({
+        agency: [],
+        calendar: [],
+        calendarDate: [],
+        feedInfo: [],
+        routes: [],
+        shapes: [],
+        stops: [],
+        trips: [],
+    });
 
-    return (
-        <GtfsContext.Provider value={contextValue}>
-            {children}
-        </GtfsContext.Provider>
-    );
+    useEffect(() => {
+        const fetchData = async () => {
+            const result = await dbClient<GtfsContextType>("data");
+            setData(result);
+        };
+
+        fetchData();
+    }, []);
+
+    return <GtfsContext.Provider value={data}>{children}</GtfsContext.Provider>;
 }
 
 export function useGtfs(): GtfsContextType {

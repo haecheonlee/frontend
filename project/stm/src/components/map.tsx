@@ -84,7 +84,7 @@ function Markers() {
                     stopIds: ReadonlyArray<string>;
                     tripId: string;
                 }>
-            >(stop.stop_id);
+            >("stops", { stopId: stop.stop_id });
 
             const stopIds: Record<string, boolean> =
                 fetchedStops.stopIds.reduce(

@@ -1,6 +1,53 @@
 import { db } from "@/db/drizzle";
-import { stop_times } from "@/db/schema";
+import {
+    agencies,
+    calendar,
+    calendar_dates,
+    feed_info,
+    routes,
+    shapes,
+    stop_times,
+    stops,
+    trips,
+} from "@/db/schema";
+import { GtfsType } from "@/types/api";
 import { aliasedTable, eq } from "drizzle-orm";
+
+export const getData = async (type: GtfsType) => {
+    let table = null;
+
+    switch (type) {
+        case "agency":
+            table = agencies;
+            break;
+        case "calendar":
+            table = calendar;
+            break;
+        case "calendarDates":
+            table = calendar_dates;
+            break;
+        case "feedInfo":
+            table = feed_info;
+            break;
+        case "routes":
+            table = routes;
+            break;
+        case "shapes":
+            table = shapes;
+            break;
+        case "stopTimes":
+            table = stop_times;
+            break;
+        case "stops":
+            table = stops;
+            break;
+        case "trips":
+            table = trips;
+            break;
+    }
+
+    return await db.select().from(table);
+};
 
 export const getRelatedStopIdsByStopId = async (
     stopId: string
