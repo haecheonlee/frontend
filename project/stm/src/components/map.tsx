@@ -17,6 +17,7 @@ import { Stops } from "@/types/gtfs";
 import { dbClient } from "@/api/clients";
 import { useStop } from "@/context/stop-context";
 import { useVehicle } from "@/context/vehicle-context";
+import { defaultIcon, redIcon } from "@/lib/utils";
 
 export default function Map() {
     return (
@@ -110,6 +111,11 @@ function Markers() {
                 <Marker
                     key={stop.stop_id}
                     position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
+                    icon={
+                        stop.stop_id === value.stop?.stop_id
+                            ? redIcon
+                            : defaultIcon
+                    }
                     eventHandlers={
                         isClickInProgress
                             ? undefined
