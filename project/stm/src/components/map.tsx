@@ -70,6 +70,48 @@ function Markers() {
         };
     }, [map, stops, value]);
 
+    useEffect(() => {
+        if (!value.stop) {
+            return;
+        }
+
+        let active = true;
+
+        async function fetchRelatedStops() {
+            const fetchedRelatedStops = await dbClient<
+                Readonly<{
+                    stopIds: ReadonlyArray<string>;
+                    tripId: string;
+                }>
+            >("stops", { stopId: value.stop!.stop_id });
+
+            if (!active) {
+                return;
+            }
+
+            const stopIds: Record<string, boolean> =
+                fetchedRelatedStops.stopIds.reduce(
+                    (acc, value) => ({ ...acc, [value]: true }),
+                    {}
+                );
+            const relatedStops = stops.filter(
+                (p) => stopIds[p.stop_id] && value.stop?.stop_id !== p.stop_id
+            );
+            const routeId = trips.find(
+                (p) => p.trip_id === fetchedRelatedStops.tripId
+            )?.route_id;
+
+            setVisibleStops(relatedStops);
+            setRouteId(routeId);
+        }
+
+        fetchRelatedStops();
+
+        return () => {
+            active = true;
+        };
+    }, [setRouteId, stops, trips, value.stop]);
+
     const click = async (stopId: string) => {
         setIsClickInProgress(true);
 
@@ -80,26 +122,9 @@ function Markers() {
                 return;
             }
 
-            const fetchedStops = await dbClient<
-                Readonly<{
-                    stopIds: ReadonlyArray<string>;
-                    tripId: string;
-                }>
-            >("stops", { stopId: stop.stop_id });
-
-            const stopIds: Record<string, boolean> =
-                fetchedStops.stopIds.reduce(
-                    (acc, value) => ({ ...acc, [value]: true }),
-                    {}
-                );
-            const relatedStops = stops.filter((p) => stopIds[p.stop_id]);
-            const routeId = trips.find(
-                (p) => p.trip_id === fetchedStops.tripId
-            )?.route_id;
-
             setValue({ stop });
-            setVisibleStops(relatedStops);
-            setRouteId(routeId);
+            setVisibleStops([]);
+            setRouteId(undefined);
         } finally {
             setIsClickInProgress(false);
         }
@@ -107,15 +132,23 @@ function Markers() {
 
     return (
         <>
+            {value.stop && (
+                <Marker
+                    key={value.stop.stop_id}
+                    position={[
+                        Number(value.stop.stop_lat),
+                        Number(value.stop.stop_lon),
+                    ]}
+                    icon={redIcon}
+                >
+                    <Popup>{`${value.stop.stop_name} (${value.stop.stop_code})`}</Popup>
+                </Marker>
+            )}
             {visibleStops.map((stop) => (
                 <Marker
                     key={stop.stop_id}
                     position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
-                    icon={
-                        stop.stop_id === value.stop?.stop_id
-                            ? redIcon
-                            : defaultIcon
-                    }
+                    icon={defaultIcon}
                     eventHandlers={
                         isClickInProgress
                             ? undefined
