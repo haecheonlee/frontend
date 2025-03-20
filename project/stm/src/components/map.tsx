@@ -78,10 +78,10 @@ function Markers() {
         let active = true;
 
         async function fetchRelatedStops() {
-            const fetchedRelatedStops = await dbClient<
+            const { stops, routeId } = await dbClient<
                 Readonly<{
-                    stopIds: ReadonlyArray<string>;
-                    tripId: string;
+                    stops: ReadonlyArray<Stops>;
+                    routeId: string;
                 }>
             >("stops", { stopId: value.stop!.stop_id });
 
@@ -89,19 +89,7 @@ function Markers() {
                 return;
             }
 
-            const stopIds: Record<string, boolean> =
-                fetchedRelatedStops.stopIds.reduce(
-                    (acc, value) => ({ ...acc, [value]: true }),
-                    {}
-                );
-            const relatedStops = stops.filter(
-                (p) => stopIds[p.stop_id] && value.stop?.stop_id !== p.stop_id
-            );
-            const routeId = trips.find(
-                (p) => p.trip_id === fetchedRelatedStops.tripId
-            )?.route_id;
-
-            setVisibleStops(relatedStops);
+            setVisibleStops(stops);
             setRouteId(routeId);
         }
 

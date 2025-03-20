@@ -1,4 +1,4 @@
-import { getRelatedStopIdsByStopId } from "@/actions/gtfs-action";
+import { getStopsByStopId } from "@/actions/gtfs-action";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
@@ -19,8 +19,8 @@ export default async function handler(
     }
 
     try {
-        const stops = await getRelatedStopIdsByStopId(stopId);
-        res.status(200).json({ value: stops });
+        const response = await getStopsByStopId(stopId);
+        res.status(200).json({ value: response });
     } catch {
         res.status(500).json({ error: "Error to get related stop ids." });
     }
