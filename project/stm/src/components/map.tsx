@@ -51,12 +51,14 @@ function Markers() {
             const bounds = map.getBounds();
 
             setVisibleStops(
-                stops.filter((stop) =>
-                    bounds.contains([
-                        Number(stop.stop_lat),
-                        Number(stop.stop_lon),
-                    ])
-                )
+                stops
+                    .filter((stop) =>
+                        bounds.contains([
+                            Number(stop.stop_lat),
+                            Number(stop.stop_lon),
+                        ])
+                    )
+                    .slice(0, 1000)
             );
         };
 
