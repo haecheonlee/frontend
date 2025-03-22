@@ -12,7 +12,7 @@ import {
 } from "@/db/schema";
 import { GtfsType } from "@/types/api";
 import { Stops } from "@/types/gtfs";
-import { aliasedTable, and, eq, ne } from "drizzle-orm";
+import { aliasedTable, eq, inArray } from "drizzle-orm";
 
 export const getData = async (type: GtfsType) => {
     let table = null;
@@ -52,10 +52,15 @@ export const getData = async (type: GtfsType) => {
 
 export const getStopsByStopId = async (
     stopId: string
-): Promise<Readonly<{ stops: ReadonlyArray<Stops>; routeId: string }>> => {
+): Promise<
+    Readonly<{
+        stops: ReadonlyArray<Stops>;
+        routeIdsDictionary: Record<string, ReadonlyArray<string>>;
+    }>
+> => {
     const related_stop_times = aliasedTable(stop_times, "related_stop_times");
 
-    const relatedStops = await db
+    const relatedStops: ReadonlyArray<Stops> = await db
         .selectDistinct({
             stop_id: stops.stop_id,
             stop_code: stops.stop_code,
@@ -74,17 +79,39 @@ export const getStopsByStopId = async (
         )
         .innerJoin(trips, eq(trips.trip_id, related_stop_times.trip_id))
         .innerJoin(stops, eq(stops.stop_id, related_stop_times.stop_id))
-        .where(and(eq(stop_times.stop_id, stopId), ne(stops.stop_id, stopId)));
+        .where(eq(stop_times.stop_id, stopId));
 
-    const [{ route_id }] = await db
-        .select({ route_id: trips.route_id })
-        .from(stop_times)
-        .innerJoin(trips, eq(trips.trip_id, stop_times.trip_id))
-        .where(eq(stop_times.stop_id, stopId))
-        .limit(1);
+    const relatedRoutes = await db
+        .selectDistinct({
+            route_id: routes.route_id,
+            stop_id: stop_times.stop_id,
+        })
+        .from(routes)
+        .innerJoin(trips, eq(trips.route_id, routes.route_id))
+        .innerJoin(stop_times, eq(stop_times.trip_id, trips.trip_id))
+        .where(
+            inArray(
+                stop_times.stop_id,
+                relatedStops.map((p) => p.stop_id)
+            )
+        );
+
+    const routeIdsDictionary = relatedRoutes.reduce<Record<string, string[]>>(
+        (acc, value) => {
+            const { route_id, stop_id } = value;
+
+            if (!acc[stop_id]) {
+                acc[stop_id] = [];
+            }
+
+            acc[stop_id].push(route_id);
+            return acc;
+        },
+        {}
+    );
 
     return {
         stops: relatedStops,
-        routeId: route_id,
+        routeIdsDictionary: routeIdsDictionary,
     };
 };

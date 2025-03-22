@@ -41,7 +41,7 @@ function Markers() {
     const map = useMap();
     const { stops, trips } = useGtfs();
     const { value, setValue } = useStop();
-    const { setRouteId } = useVehicle();
+    const { setRouteIds } = useVehicle();
 
     const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
@@ -73,26 +73,27 @@ function Markers() {
     }, [map, stops, value]);
 
     useEffect(() => {
-        if (!value.stop) {
-            return;
-        }
-
         let active = true;
 
         async function fetchRelatedStops() {
-            const { stops, routeId } = await dbClient<
+            const stop_id = value.stop?.stop_id;
+            if (!stop_id) {
+                return;
+            }
+
+            const { stops, routeIdsDictionary } = await dbClient<
                 Readonly<{
                     stops: ReadonlyArray<Stops>;
-                    routeId: string;
+                    routeIdsDictionary: Record<string, ReadonlyArray<string>>;
                 }>
-            >("stops", { stopId: value.stop!.stop_id });
+            >("stops", { stopId: stop_id });
 
             if (!active) {
                 return;
             }
 
             setVisibleStops(stops);
-            setRouteId(routeId);
+            setRouteIds(routeIdsDictionary[stop_id]);
         }
 
         fetchRelatedStops();
@@ -100,7 +101,7 @@ function Markers() {
         return () => {
             active = true;
         };
-    }, [setRouteId, stops, trips, value.stop]);
+    }, [setRouteIds, stops, trips, value.stop]);
 
     const click = async (stopId: string) => {
         setIsClickInProgress(true);
@@ -114,7 +115,7 @@ function Markers() {
 
             setValue({ stop });
             setVisibleStops([]);
-            setRouteId(undefined);
+            setRouteIds([]);
         } finally {
             setIsClickInProgress(false);
         }
@@ -134,37 +135,48 @@ function Markers() {
                     <Popup>{`${value.stop.stop_name} (${value.stop.stop_code})`}</Popup>
                 </Marker>
             )}
-            {visibleStops.map((stop) => (
-                <Marker
-                    key={stop.stop_id}
-                    position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
-                    icon={defaultIcon}
-                    eventHandlers={
-                        isClickInProgress
-                            ? undefined
-                            : {
-                                  click: () => click(stop.stop_id),
-                              }
-                    }
-                >
-                    <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
-                </Marker>
-            ))}
+            {visibleStops.map((stop) => {
+                if (stop.stop_id === value.stop?.stop_id) {
+                    return null;
+                }
+
+                return (
+                    <Marker
+                        key={stop.stop_id}
+                        position={[
+                            Number(stop.stop_lat),
+                            Number(stop.stop_lon),
+                        ]}
+                        icon={defaultIcon}
+                        eventHandlers={
+                            isClickInProgress
+                                ? undefined
+                                : {
+                                      click: () => click(stop.stop_id),
+                                  }
+                        }
+                    >
+                        <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
+                    </Marker>
+                );
+            })}
         </>
     );
 }
 
 function VehicleMarkers() {
     const { value } = useStop();
-    const { vehicles, routeId } = useVehicle();
+    const { vehicles, routeIds } = useVehicle();
 
     const vehiclesByRouteId = useMemo(() => {
-        if (!routeId) {
+        if (!routeIds.length) {
             return [];
         }
 
-        return vehicles.filter((p) => p.trip?.routeId === routeId);
-    }, [vehicles, routeId]);
+        return vehicles.filter(
+            (p) => p.trip?.routeId && routeIds.includes(p.trip.routeId)
+        );
+    }, [vehicles, routeIds]);
 
     if (!value.stop || !vehicles.length) {
         return null;
