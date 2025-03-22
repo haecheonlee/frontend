@@ -3,7 +3,7 @@
  * https://gtfs.org/documentation/schedule/reference/#agencytxt
  */
 export interface Agency {
-    agency_id?: string;
+    agency_id: string;
     agency_name: string;
     agency_url: string;
     agency_timezone: string;
@@ -19,13 +19,13 @@ export interface Agency {
  */
 export interface Calendar {
     service_id: string;
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
+    monday: number;
+    tuesday: number;
+    wednesday: number;
+    thursday: number;
+    friday: number;
+    saturday: number;
+    sunday: number;
     start_date: string;
     end_date: string;
 }
@@ -37,7 +37,7 @@ export interface Calendar {
 export interface CalendarDates {
     service_id: string;
     date: string;
-    exception_type: string;
+    exception_type: number;
 }
 
 /**
@@ -61,7 +61,7 @@ export interface Routes {
     agency_id?: string;
     route_short_name?: string;
     route_long_name?: string;
-    route_type: string;
+    route_type: number;
     route_url?: string;
     route_color?: string;
     route_text_color?: string;
@@ -73,9 +73,9 @@ export interface Routes {
  */
 export interface Shapes {
     shape_id: string;
-    shape_pt_lat: string;
-    shape_pt_lon: string;
-    shape_pt_sequence: string;
+    shape_pt_lat: number;
+    shape_pt_lon: number;
+    shape_pt_sequence: number;
 }
 
 /**
@@ -86,12 +86,12 @@ export interface Stops {
     stop_id: string;
     stop_code?: string;
     stop_name?: string;
-    stop_lat?: string;
-    stop_lon?: string;
+    stop_lat?: number;
+    stop_lon?: number;
     stop_url?: string;
-    location_type: string;
-    parent_station: string;
-    wheelchair_boarding: string;
+    location_type?: number;
+    parent_station?: string;
+    wheelchair_boarding?: number;
 }
 
 /**
@@ -100,10 +100,10 @@ export interface Stops {
  */
 export interface StopTimes {
     trip_id: string;
+    stop_id: string;
     arrival_time?: string;
     departure_time?: string;
-    stop_id?: string;
-    stop_sequence: string;
+    stop_sequence: number;
 }
 
 /**
@@ -111,13 +111,13 @@ export interface StopTimes {
  * https://gtfs.org/documentation/schedule/reference/#tripstxt
  */
 export interface Trips {
+    trip_id: string;
     route_id: string;
     service_id: string;
-    trip_id: string;
     trip_headsign?: string;
-    direction_id?: string;
+    direction_id?: number;
     shape_id?: string;
-    wheelchair_accessible?: string;
+    wheelchair_accessible?: number;
     note_fr?: string;
     note_en?: string;
 }

@@ -40,12 +40,12 @@ const seeds: Array<
         tableType: schema.stops,
     },
     {
-        fileName: "stopTimes",
-        tableType: schema.stop_times,
-    },
-    {
         fileName: "trips",
         tableType: schema.trips,
+    },
+    {
+        fileName: "stopTimes",
+        tableType: schema.stop_times,
     },
 ] as const;
 
