@@ -7,10 +7,10 @@ export interface Agency {
     agency_name: string;
     agency_url: string;
     agency_timezone: string;
-    agency_lang?: string;
-    agency_phone?: string;
-    agency_fare_url?: string;
-    agency_email?: string;
+    agency_lang: string | null;
+    agency_phone: string | null;
+    agency_fare_url: string | null;
+    agency_email: string | null;
 }
 
 /**
@@ -48,8 +48,8 @@ export interface FeedInfo {
     feed_publisher_name: string;
     feed_publisher_url: string;
     feed_lang: string;
-    feed_start_date?: string;
-    feed_end_date?: string;
+    feed_start_date: string | null;
+    feed_end_date: string | null;
 }
 
 /**
@@ -58,13 +58,13 @@ export interface FeedInfo {
  */
 export interface Routes {
     route_id: string;
-    agency_id?: string;
-    route_short_name?: string;
-    route_long_name?: string;
+    agency_id: string | null;
+    route_short_name: string | null;
+    route_long_name: string | null;
     route_type: number;
-    route_url?: string;
-    route_color?: string;
-    route_text_color?: string;
+    route_url: string | null;
+    route_color: string | null;
+    route_text_color: string | null;
 }
 
 /**
@@ -84,14 +84,14 @@ export interface Shapes {
  */
 export interface Stops {
     stop_id: string;
-    stop_code?: string;
-    stop_name?: string;
-    stop_lat?: number;
-    stop_lon?: number;
-    stop_url?: string;
-    location_type?: number;
-    parent_station?: string;
-    wheelchair_boarding?: number;
+    stop_code: string;
+    stop_name: string | null;
+    stop_lat: number | null;
+    stop_lon: number | null;
+    stop_url: string | null;
+    location_type: number | null;
+    parent_station: string | null;
+    wheelchair_boarding: number | null;
 }
 
 /**
@@ -101,8 +101,8 @@ export interface Stops {
 export interface StopTimes {
     trip_id: string;
     stop_id: string;
-    arrival_time?: string;
-    departure_time?: string;
+    arrival_time: string | null;
+    departure_time: string | null;
     stop_sequence: number;
 }
 
@@ -114,10 +114,10 @@ export interface Trips {
     trip_id: string;
     route_id: string;
     service_id: string;
-    trip_headsign?: string;
-    direction_id?: number;
-    shape_id?: string;
-    wheelchair_accessible?: number;
-    note_fr?: string;
-    note_en?: string;
+    trip_headsign: string | null;
+    direction_id: number | null;
+    shape_id: string | null;
+    wheelchair_accessible: number | null;
+    note_fr: string | null;
+    note_en: string | null;
 }

@@ -60,7 +60,7 @@ export const shapes = sqliteTable("shapes", {
 
 export const stops = sqliteTable("stops", {
     stop_id: text("stop_id").primaryKey().notNull(),
-    stop_code: text("stop_code"),
+    stop_code: text("stop_code").notNull(),
     stop_name: text("stop_name"),
     stop_lat: real("stop_lat"),
     stop_lon: real("stop_lon"),
