@@ -22,7 +22,7 @@ export default function StopMenu() {
     };
 
     return (
-        <div className="h-full overflow-auto">
+        <div className="overflow-auto mb-[5px]">
             <Card>
                 <CardHeader>
                     <CardTitle className="flex justify-between items-center">

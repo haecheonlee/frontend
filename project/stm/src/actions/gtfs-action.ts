@@ -11,7 +11,7 @@ import {
     trips,
 } from "@/db/schema";
 import { GtfsType } from "@/types/api";
-import { Stops } from "@/types/gtfs";
+import { Routes, Stops } from "@/types/gtfs";
 import { aliasedTable, eq, inArray } from "drizzle-orm";
 
 export const getData = async (type: GtfsType) => {
@@ -55,7 +55,8 @@ export const getStopsByStopId = async (
 ): Promise<
     Readonly<{
         stops: ReadonlyArray<Stops>;
-        routeIdsDictionary: Record<string, ReadonlyArray<string>>;
+        routes: ReadonlyArray<Routes>;
+        routesDictionary: Record<string, ReadonlyArray<string>>;
     }>
 > => {
     const related_stop_times = aliasedTable(stop_times, "related_stop_times");
@@ -81,7 +82,7 @@ export const getStopsByStopId = async (
         .innerJoin(stops, eq(stops.stop_id, related_stop_times.stop_id))
         .where(eq(stop_times.stop_id, stopId));
 
-    const relatedRoutes = await db
+    const relationalRoutesByStops = await db
         .selectDistinct({
             route_id: routes.route_id,
             stop_id: stop_times.stop_id,
@@ -96,22 +97,32 @@ export const getStopsByStopId = async (
             )
         );
 
-    const routeIdsDictionary = relatedRoutes.reduce<Record<string, string[]>>(
-        (acc, value) => {
-            const { route_id, stop_id } = value;
+    const currentStopsRouteId = relationalRoutesByStops.find(
+        (p) => p.stop_id === stopId
+    )?.route_id;
+    const currentStopsRoutes = !currentStopsRouteId
+        ? []
+        : await db
+              .select()
+              .from(routes)
+              .where(eq(routes.route_id, currentStopsRouteId));
 
-            if (!acc[stop_id]) {
-                acc[stop_id] = [];
-            }
+    const routesDictionary = relationalRoutesByStops.reduce<
+        Record<string, string[]>
+    >((acc, value) => {
+        const { route_id, stop_id } = value;
 
-            acc[stop_id].push(route_id);
-            return acc;
-        },
-        {}
-    );
+        if (!acc[stop_id]) {
+            acc[stop_id] = [];
+        }
+
+        acc[stop_id].push(route_id);
+        return acc;
+    }, {});
 
     return {
         stops: relatedStops,
-        routeIdsDictionary: routeIdsDictionary,
+        routesDictionary: routesDictionary,
+        routes: currentStopsRoutes,
     };
 };

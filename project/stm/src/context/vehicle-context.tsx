@@ -14,8 +14,6 @@ import React, {
 type VehicleContextValue = {
     vehicles: ReadonlyArray<VehiclePosition>;
     setVehicles: Dispatch<SetStateAction<VehicleContextValue["vehicles"]>>;
-    routeIds: ReadonlyArray<string>;
-    setRouteIds: Dispatch<SetStateAction<VehicleContextValue["routeIds"]>>;
 };
 
 const VehicleContext = createContext<VehicleContextValue | undefined>(
@@ -26,9 +24,6 @@ export function VehicleProvider({
     children,
 }: React.PropsWithChildren<unknown>) {
     const [vehicles, setVehicles] = useState<VehicleContextValue["vehicles"]>(
-        []
-    );
-    const [routeIds, setRouteIds] = useState<VehicleContextValue["routeIds"]>(
         []
     );
 
@@ -51,8 +46,6 @@ export function VehicleProvider({
             value={{
                 vehicles,
                 setVehicles,
-                routeIds,
-                setRouteIds,
             }}
         >
             {children}

@@ -12,10 +12,19 @@ const DynamicallyLoadedStopMenu = dynamic(() => import("./stop-menu"), {
     ssr: false,
 });
 
+const DynamicallyLoadedRoutesList = dynamic(() => import("./routes-list"), {
+    loading: () => null,
+    ssr: false,
+});
+
 export function DynamicMap() {
     return <DynamicallyLoadedMap />;
 }
 
 export function DynamicStopMenu() {
     return <DynamicallyLoadedStopMenu />;
+}
+
+export function DynamicRoutesList() {
+    return <DynamicallyLoadedRoutesList />;
 }

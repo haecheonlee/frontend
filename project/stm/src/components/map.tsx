@@ -13,11 +13,12 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
-import { Stops } from "@/types/gtfs";
+import { Routes, Stops } from "@/types/gtfs";
 import { dbClient } from "@/api/clients";
 import { useStop } from "@/context/stop-context";
 import { useVehicle } from "@/context/vehicle-context";
 import { defaultIcon, redIcon } from "@/lib/utils";
+import { useRoutes } from "@/context/routes-context";
 
 export default function Map() {
     return (
@@ -41,7 +42,8 @@ function Markers() {
     const map = useMap();
     const { stops, trips } = useGtfs();
     const { value, setValue } = useStop();
-    const { setRouteIds } = useVehicle();
+    const { selectedRoutes, routesDictionary, setRoutes, setRoutesDictionary } =
+        useRoutes();
 
     const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
@@ -81,10 +83,11 @@ function Markers() {
                 return;
             }
 
-            const { stops, routeIdsDictionary } = await dbClient<
+            const { stops, routes, routesDictionary } = await dbClient<
                 Readonly<{
                     stops: ReadonlyArray<Stops>;
-                    routeIdsDictionary: Record<string, ReadonlyArray<string>>;
+                    routes: ReadonlyArray<Routes>;
+                    routesDictionary: Record<string, ReadonlyArray<string>>;
                 }>
             >("stops", { stopId: stop_id });
 
@@ -93,7 +96,8 @@ function Markers() {
             }
 
             setVisibleStops(stops);
-            setRouteIds(routeIdsDictionary[stop_id]);
+            setRoutes(routes);
+            setRoutesDictionary(routesDictionary);
         }
 
         fetchRelatedStops();
@@ -101,7 +105,7 @@ function Markers() {
         return () => {
             active = true;
         };
-    }, [setRouteIds, stops, trips, value.stop]);
+    }, [setRoutesDictionary, setRoutes, stops, trips, value.stop]);
 
     const click = async (stopId: string) => {
         setIsClickInProgress(true);
@@ -115,7 +119,8 @@ function Markers() {
 
             setValue({ stop });
             setVisibleStops([]);
-            setRouteIds([]);
+            setRoutesDictionary({});
+            setRoutes([]);
         } finally {
             setIsClickInProgress(false);
         }
@@ -135,48 +140,57 @@ function Markers() {
                     <Popup>{`${value.stop.stop_name} (${value.stop.stop_code})`}</Popup>
                 </Marker>
             )}
-            {visibleStops.map((stop) => {
-                if (stop.stop_id === value.stop?.stop_id) {
-                    return null;
-                }
+            {visibleStops
+                .filter(
+                    (p) =>
+                        !selectedRoutes ||
+                        routesDictionary[p.stop_id].some(
+                            (routeId) => selectedRoutes.route_id === routeId
+                        )
+                )
+                .map((stop) => {
+                    if (stop.stop_id === value.stop?.stop_id) {
+                        return null;
+                    }
 
-                return (
-                    <Marker
-                        key={stop.stop_id}
-                        position={[
-                            Number(stop.stop_lat),
-                            Number(stop.stop_lon),
-                        ]}
-                        icon={defaultIcon}
-                        eventHandlers={
-                            isClickInProgress
-                                ? undefined
-                                : {
-                                      click: () => click(stop.stop_id),
-                                  }
-                        }
-                    >
-                        <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
-                    </Marker>
-                );
-            })}
+                    return (
+                        <Marker
+                            key={stop.stop_id}
+                            position={[
+                                Number(stop.stop_lat),
+                                Number(stop.stop_lon),
+                            ]}
+                            icon={defaultIcon}
+                            eventHandlers={
+                                isClickInProgress
+                                    ? undefined
+                                    : {
+                                          click: () => click(stop.stop_id),
+                                      }
+                            }
+                        >
+                            <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
+                        </Marker>
+                    );
+                })}
         </>
     );
 }
 
 function VehicleMarkers() {
     const { value } = useStop();
-    const { vehicles, routeIds } = useVehicle();
+    const { vehicles } = useVehicle();
+    const { selectedRoutes } = useRoutes();
 
     const vehiclesByRouteId = useMemo(() => {
-        if (!routeIds.length) {
+        if (!selectedRoutes) {
             return [];
         }
 
         return vehicles.filter(
-            (p) => p.trip?.routeId && routeIds.includes(p.trip.routeId)
+            (p) => p.trip?.routeId === selectedRoutes.route_id
         );
-    }, [vehicles, routeIds]);
+    }, [vehicles, selectedRoutes]);
 
     if (!value.stop || !vehicles.length) {
         return null;
