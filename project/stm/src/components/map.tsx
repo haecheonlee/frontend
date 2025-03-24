@@ -42,8 +42,13 @@ function Markers() {
     const map = useMap();
     const { stops, trips } = useGtfs();
     const { value, setValue } = useStop();
-    const { selectedRoutes, routesDictionary, setRoutes, setRoutesDictionary } =
-        useRoutes();
+    const {
+        selectedRoutes,
+        routesDictionary,
+        setRoutes,
+        setRoutesDictionary,
+        setSelectedRoutes,
+    } = useRoutes();
 
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
 
@@ -117,6 +122,7 @@ function Markers() {
         setVisibleStops([]);
         setRoutesDictionary({});
         setRoutes([]);
+        setSelectedRoutes(null);
     };
 
     return (

@@ -3,9 +3,11 @@
 import { useStop } from "@/context/stop-context";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import { useRoutes } from "@/context/routes-context";
 
 export default function StopMenu() {
     const { value, setValue } = useStop();
+    const { setRoutes, setRoutesDictionary, setSelectedRoutes } = useRoutes();
 
     if (!value.stop) {
         return (
@@ -19,6 +21,9 @@ export default function StopMenu() {
 
     const reset = () => {
         setValue({ stop: null });
+        setRoutes([]);
+        setRoutesDictionary({});
+        setSelectedRoutes(null);
     };
 
     return (
