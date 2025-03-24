@@ -3,9 +3,16 @@ import { Card, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { useRoutes } from "@/context/routes-context";
 import { Routes } from "@/types/gtfs";
 import clsx from "clsx";
+import { useMemo } from "react";
 
 export default function RoutesList() {
     const { routes, selectedRoutes, setSelectedRoutes } = useRoutes();
+
+    const sortedRoutes = useMemo(() => {
+        return routes.toSorted(
+            (a, b) => Number(a.route_id) - Number(b.route_id)
+        );
+    }, [routes]);
 
     if (!routes.length) {
         return null;
@@ -21,7 +28,7 @@ export default function RoutesList() {
 
     return (
         <ScrollArea className="overflow-auto">
-            {routes.map((p) => (
+            {sortedRoutes.map((p) => (
                 <div key={p.route_id}>
                     <Card
                         className={clsx("mb-[5px] cursor-pointer", {
