@@ -103,7 +103,7 @@ function Markers() {
         fetchRelatedStops();
 
         return () => {
-            active = true;
+            active = false;
         };
     }, [setRoutesDictionary, setRoutes, stops, trips, value.stop]);
 
