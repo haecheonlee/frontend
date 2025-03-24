@@ -115,7 +115,7 @@ export interface Trips {
     route_id: string;
     service_id: string;
     trip_headsign: string | null;
-    direction_id: number | null;
+    direction_id: number;
     shape_id: string | null;
     wheelchair_accessible: number | null;
     note_fr: string | null;

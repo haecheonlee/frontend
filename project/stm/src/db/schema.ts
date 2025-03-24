@@ -91,7 +91,7 @@ export const trips = sqliteTable("trips", {
         .notNull()
         .references(() => calendar.service_id),
     trip_headsign: text("trip_headsign"),
-    direction_id: integer("direction_id"),
+    direction_id: integer("direction_id").notNull(),
     shape_id: text("shape_id"),
     wheelchair_accessible: integer("wheelchair_accessible"),
     note_fr: text("note_fr"),
