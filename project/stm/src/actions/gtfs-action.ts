@@ -12,7 +12,7 @@ import {
 } from "@/db/schema";
 import { GtfsType } from "@/types/api";
 import { Routes, Stops } from "@/types/gtfs";
-import { aliasedTable, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export const getData = async (type: GtfsType) => {
     let table = null;
@@ -59,8 +59,23 @@ export const getStopsByStopId = async (
         routesDictionary: Record<string, ReadonlyArray<string>>;
     }>
 > => {
-    const related_stop_times = aliasedTable(stop_times, "related_stop_times");
+    const currentStopsRoutes = await db
+        .selectDistinct({
+            route_id: routes.route_id,
+            agency_id: routes.agency_id,
+            route_short_name: routes.route_short_name,
+            route_long_name: routes.route_long_name,
+            route_type: routes.route_type,
+            route_url: routes.route_url,
+            route_color: routes.route_color,
+            route_text_color: routes.route_text_color,
+        })
+        .from(routes)
+        .innerJoin(trips, eq(trips.route_id, routes.route_id))
+        .innerJoin(stop_times, eq(stop_times.trip_id, trips.trip_id))
+        .where(eq(stop_times.stop_id, stopId));
 
+    const routeIds = currentStopsRoutes.map((route) => route.route_id);
     const relatedStops: ReadonlyArray<Stops> = await db
         .selectDistinct({
             stop_id: stops.stop_id,
@@ -74,14 +89,12 @@ export const getStopsByStopId = async (
             wheelchair_boarding: stops.wheelchair_boarding,
         })
         .from(stop_times)
-        .innerJoin(
-            related_stop_times,
-            eq(related_stop_times.trip_id, stop_times.trip_id)
-        )
-        .innerJoin(trips, eq(trips.trip_id, related_stop_times.trip_id))
-        .innerJoin(stops, eq(stops.stop_id, related_stop_times.stop_id))
-        .where(eq(stop_times.stop_id, stopId));
+        .innerJoin(stops, eq(stops.stop_id, stop_times.stop_id))
+        .innerJoin(trips, eq(trips.trip_id, stop_times.trip_id))
+        .innerJoin(routes, eq(routes.route_id, trips.route_id))
+        .where(inArray(routes.route_id, routeIds));
 
+    const stopIds = relatedStops.map((stop) => stop.stop_id);
     const relationalRoutesByStops = await db
         .selectDistinct({
             route_id: routes.route_id,
@@ -90,22 +103,7 @@ export const getStopsByStopId = async (
         .from(routes)
         .innerJoin(trips, eq(trips.route_id, routes.route_id))
         .innerJoin(stop_times, eq(stop_times.trip_id, trips.trip_id))
-        .where(
-            inArray(
-                stop_times.stop_id,
-                relatedStops.map((p) => p.stop_id)
-            )
-        );
-
-    const currentStopsRouteId = relationalRoutesByStops.find(
-        (p) => p.stop_id === stopId
-    )?.route_id;
-    const currentStopsRoutes = !currentStopsRouteId
-        ? []
-        : await db
-              .select()
-              .from(routes)
-              .where(eq(routes.route_id, currentStopsRouteId));
+        .where(inArray(stop_times.stop_id, stopIds));
 
     const routesDictionary = relationalRoutesByStops.reduce<
         Record<string, string[]>
@@ -122,7 +120,7 @@ export const getStopsByStopId = async (
 
     return {
         stops: relatedStops,
-        routesDictionary: routesDictionary,
         routes: currentStopsRoutes,
+        routesDictionary,
     };
 };
