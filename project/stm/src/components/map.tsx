@@ -45,7 +45,6 @@ function Markers() {
     const { selectedRoutes, routesDictionary, setRoutes, setRoutesDictionary } =
         useRoutes();
 
-    const [isClickInProgress, setIsClickInProgress] = useState(false);
     const [visibleStops, setVisibleStops] = useState<ReadonlyArray<Stops>>([]);
 
     useEffect(() => {
@@ -107,23 +106,17 @@ function Markers() {
         };
     }, [setRoutesDictionary, setRoutes, stops, trips, value.stop]);
 
-    const click = async (stopId: string) => {
-        setIsClickInProgress(true);
+    const click = (stopId: string) => {
+        const stop = stops.find((p) => p.stop_id === stopId);
 
-        try {
-            const stop = stops.find((p) => p.stop_id === stopId);
-
-            if (!stop) {
-                return;
-            }
-
-            setValue({ stop });
-            setVisibleStops([]);
-            setRoutesDictionary({});
-            setRoutes([]);
-        } finally {
-            setIsClickInProgress(false);
+        if (!stop) {
+            return;
         }
+
+        setValue({ stop });
+        setVisibleStops([]);
+        setRoutesDictionary({});
+        setRoutes([]);
     };
 
     return (
@@ -144,7 +137,7 @@ function Markers() {
                 .filter(
                     (p) =>
                         !selectedRoutes ||
-                        routesDictionary[p.stop_id].some(
+                        routesDictionary[p.stop_id]?.some(
                             (routeId) => selectedRoutes.route_id === routeId
                         )
                 )
@@ -161,13 +154,9 @@ function Markers() {
                                 Number(stop.stop_lon),
                             ]}
                             icon={defaultIcon}
-                            eventHandlers={
-                                isClickInProgress
-                                    ? undefined
-                                    : {
-                                          click: () => click(stop.stop_id),
-                                      }
-                            }
+                            eventHandlers={{
+                                click: () => click(stop.stop_id),
+                            }}
                         >
                             <Popup>{`${stop.stop_name} (${stop.stop_code})`}</Popup>
                         </Marker>
