@@ -40,7 +40,7 @@ export default function Map() {
 
 function Markers() {
     const map = useMap();
-    const { stops, trips } = useGtfs();
+    const { stops } = useGtfs();
     const { value, setValue } = useStop();
     const {
         selectedRoutes,
@@ -109,7 +109,7 @@ function Markers() {
         return () => {
             active = false;
         };
-    }, [setRoutesDictionary, setRoutes, stops, trips, value.stop]);
+    }, [setRoutesDictionary, setRoutes, stops, value.stop]);
 
     const click = (stopId: string) => {
         const stop = stops.find((p) => p.stop_id === stopId);

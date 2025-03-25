@@ -12,7 +12,7 @@ export default async function handler(
     _: NextApiRequest,
     res: NextApiResponse
 ): Promise<void> {
-    const types: ReadonlyArray<GtfsType> = ["stops", "trips"];
+    const types: ReadonlyArray<GtfsType> = ["stops"];
     const promises = types.map((p) => getData(p));
     const result = await Promise.all(promises);
 
