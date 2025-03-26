@@ -1,6 +1,6 @@
 "use client";
 
-import { Routes } from "@/types/gtfs";
+import { RoutesDirectionType, RoutesWithDirectionId } from "@/types/gtfs";
 import {
     createContext,
     Dispatch,
@@ -10,13 +10,13 @@ import {
 } from "react";
 
 type RoutesContextValue = {
-    routes: ReadonlyArray<Routes>;
+    routes: ReadonlyArray<RoutesWithDirectionId>;
     setRoutes: Dispatch<SetStateAction<RoutesContextValue["routes"]>>;
-    routesDictionary: Record<string, ReadonlyArray<string>>;
+    routesDictionary: Record<string, ReadonlyArray<RoutesDirectionType>>;
     setRoutesDictionary: Dispatch<
         SetStateAction<RoutesContextValue["routesDictionary"]>
     >;
-    selectedRoutes: Readonly<Routes> | null;
+    selectedRoutes: Readonly<RoutesWithDirectionId> | null;
     setSelectedRoutes: Dispatch<
         SetStateAction<RoutesContextValue["selectedRoutes"]>
     >;

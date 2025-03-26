@@ -13,7 +13,11 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import { useGtfs } from "@/context/gtfs-context";
-import { Routes, Stops } from "@/types/gtfs";
+import {
+    RoutesDirectionType,
+    RoutesWithDirectionId,
+    Stops,
+} from "@/types/gtfs";
 import { dbClient } from "@/api/clients";
 import { useStop } from "@/context/stop-context";
 import { useVehicle } from "@/context/vehicle-context";
@@ -90,8 +94,11 @@ function Markers() {
             const { stops, routes, routesDictionary } = await dbClient<
                 Readonly<{
                     stops: ReadonlyArray<Stops>;
-                    routes: ReadonlyArray<Routes>;
-                    routesDictionary: Record<string, ReadonlyArray<string>>;
+                    routes: ReadonlyArray<RoutesWithDirectionId>;
+                    routesDictionary: Record<
+                        string,
+                        ReadonlyArray<RoutesDirectionType>
+                    >;
                 }>
             >("stops", { stopId: stop_id });
 
@@ -144,7 +151,9 @@ function Markers() {
                     (p) =>
                         !selectedRoutes ||
                         routesDictionary[p.stop_id]?.some(
-                            (routeId) => selectedRoutes.route_id === routeId
+                            ({ route_id, direction_id }) =>
+                                selectedRoutes.route_id === route_id &&
+                                selectedRoutes.direction_id === direction_id
                         )
                 )
                 .map((stop) => {

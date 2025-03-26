@@ -121,3 +121,13 @@ export interface Trips {
     note_fr: string | null;
     note_en: string | null;
 }
+
+// Defines custom types for GTFS
+export type RoutesWithDirectionId = Routes & {
+    direction_id: Trips["direction_id"];
+};
+
+export type RoutesDirectionType = Readonly<{
+    route_id: Routes["route_id"];
+    direction_id: Trips["direction_id"];
+}>;

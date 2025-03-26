@@ -11,7 +11,7 @@ import {
     trips,
 } from "@/db/schema";
 import { GtfsType } from "@/types/api";
-import { Routes, Stops } from "@/types/gtfs";
+import { Routes, RoutesDirectionType, Stops } from "@/types/gtfs";
 import { and, eq, inArray, or } from "drizzle-orm";
 
 export const getData = async (type: GtfsType) => {
@@ -56,7 +56,7 @@ export const getStopsByStopId = async (
     Readonly<{
         stops: ReadonlyArray<Stops>;
         routes: ReadonlyArray<Routes>;
-        routesDictionary: Record<string, ReadonlyArray<string>>;
+        routesDictionary: Record<string, ReadonlyArray<RoutesDirectionType>>;
     }>
 > => {
     const currentStopsRoutes = !stopId
@@ -114,6 +114,7 @@ export const getStopsByStopId = async (
               .selectDistinct({
                   route_id: routes.route_id,
                   stop_id: stop_times.stop_id,
+                  direction_id: trips.direction_id,
               })
               .from(routes)
               .innerJoin(trips, eq(trips.route_id, routes.route_id))
@@ -121,15 +122,18 @@ export const getStopsByStopId = async (
               .where(inArray(stop_times.stop_id, stopIds));
 
     const routesDictionary = relationalRoutesByStops.reduce<
-        Record<string, string[]>
+        Record<string, Array<RoutesDirectionType>>
     >((acc, value) => {
-        const { route_id, stop_id } = value;
+        const { stop_id, route_id, direction_id } = value;
 
         if (!acc[stop_id]) {
             acc[stop_id] = [];
         }
 
-        acc[stop_id].push(route_id);
+        acc[stop_id].push({
+            route_id,
+            direction_id,
+        });
         return acc;
     }, {});
 

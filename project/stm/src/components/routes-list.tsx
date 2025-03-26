@@ -1,7 +1,7 @@
 import { ScrollArea } from "./ui/scroll-area";
 import { Card, CardHeader, CardTitle, CardDescription } from "./ui/card";
 import { useRoutes } from "@/context/routes-context";
-import { Routes } from "@/types/gtfs";
+import { RoutesWithDirectionId } from "@/types/gtfs";
 import clsx from "clsx";
 import { useMemo } from "react";
 
@@ -18,8 +18,15 @@ export default function RoutesList() {
         return null;
     }
 
-    const onClick = (route: Readonly<Routes>) => {
-        if (!selectedRoutes || selectedRoutes.route_id !== route.route_id) {
+    const areRoutesEqual = (
+        a: RoutesWithDirectionId,
+        b: RoutesWithDirectionId
+    ) => {
+        return a.route_id === b.route_id && a.direction_id === b.direction_id;
+    };
+
+    const onClick = (route: Readonly<RoutesWithDirectionId>) => {
+        if (!selectedRoutes || !areRoutesEqual(selectedRoutes, route)) {
             setSelectedRoutes(route);
         } else {
             setSelectedRoutes(null);
@@ -29,16 +36,19 @@ export default function RoutesList() {
     return (
         <ScrollArea className="overflow-auto">
             {sortedRoutes.map((p) => (
-                <div key={p.route_id}>
+                <div key={p.route_id + p.direction_id}>
                     <Card
                         className={clsx("mb-[5px] cursor-pointer", {
                             "bg-gray-200":
-                                selectedRoutes?.route_id === p.route_id,
+                                selectedRoutes &&
+                                areRoutesEqual(selectedRoutes, p),
                         })}
                         onClick={onClick.bind(null, p)}
                     >
                         <CardHeader>
-                            <CardTitle>{p.route_short_name}</CardTitle>
+                            <CardTitle>{`${p.route_short_name} - ${
+                                p.direction_id === 0 ? "Out" : "In"
+                            }`}</CardTitle>
                             <CardDescription>
                                 {p.route_long_name}
                             </CardDescription>
