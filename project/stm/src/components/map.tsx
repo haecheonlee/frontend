@@ -202,17 +202,23 @@ function VehicleMarkers() {
 
     return (
         <>
-            {vehiclesByRouteId.map((vehicle) => (
-                <Circle
-                    key={vehicle.vehicle!.id}
-                    center={[
-                        Number(vehicle.position!.latitude),
-                        Number(vehicle.position!.longitude),
-                    ]}
-                    radius={20}
-                    pathOptions={{ color: "red" }}
-                ></Circle>
-            ))}
+            {vehiclesByRouteId.map((vehicle) => {
+                if (!vehicle.vehicle || !vehicle.position) {
+                    return null;
+                }
+
+                return (
+                    <Circle
+                        key={vehicle.vehicle.id}
+                        center={[
+                            Number(vehicle.position.latitude),
+                            Number(vehicle.position.longitude),
+                        ]}
+                        radius={20}
+                        pathOptions={{ color: "red" }}
+                    ></Circle>
+                );
+            })}
         </>
     );
 }
