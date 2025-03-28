@@ -216,7 +216,11 @@ function VehicleMarkers() {
                         ]}
                         radius={20}
                         pathOptions={{ color: "red" }}
-                    ></Circle>
+                    >
+                        <Popup>{`Speed: ${Number(
+                            vehicle.position.speed
+                        ).toFixed(2)} ms`}</Popup>
+                    </Circle>
                 );
             })}
         </>
