@@ -71,8 +71,8 @@ async function seedData(
             return;
         }
 
-        const isExist = await db.select().from(seed.tableType).limit(1);
-        if (isExist) {
+        const [firstRow] = await db.select().from(seed.tableType).limit(1);
+        if (firstRow) {
             console.log("Database already seeded. Skipping: ", seed.fileName);
             return;
         }
