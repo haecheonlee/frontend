@@ -42,15 +42,6 @@ export default async function Home() {
                         </StopProvider>
                     </GtfsProvider>
                 </main>
-                <footer className="flex flex-wrap items-center justify-center">
-                    <a
-                        href="https://github.com/haecheonlee"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        github
-                    </a>
-                </footer>
             </div>
         </div>
     );
