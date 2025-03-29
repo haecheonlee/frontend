@@ -71,6 +71,12 @@ async function seedData(
             return;
         }
 
+        const isExist = await db.select().from(seed.tableType).limit(1);
+        if (isExist) {
+            console.log("Database already seeded. Skipping: ", seed.fileName);
+            return;
+        }
+
         const compressedData = fs.readFileSync(filePath);
         const data = zlib.brotliDecompressSync(compressedData).toString();
 
