@@ -29,7 +29,16 @@ A real-time bus tracking application that visualizes STM bus stops and live posi
     npm run db:migration
     ```
 
-4. Run the development server:
+4. Create .env file and set the environment variables
+
+    ```sh
+    # API Configuration
+    STM_API_URL=https://api.stm.info/pub/od/gtfs-rt/ic/v2
+    API_KEY=your_stm_api_key_here
+    DB_FILE_NAME=local.db
+    ```
+
+5. Run the development server:
 
     ```sh
     npm run dev
