@@ -2,11 +2,7 @@ import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 import * as fs from "fs";
 
-interface ComponentInfo {
-    file: string;
-    imports: string[];
-    renders: string[];
-}
+import type { ComponentInfo } from "./types";
 
 export function parseComponentFile(filePath: string): ComponentInfo {
     const code = fs.readFileSync(filePath, "utf-8");

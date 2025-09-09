@@ -1,7 +1,14 @@
 import { glob } from "fast-glob";
 import { parseComponentFile } from "./parser";
+import { generateHtml } from "./html-generator";
+import * as fs from "fs";
 
-export async function visualizeComponents(projectPath: string) {
+import type { CommandOptions } from "./types";
+
+export async function visualizeComponents(
+    projectPath: string,
+    options: CommandOptions
+) {
     const files = await glob(`${projectPath}/**/*.{tsx,jsx}`, {
         ignore: ["**/node_modules/**"],
     });
@@ -12,6 +19,13 @@ export async function visualizeComponents(projectPath: string) {
     }
 
     const componentData = files.map(parseComponentFile);
+
+    if (options.generateHtml) {
+        console.log(`Generating HTML file at ${options.output}...`);
+        const htmlContent = generateHtml(componentData);
+        fs.writeFileSync(options.output, htmlContent);
+        console.log(`HTML file is created at ${options.output}`);
+    }
 
     componentData.forEach((data) => {
         console.log(`\nFile: ${data.file}`);
