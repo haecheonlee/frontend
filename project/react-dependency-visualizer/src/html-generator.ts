@@ -27,6 +27,18 @@ export function generateHtml(componentData: ComponentInfo[]) {
     });
 
     const graphData = JSON.stringify({ nodes, links }, null, 2);
-    console.log(graphData);
-    return "<html><body>Hello World</body></html>";
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="device-width, initial-scale=1.0">
+    <title>React Dependency Visualizer</title>
+</head>
+<body>
+    Hello World!
+    <script src="assets/d3.v7.min.js" />
+</body>
+</html>
+    `.trim();
 }
