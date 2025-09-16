@@ -1,8 +1,23 @@
 import type { ComponentInfo } from "./types";
 
-export function generateHtml(componentData: ComponentInfo[]) {
-    const nodes: Array<{ id: string; main: boolean }> = [];
-    const links: Array<{ source: string; target: string }> = [];
+interface GraphNode {
+    id: string;
+    main: boolean;
+}
+
+interface GraphLink {
+    source: string;
+    target: string;
+}
+
+interface GraphData {
+    nodes: GraphNode[];
+    links: GraphLink[];
+}
+
+function processComponentData(componentData: ComponentInfo[]): GraphData {
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
     const nodeSet = new Set<string>();
 
     componentData.forEach((fileData) => {
@@ -26,16 +41,17 @@ export function generateHtml(componentData: ComponentInfo[]) {
             });
     });
 
-    const graphData = JSON.stringify({ nodes, links }, null, 2);
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
+    return { nodes, links };
+}
+
+function generateHtmlHead(): string {
+    return `    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React Dependency Visualizer</title>
-    <style>
-        body {
+    <title>React Dependency Visualizer</title>`;
+}
+
+function generateStyles(): string {
+    return `        body {
             font-family: sans-serif;
             padding: 0 2rem;
             margin: 0;
@@ -66,16 +82,18 @@ export function generateHtml(componentData: ComponentInfo[]) {
         #dependency-graph {
             width: 100%;
             height: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div class="graph-container">
+        }`;
+}
+
+function generateBody(): string {
+    return `    <div class="graph-container">
         <svg id="dependency-graph"></svg>
     </div>
-    <script src="assets/d3.v7.min.js" /></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script src="assets/d3.v7.min.js" /></script>`;
+}
+
+function generateVisualizationScript(graphData: string): string {
+    return `        document.addEventListener('DOMContentLoaded', () => {
             const svg = d3.select("#dependency-graph");
             const graphData = ${graphData};
 
@@ -114,7 +132,25 @@ export function generateHtml(componentData: ComponentInfo[]) {
                 });
             }
             drawGraph(graphData);
-        });
+        });`;
+}
+
+export function generateHtml(componentData: ComponentInfo[]): string {
+    const graphData = processComponentData(componentData);
+    const graphDataString = JSON.stringify(graphData, null, 2);
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+${generateHtmlHead()}
+    <style>
+${generateStyles()}
+    </style>
+</head>
+<body>
+${generateBody()}
+    <script>
+${generateVisualizationScript(graphDataString)}
     </script>
 </body>
 </html>`;
