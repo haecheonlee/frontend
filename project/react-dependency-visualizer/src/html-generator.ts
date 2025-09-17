@@ -44,14 +44,37 @@ function processComponentData(componentData: ComponentInfo[]): GraphData {
     return { nodes, links };
 }
 
-function generateHtmlHead(): string {
-    return `    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React Dependency Visualizer</title>`;
+const SELF_CLOSING_TAGS: string[] = [
+    "meta",
+    "link",
+    "br",
+    "hr",
+    "img",
+    "input",
+] as const;
+
+function tag(
+    name: string,
+    attributes: Record<string, string> = {},
+    ...children: string[]
+): string {
+    const attributesAsString = Object.entries(attributes)
+        .map(([key, value]) => ` ${key}="${value}"`)
+        .join("");
+
+    const childAsString = children.flat().join("");
+    const isSelfClosing = SELF_CLOSING_TAGS.includes(name);
+
+    if (isSelfClosing && !childAsString) {
+        return `<${name}${attributesAsString}>`;
+    }
+
+    return `<${name}${attributesAsString}>${childAsString}</${name}>`;
 }
 
 function generateStyles(): string {
-    return `        body {
+    return `
+        body {
             font-family: sans-serif;
             padding: 0 2rem;
             margin: 0;
@@ -85,15 +108,9 @@ function generateStyles(): string {
         }`;
 }
 
-function generateBody(): string {
-    return `    <div class="graph-container">
-        <svg id="dependency-graph"></svg>
-    </div>
-    <script src="assets/d3.v7.min.js" /></script>`;
-}
-
 function generateVisualizationScript(graphData: string): string {
-    return `        document.addEventListener('DOMContentLoaded', () => {
+    return `
+        document.addEventListener('DOMContentLoaded', () => {
             const svg = d3.select("#dependency-graph");
             const graphData = ${graphData};
 
@@ -132,26 +149,40 @@ function generateVisualizationScript(graphData: string): string {
                 });
             }
             drawGraph(graphData);
-        });`;
+        });
+    `;
 }
 
 export function generateHtml(componentData: ComponentInfo[]): string {
     const graphData = processComponentData(componentData);
     const graphDataString = JSON.stringify(graphData, null, 2);
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-${generateHtmlHead()}
-    <style>
-${generateStyles()}
-    </style>
-</head>
-<body>
-${generateBody()}
-    <script>
-${generateVisualizationScript(graphDataString)}
-    </script>
-</body>
-</html>`;
+    const htmlContent = tag(
+        "html",
+        { lang: "en" },
+        tag(
+            "head",
+            {},
+            tag("meta", { charset: "utf-8" }),
+            tag("meta", {
+                name: "viewport",
+                content: "width=device-width, initial-scale=1.0",
+            }),
+            tag("title", {}, "React Dependency Visualizer"),
+            tag("style", {}, generateStyles())
+        ),
+        tag(
+            "body",
+            {},
+            tag(
+                "div",
+                { class: "graph-container" },
+                tag("svg", { id: "dependency-graph" })
+            ),
+            tag("script", {}, generateVisualizationScript(graphDataString)),
+            tag("script", { src: "assets/d3.v7.min.js" })
+        )
+    );
+
+    return `<!DOCTYPE html>\n${htmlContent}`.trim();
 }
