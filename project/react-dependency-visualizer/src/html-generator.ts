@@ -72,40 +72,68 @@ function tag(
     return `<${name}${attributesAsString}>${childAsString}</${name}>`;
 }
 
+function css(
+    type: "id" | "class" | "tag",
+    name: string,
+    properties: Partial<CSSStyleDeclaration>
+): string {
+    const selector = {
+        class: `.${name}`,
+        id: `#${name}`,
+        tag: name,
+    }[type];
+
+    const styles = Object.entries(properties)
+        .filter(([, value]) => value != null)
+        .map(([key, value]) => {
+            const keyAsKebab = key.replace(
+                /[A-Z]/g,
+                (m) => `-${m.toLowerCase()}`
+            );
+            return `    ${keyAsKebab}: ${value};`;
+        })
+        .join("\n");
+
+    return `${selector} {\n${styles}\n}`;
+}
+
 function generateStyles(): string {
-    return `
-        body {
-            font-family: sans-serif;
-            padding: 0 2rem;
-            margin: 0;
-            display: flex;
-            flex-direction: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            width: 100%;
-            max-width: 64rem;
-            text-align: center;
-        }
-        .graph-container {
-            width: 100%;
-            height: 700px;
-            background-color: black;
-        }
-        .node {
-            stroke: #fff;
-            stroke-width: 1.5px;
-            cursor: pointer;
-        }
-        .link {
-            stroke: #999;
-            stroke-opacity: 0.6;
-        }
-        #dependency-graph {
-            width: 100%;
-            height: 100%;
-        }`;
+    const body = css("tag", "body", {
+        fontFamily: "sans-serif",
+        padding: "0 2rem",
+        margin: "0",
+        display: "flex",
+        flexDirection: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+    });
+    const container = css("class", "container", {
+        width: "100%",
+        maxWidth: "64rem",
+        textAlign: "center",
+    });
+    const graphContainer = css("class", "graph-container", {
+        width: "100%",
+        height: "700px",
+        backgroundColor: "black",
+    });
+    const node = css("class", "node", {
+        stroke: "#fff",
+        strokeWidth: "1.5px",
+        cursor: "pointer",
+    });
+    const link = css("class", "link", {
+        stroke: "#999",
+        strokeOpacity: "0.6",
+    });
+    const dependencyGraph = css("id", "dependency-graph", {
+        width: "100%",
+        height: "100%",
+    });
+
+    return [body, container, graphContainer, node, link, dependencyGraph].join(
+        "\n\n"
+    );
 }
 
 function generateVisualizationScript(graphData: string): string {
