@@ -153,11 +153,21 @@ function generateVisualizationScript(graphData: string): string {
                     .force("charge", d3.forceManyBody().strength(-300))
                     .force("center", d3.forceCenter(width / 2, height / 2));
 
+                const link = svg.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(data.links)
+                    .enter().append("line")
+                    .attr("class", "link")
+                    .attr("stroke", "#fff")
+                    .attr("stroke-opacity", 0.6)
+                    .attr("stroke-width", 2);
+
                 const node = svg.append("g")
                     .attr("class", "nodes")
                     .selectAll("g")
                     .data(data.nodes)
-                    .enter().append("g")
+                    .enter().append("g");
 
                 node.append("circle")
                     .attr("r", 15)
@@ -172,8 +182,13 @@ function generateVisualizationScript(graphData: string): string {
                     .style("pointer-events", "none");
 
                 simulation.on("tick", () => {
-                    node
-                        .attr("transform", d => \`translate(\${d.x},\${d.y})\`);
+                    node.attr("transform", d => \`translate(\${d.x},\${d.y})\`);
+                    
+                    link
+                        .attr("x1", d => d.source.x)
+                        .attr("y1", d => d.source.y)
+                        .attr("x2", d => d.target.x)
+                        .attr("y2", d => d.target.y);
                 });
             }
             drawGraph(graphData);
