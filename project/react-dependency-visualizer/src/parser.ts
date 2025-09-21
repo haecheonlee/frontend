@@ -17,7 +17,11 @@ export function parseComponentFile(filePath: string): ComponentInfo {
     traverse(ast, {
         ImportDeclaration(path) {
             const specifier = path.node.specifiers[0];
-            if (specifier && specifier.type === "ImportDefaultSpecifier") {
+            if (
+                ["ImportDefaultSpecifier", "ImportSpecifier"].some(
+                    (type) => type === specifier?.type
+                )
+            ) {
                 imports.push(specifier.local.name);
             }
         },
