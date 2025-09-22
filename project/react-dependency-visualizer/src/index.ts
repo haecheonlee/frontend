@@ -3,8 +3,6 @@ import { parseComponentFile } from "./parser";
 import { generateHtml } from "./html-generator";
 import * as fs from "fs";
 
-import type { CommandOptions } from "./types";
-
 export async function visualizeComponents(
     projectPath: string,
     options: CommandOptions

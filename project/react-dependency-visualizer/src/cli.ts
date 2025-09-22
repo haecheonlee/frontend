@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import { visualizeComponents } from "./index";
-import type { CommandOptions } from "./types";
 
 const program = new Command();
 
