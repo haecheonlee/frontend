@@ -1,5 +1,6 @@
 interface ComponentInfo {
     file: string;
+    name: string;
     imports: string[];
     renders: string[];
 }
@@ -12,6 +13,7 @@ interface CommandOptions {
 interface GraphNode {
     id: string;
     main: boolean;
+    name: string;
 }
 
 interface GraphLink {

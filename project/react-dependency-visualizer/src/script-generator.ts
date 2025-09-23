@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .attr("x", 20)
             .attr("y", 5)
             .attr("fill", "#fff")
-            .text((d) => d.id)
+            .text((d) => d.name)
             .style("pointer-events", "none");
 
         simulation.on("tick", () => {
