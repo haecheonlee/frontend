@@ -1,8 +1,11 @@
-interface ComponentInfo {
+interface Component {
     file: string;
     name: string;
+}
+
+interface ComponentInfo extends Component {
     imports: string[];
-    renders: string[];
+    renders: Component[];
 }
 
 interface CommandOptions {

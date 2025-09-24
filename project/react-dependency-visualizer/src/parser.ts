@@ -6,7 +6,9 @@ import path from "path";
 export function parseComponentFile(filePath: string): ComponentInfo {
     const code = fs.readFileSync(filePath, "utf-8");
     const imports: string[] = [];
-    const renders: string[] = [];
+    const renders: Component[] = [];
+
+    const importMap: Record<string, string> = {};
 
     const ast = parse(code, {
         sourceType: "module",
@@ -17,22 +19,32 @@ export function parseComponentFile(filePath: string): ComponentInfo {
 
     traverse(ast, {
         ImportDeclaration(path) {
-            const specifier = path.node.specifiers[0];
-            if (
-                ["ImportDefaultSpecifier", "ImportSpecifier"].some(
-                    (type) => type === specifier?.type
-                )
-            ) {
-                imports.push(specifier.local.name);
-            }
+            const importPath = path.node.source.value;
+
+            path.node.specifiers.forEach((specifier) => {
+                if (
+                    specifier.type === "ImportDefaultSpecifier" ||
+                    specifier.type === "ImportSpecifier"
+                ) {
+                    const name = specifier.local.name;
+                    importMap[name] = importPath;
+                    imports.push(name);
+                }
+            });
         },
+
         JSXOpeningElement(path) {
             const jsx = path.node.name;
             if (jsx && jsx.type === "JSXIdentifier") {
                 const componentName = jsx.name;
 
                 if (componentName[0] === componentName[0].toUpperCase()) {
-                    renders.push(componentName);
+                    const resolved = importMap[componentName];
+
+                    renders.push({
+                        file: resolved,
+                        name: componentName,
+                    });
                 }
             }
         },

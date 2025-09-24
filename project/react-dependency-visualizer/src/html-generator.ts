@@ -3,38 +3,37 @@ function processComponentData(componentData: ComponentInfo[]): GraphData {
     const links: GraphLink[] = [];
     const nodeSet = new Set<string>();
 
-    const nameToFileMap = new Map<string, string>();
-    for (const { name, file } of componentData) {
-        nameToFileMap.set(name, file);
-    }
-
     componentData.forEach((fileData) => {
         const { file, name, renders, imports } = fileData;
         if (!nodeSet.has(file)) {
             nodes.push({
-                id: file,
+                id: name,
                 main: file.endsWith("App.jsx") || file.endsWith("App.tsx"),
-                name: nameToFileMap.get(name) || "",
+                name: file,
             });
             nodeSet.add(file);
         }
 
         renders
-            .filter(
-                (renderedComponent) =>
-                    imports.includes(renderedComponent) &&
-                    renders.includes(renderedComponent)
+            .filter((renderedComponent) =>
+                imports.includes(renderedComponent.name)
             )
             .forEach((renderedComponent) => {
-                if (!nodeSet.has(renderedComponent)) {
+                const {
+                    file: renderedComponentFile,
+                    name: renderedComponentName,
+                } = renderedComponent;
+
+                const key = name + renderedComponentName;
+                if (!nodeSet.has(key)) {
                     nodes.push({
-                        id: renderedComponent,
+                        id: key,
                         main: false,
-                        name: nameToFileMap.get(renderedComponent) || "",
+                        name: renderedComponentFile,
                     });
-                    nodeSet.add(renderedComponent);
+                    nodeSet.add(key);
                 }
-                links.push({ source: file, target: renderedComponent });
+                links.push({ source: name, target: key });
             });
     });
 
