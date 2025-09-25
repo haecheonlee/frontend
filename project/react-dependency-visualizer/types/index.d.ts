@@ -3,7 +3,7 @@ interface Component {
     name: string;
 }
 
-interface ComponentInfo extends Component {
+interface ComponentNode extends Component {
     imports: string[];
     renders: Component[];
 }

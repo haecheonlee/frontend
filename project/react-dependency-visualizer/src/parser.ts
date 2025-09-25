@@ -3,7 +3,7 @@ import traverse from "@babel/traverse";
 import * as fs from "fs";
 import path from "path";
 
-export function parseComponentFile(filePath: string): ComponentInfo {
+export function parseComponentFile(filePath: string): ComponentNode {
     const code = fs.readFileSync(filePath, "utf-8");
     const imports: string[] = [];
     const renders: Component[] = [];

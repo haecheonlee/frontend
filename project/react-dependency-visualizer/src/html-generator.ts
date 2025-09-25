@@ -1,4 +1,4 @@
-function processComponentData(componentData: ComponentInfo[]): GraphData {
+function processComponentData(componentData: ComponentNode[]): GraphData {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
     const nodeSet = new Set<string>();
@@ -132,7 +132,7 @@ function generateStyles(): string {
     );
 }
 
-export function generateHtml(componentData: ComponentInfo[]): string {
+export function generateHtml(componentData: ComponentNode[]): string {
     const graphData = processComponentData(componentData);
     const graphDataString = JSON.stringify(graphData, null, 2);
 
