@@ -11,6 +11,7 @@ interface ComponentNode extends Component {
 interface CommandOptions {
     generateHtml?: boolean;
     output: string;
+    rootComponent?: string;
 }
 
 interface GraphNode {
