@@ -18,7 +18,7 @@ export async function visualizeComponents(
 
     const componentData = files.map(parseComponentFile);
 
-    if (options.generateHtml) {
+    if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
         const htmlContent = generateHtml(componentData);
         fs.writeFileSync(options.output, htmlContent);

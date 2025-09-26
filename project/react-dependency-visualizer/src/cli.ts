@@ -10,7 +10,6 @@ program
 
 program
     .argument("<path>", "Path to the root of your React project.")
-    .option("-g, --generate-html", "Generate an HTML graph visualization file.")
     .option(
         "-o, --output <path>",
         "Output path for the HTML file",
