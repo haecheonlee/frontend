@@ -28,6 +28,8 @@ export async function visualizeComponents(
     componentData.forEach((data) => {
         console.log(`\nFile: ${data.file}`);
         console.log(`   Imports: ${data.imports.join(", ")}`);
-        console.log(`   Renders: ${data.renders.join(", ")}`);
+        console.log(
+            `   Renders: ${data.renders.map((p) => p.file).join(", ")}`
+        );
     });
 }
