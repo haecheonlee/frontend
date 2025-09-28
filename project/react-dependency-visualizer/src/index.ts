@@ -1,15 +1,13 @@
 import { glob } from "fast-glob";
 import { parseComponentFile } from "./parser";
 import { generateHtml } from "./html-generator";
-import * as fs from "fs";
+import fs from "fs";
 
 export async function visualizeComponents(
     projectPath: string,
     options: CommandOptions
 ) {
-    const files = await glob(`${projectPath}/**/*.{tsx,jsx}`, {
-        ignore: ["**/node_modules/**"],
-    });
+    const files = await getAllFiles(projectPath, options.rootComponent);
 
     if (files.length === 0) {
         console.error("No React files found in the specified path.");
@@ -32,4 +30,19 @@ export async function visualizeComponents(
             `   Renders: ${data.renders.map((p) => p.file).join(", ")}`
         );
     });
+}
+
+async function getAllFiles(
+    projectPath: string,
+    rootComponent: string = "*"
+): Promise<string[]> {
+    const files = await glob(`${projectPath}/**/${rootComponent}.{tsx,jsx}`, {
+        ignore: ["**/node_modules/**"],
+    });
+
+    if (files.length === 0) {
+        return [];
+    }
+
+    return files;
 }
