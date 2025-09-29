@@ -22,7 +22,7 @@ export async function start(projectPath: string, options: CommandOptions) {
 
     if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
-        const htmlContent = generateHtml(componentData);
+        const htmlContent = generateHtml(processComponentData(componentData));
         fs.writeFileSync(options.output, htmlContent);
         console.log(`HTML file is created at ${options.output}`);
     }
@@ -89,4 +89,46 @@ function parseComponentFile(filePath: string): ComponentNode {
         imports: [...new Set(imports)],
         renders: [...new Set(renders)],
     };
+}
+
+function processComponentData(componentData: ComponentNode[]): GraphData {
+    const nodes: GraphNode[] = [];
+    const links: GraphLink[] = [];
+    const nodeSet = new Set<string>();
+
+    componentData.forEach((fileData) => {
+        const { file, name, renders, imports } = fileData;
+        if (!nodeSet.has(file)) {
+            nodes.push({
+                id: name,
+                main: file.endsWith("App.jsx") || file.endsWith("App.tsx"),
+                name: file,
+            });
+            nodeSet.add(file);
+        }
+
+        renders
+            .filter((renderedComponent) =>
+                imports.includes(renderedComponent.name)
+            )
+            .forEach((renderedComponent) => {
+                const {
+                    file: renderedComponentFile,
+                    name: renderedComponentName,
+                } = renderedComponent;
+
+                const key = name + renderedComponentName;
+                if (!nodeSet.has(key)) {
+                    nodes.push({
+                        id: key,
+                        main: false,
+                        name: renderedComponentFile,
+                    });
+                    nodeSet.add(key);
+                }
+                links.push({ source: name, target: key });
+            });
+    });
+
+    return { nodes, links };
 }

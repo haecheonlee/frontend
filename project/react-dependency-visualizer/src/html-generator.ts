@@ -1,45 +1,3 @@
-function processComponentData(componentData: ComponentNode[]): GraphData {
-    const nodes: GraphNode[] = [];
-    const links: GraphLink[] = [];
-    const nodeSet = new Set<string>();
-
-    componentData.forEach((fileData) => {
-        const { file, name, renders, imports } = fileData;
-        if (!nodeSet.has(file)) {
-            nodes.push({
-                id: name,
-                main: file.endsWith("App.jsx") || file.endsWith("App.tsx"),
-                name: file,
-            });
-            nodeSet.add(file);
-        }
-
-        renders
-            .filter((renderedComponent) =>
-                imports.includes(renderedComponent.name)
-            )
-            .forEach((renderedComponent) => {
-                const {
-                    file: renderedComponentFile,
-                    name: renderedComponentName,
-                } = renderedComponent;
-
-                const key = name + renderedComponentName;
-                if (!nodeSet.has(key)) {
-                    nodes.push({
-                        id: key,
-                        main: false,
-                        name: renderedComponentFile,
-                    });
-                    nodeSet.add(key);
-                }
-                links.push({ source: name, target: key });
-            });
-    });
-
-    return { nodes, links };
-}
-
 const SELF_CLOSING_TAGS: string[] = [
     "meta",
     "link",
@@ -132,8 +90,7 @@ function generateStyles(): string {
     );
 }
 
-export function generateHtml(componentData: ComponentNode[]): string {
-    const graphData = processComponentData(componentData);
+export function generateHtml(graphData: GraphData): string {
     const graphDataString = JSON.stringify(graphData, null, 2);
 
     const htmlContent = tag(
