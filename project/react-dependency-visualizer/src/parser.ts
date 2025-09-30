@@ -5,20 +5,33 @@ import { generateHtml } from "./html-generator";
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 
-export async function start(projectPath: string, options: CommandOptions) {
-    const files = await glob(
-        `${projectPath}/**/${options.rootComponent ?? "*"}.{tsx,jsx}`,
-        {
-            ignore: ["**/node_modules/**"],
-        }
-    );
+const allComponents = new Map<string, ComponentNode>();
 
-    if (files.length === 0) {
-        console.error("No React files found in the specified path.");
+export async function start(projectPath: string, options: CommandOptions) {
+    if (!options.rootComponent) {
+        console.error("Please provide a root component file.");
         return;
     }
 
-    const componentData = files.map(parseComponentFile);
+    const rootPattern = `${projectPath}/**/${options.rootComponent}.{tsx,jsx}`;
+    const rootFiles = await glob(rootPattern, {
+        ignore: ["**/node_modules/**"],
+    });
+
+    if (rootFiles.length === 0) {
+        console.error("Root component file not found:", options.rootComponent);
+        return;
+    }
+
+    const rootFile = path.resolve(rootFiles[0]);
+
+    const rootNode = await traverseComponentTree(rootFile, projectPath);
+    if (!rootNode) {
+        console.error("Failed to parse root component.");
+        return;
+    }
+
+    const componentData = Array.from(allComponents.values());
 
     if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
@@ -36,7 +49,72 @@ export async function start(projectPath: string, options: CommandOptions) {
     });
 }
 
-function parseComponentFile(filePath: string): ComponentNode {
+async function traverseComponentTree(
+    filePath: string,
+    projectPath: string
+): Promise<ComponentNode | null> {
+    const absolutePath = path.resolve(filePath);
+
+    if (allComponents.has(absolutePath) || !fs.existsSync(absolutePath)) {
+        return allComponents.get(absolutePath) ?? null;
+    }
+
+    const node = parseComponentFile(absolutePath, projectPath);
+    allComponents.set(absolutePath, node);
+
+    for (const render of node.renders) {
+        const renderPath = resolveImportPath(
+            render.file,
+            path.dirname(filePath)
+        );
+
+        if (renderPath) {
+            const resolvedPath = path.resolve(renderPath);
+            const relativePath = `./${path.relative(
+                projectPath,
+                resolvedPath
+            )}`;
+
+            render.file = relativePath;
+
+            await traverseComponentTree(resolvedPath, projectPath);
+        }
+    }
+
+    return node;
+}
+
+function resolveImportPath(
+    importPath: string,
+    currentDir: string
+): string | null {
+    if (!importPath) {
+        return null;
+    }
+
+    if (!importPath.startsWith(".")) {
+        return null;
+    }
+    const fullPath = path.resolve(currentDir, importPath);
+    const extensions = [".tsx", ".jsx"];
+
+    for (const ext of extensions) {
+        const candidate = `${fullPath}${ext}`;
+        if (fs.existsSync(candidate)) return candidate;
+    }
+
+    for (const ext of extensions) {
+        const candidate = path.join(fullPath, `index${ext}`);
+        if (fs.existsSync(candidate)) return candidate;
+    }
+
+    return null;
+}
+
+function parseComponentFile(
+    filePath: string,
+    projectPath: string
+): ComponentNode {
     const code = fs.readFileSync(filePath, "utf-8");
     const imports: string[] = [];
     const renders: Component[] = [];
@@ -48,7 +126,7 @@ function parseComponentFile(filePath: string): ComponentNode {
         plugins: ["typescript", "jsx"],
     });
 
-    const baseFileName = path.basename(filePath, path.extname(filePath)); // e.g., MyComponent
+    const baseFileName = path.basename(filePath, path.extname(filePath));
 
     traverse(ast, {
         ImportDeclaration(path) {
@@ -83,8 +161,10 @@ function parseComponentFile(filePath: string): ComponentNode {
         },
     });
 
+    const relativeFilePath = `./${path.relative(projectPath, filePath)}`;
+
     return {
-        file: filePath,
+        file: relativeFilePath,
         name: baseFileName,
         imports: [...new Set(imports)],
         renders: [...new Set(renders)],
