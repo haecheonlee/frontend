@@ -44,7 +44,7 @@ export async function start(projectPath: string, options: CommandOptions) {
         console.log(`\nFile: ${data.file}`);
         console.log(`   Imports: ${data.imports.join(", ")}`);
         console.log(
-            `   Renders: ${data.renders.map((p) => p.file).join(", ")}`
+            `   Renders: ${data.renders.map((p) => p.name).join(", ")}`
         );
     });
 }
@@ -182,7 +182,7 @@ function processComponentData(componentData: ComponentNode[]): GraphData {
             nodes.push({
                 id: name,
                 main: file.endsWith("App.jsx") || file.endsWith("App.tsx"),
-                name: file,
+                name: name,
             });
             nodeSet.add(file);
         }
@@ -192,17 +192,14 @@ function processComponentData(componentData: ComponentNode[]): GraphData {
                 imports.includes(renderedComponent.name)
             )
             .forEach((renderedComponent) => {
-                const {
-                    file: renderedComponentFile,
-                    name: renderedComponentName,
-                } = renderedComponent;
+                const { name: renderedComponentName } = renderedComponent;
 
                 const key = name + renderedComponentName;
                 if (!nodeSet.has(key)) {
                     nodes.push({
                         id: key,
                         main: false,
-                        name: renderedComponentFile,
+                        name: renderedComponentName,
                     });
                     nodeSet.add(key);
                 }
