@@ -35,7 +35,9 @@ export async function start(projectPath: string, options: CommandOptions) {
 
     if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
-        const htmlContent = generateHtml(processComponentData(componentData));
+        const htmlContent = generateHtml(
+            processComponentData(componentData, "./App.jsx")
+        );
         fs.writeFileSync(options.output, htmlContent);
         console.log(`HTML file is created at ${options.output}`);
     }
@@ -171,41 +173,55 @@ function parseComponentFile(
     };
 }
 
-function processComponentData(componentData: ComponentNode[]): GraphData {
+function processComponentData(
+    componentData: ComponentNode[],
+    startFile: string
+): GraphData {
+    const fileMap = new Map(componentData.map((comp) => [comp.file, comp]));
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
-    const nodeSet = new Set<string>();
+    const createdNodeIds = new Set<string>();
 
-    componentData.forEach((fileData) => {
-        const { file, name, renders, imports } = fileData;
-        if (!nodeSet.has(file)) {
-            nodes.push({
-                id: name,
-                main: file.endsWith("App.jsx") || file.endsWith("App.tsx"),
-                name: name,
-            });
-            nodeSet.add(file);
+    function getNodeId(file: string, parentId: string | null): string {
+        return parentId ? `${file}@${parentId}` : file;
+    }
+
+    function traverse(file: string, parentId: string | null): string | null {
+        const component = fileMap.get(file);
+
+        if (!component) {
+            return null;
         }
 
-        renders
-            .filter((renderedComponent) =>
-                imports.includes(renderedComponent.name)
-            )
-            .forEach((renderedComponent) => {
-                const { name: renderedComponentName } = renderedComponent;
+        const nodeId = getNodeId(file, parentId ?? "root");
 
-                const key = name + renderedComponentName;
-                if (!nodeSet.has(key)) {
-                    nodes.push({
-                        id: key,
-                        main: false,
-                        name: renderedComponentName,
-                    });
-                    nodeSet.add(key);
-                }
-                links.push({ source: name, target: key });
+        if (!createdNodeIds.has(nodeId)) {
+            nodes.push({
+                id: nodeId,
+                main: parentId === null,
+                name: component.name,
             });
-    });
+
+            createdNodeIds.add(nodeId);
+        }
+
+        if (parentId) {
+            links.push({
+                source: parentId,
+                target: nodeId,
+            });
+        }
+
+        for (const rendered of component.renders) {
+            if (component.imports.includes(rendered.name)) {
+                traverse(rendered.file, nodeId);
+            }
+        }
+
+        return nodeId;
+    }
+
+    traverse(startFile, null);
 
     return { nodes, links };
 }
