@@ -36,7 +36,10 @@ export async function start(projectPath: string, options: CommandOptions) {
     if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
         const htmlContent = generateHtml(
-            processComponentData(componentData, "./App.jsx")
+            processComponentData(
+                componentData,
+                `./${options.rootComponent}.jsx`
+            )
         );
         fs.writeFileSync(options.output, htmlContent);
         console.log(`HTML file is created at ${options.output}`);
