@@ -1,22 +1,29 @@
 declare const graphData: GraphData;
 
+type SimulationNode = GraphNode & d3.SimulationNodeDatum;
+type SimulationLink = d3.SimulationLinkDatum<SimulationNode>;
+
 document.addEventListener("DOMContentLoaded", () => {
-    const svg = d3.select("#dependency-graph");
+    const svg = d3.select<SVGSVGElement, unknown>("#dependency-graph");
 
     function drawGraph(data: GraphData) {
         svg.selectAll("*").remove();
 
-        const svgNode = svg.node() as any;
-        const width = svgNode?.clientWidth ?? 800;
-        const height = svgNode?.clientHeight ?? 600;
+        const svgNode = svg.node();
+        const isSvgElement = svgNode instanceof SVGSVGElement;
+        const width = isSvgElement ? svgNode.clientWidth : 800;
+        const height = isSvgElement ? svgNode.clientHeight : 600;
+
+        const nodes: SimulationNode[] = data.nodes.map((d) => ({ ...d }));
+        const links: SimulationLink[] = data.links.map((d) => ({ ...d }));
 
         const simulation = d3
-            .forceSimulation((data as any).nodes)
+            .forceSimulation<SimulationNode>(nodes)
             .force(
                 "link",
                 d3
-                    .forceLink(data.links)
-                    .id((d) => (d as any).id)
+                    .forceLink<SimulationNode, SimulationLink>(links)
+                    .id((d) => d.id)
                     .distance(150)
             )
             .force("charge", d3.forceManyBody().strength(-300))
@@ -25,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const link = svg
             .append("g")
             .attr("class", "links")
-            .selectAll("line")
-            .data(data.links)
+            .selectAll<SVGLineElement, SimulationLink>("line")
+            .data(links)
             .enter()
             .append("line")
             .attr("class", "link")
@@ -37,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const node = svg
             .append("g")
             .attr("class", "nodes")
-            .selectAll("g")
-            .data(data.nodes)
+            .selectAll<SVGGElement, SimulationNode>("g")
+            .data(nodes)
             .enter()
             .append("g");
 
@@ -55,15 +62,20 @@ document.addEventListener("DOMContentLoaded", () => {
             .style("pointer-events", "none");
 
         simulation.on("tick", () => {
-            node.attr(
-                "transform",
-                (d) => `translate(${(d as any).x},${(d as any).y})`
-            );
+            node.attr("transform", (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
 
-            link.attr("x1", (d) => (d.source as any).x)
-                .attr("y1", (d) => (d.source as any).y)
-                .attr("x2", (d) => (d.target as any).x)
-                .attr("y2", (d) => (d.target as any).y);
+            link.attr("x1", (d) =>
+                typeof d.source === "object" ? d.source.x ?? 0 : 0
+            )
+                .attr("y1", (d) =>
+                    typeof d.source === "object" ? d.source.y ?? 0 : 0
+                )
+                .attr("x2", (d) =>
+                    typeof d.target === "object" ? d.target.x ?? 0 : 0
+                )
+                .attr("y2", (d) =>
+                    typeof d.target === "object" ? d.target.y ?? 0 : 0
+                );
         });
     }
 
