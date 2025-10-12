@@ -10,7 +10,6 @@ interface ComponentNode extends Component {
 
 interface CommandOptions {
     output: string;
-    rootComponent?: string;
 }
 
 interface GraphNode {

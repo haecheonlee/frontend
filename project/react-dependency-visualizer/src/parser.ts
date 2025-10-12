@@ -7,23 +7,19 @@ import traverse from "@babel/traverse";
 
 const allComponents = new Map<string, ComponentNode>();
 
-export async function start(projectPath: string, options: CommandOptions) {
-    if (!options.rootComponent) {
-        console.error("Please provide a root component file.");
+export async function start(
+    rootComponentPath: string,
+    options: CommandOptions
+) {
+    const resolvedPath = path.resolve(rootComponentPath);
+
+    if (!fs.existsSync(resolvedPath)) {
+        console.error("Root component file not found:", rootComponentPath);
         return;
     }
 
-    const rootPattern = `${projectPath}/**/${options.rootComponent}.{tsx,jsx}`;
-    const rootFiles = await glob(rootPattern, {
-        ignore: ["**/node_modules/**"],
-    });
-
-    if (rootFiles.length === 0) {
-        console.error("Root component file not found:", options.rootComponent);
-        return;
-    }
-
-    const rootFile = path.resolve(rootFiles[0]);
+    const projectPath = path.dirname(resolvedPath);
+    const rootFile = resolvedPath;
 
     const rootNode = await traverseComponentTree(rootFile, projectPath);
     if (!rootNode) {
@@ -32,14 +28,12 @@ export async function start(projectPath: string, options: CommandOptions) {
     }
 
     const componentData = Array.from(allComponents.values());
+    const rootRelativePath = `./${path.relative(projectPath, rootFile)}`;
 
     if (options.output) {
         console.log(`Generating HTML file at ${options.output}...`);
         const htmlContent = generateHtml(
-            processComponentData(
-                componentData,
-                `./${options.rootComponent}.jsx`
-            )
+            processComponentData(componentData, rootRelativePath)
         );
         fs.writeFileSync(options.output, htmlContent);
         console.log(`HTML file is created at ${options.output}`);

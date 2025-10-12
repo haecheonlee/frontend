@@ -15,10 +15,6 @@ program
         "Output path for the HTML file",
         "index.html"
     )
-    .option(
-        "-r, --root-component <name>",
-        "Start traversal from a specific root component"
-    )
     .action(async (path, options: CommandOptions) => {
         try {
             await start(path, options);
