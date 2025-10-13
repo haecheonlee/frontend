@@ -41,7 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const hierarchy = d3.hierarchy(root);
         const treeData = treeLayout(hierarchy);
 
-        const g = svg.append("g").attr("transform", `translate(50, 50)`);
+        const g = svg.append("g");
+
+        const zoom = d3
+            .zoom<SVGSVGElement, unknown>()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        const initialTransform = d3.zoomIdentity.translate(50, 50);
+        svg.call(zoom.transform, initialTransform);
+
         g.append("g")
             .attr("class", "links")
             .selectAll<SVGPathElement, d3.HierarchyPointLink<GraphNode>>("path")
