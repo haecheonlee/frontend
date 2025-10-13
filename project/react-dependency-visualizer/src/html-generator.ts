@@ -52,23 +52,21 @@ function css(
 }
 
 function generateStyles(): string {
+    const html = css("tag", "html", {
+        margin: "0",
+        padding: "0",
+        height: "100%",
+    });
     const body = css("tag", "body", {
         fontFamily: "sans-serif",
-        padding: "0 2rem",
         margin: "0",
-        display: "flex",
-        flexDirection: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-    });
-    const container = css("class", "container", {
-        width: "100%",
-        maxWidth: "64rem",
-        textAlign: "center",
+        padding: "0",
+        height: "100%",
+        overflow: "hidden",
     });
     const graphContainer = css("class", "graph-container", {
         width: "100%",
-        height: "700px",
+        height: "100%",
         backgroundColor: "black",
     });
     const node = css("class", "node", {
@@ -85,7 +83,7 @@ function generateStyles(): string {
         height: "100%",
     });
 
-    return [body, container, graphContainer, node, link, dependencyGraph].join(
+    return [html, body, graphContainer, node, link, dependencyGraph].join(
         "\n\n"
     );
 }
