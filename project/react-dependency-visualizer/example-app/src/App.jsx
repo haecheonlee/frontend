@@ -1,12 +1,13 @@
 import React from "react";
-import { Card } from "./components/Card";
-import { Button } from "./components/Button";
+import Dashboard from "./pages/Dashboard";
+import { Header } from "./layout/Header";
+import { Footer } from "./layout/Footer";
 
 const App = () => (
     <div>
-        <h1>My App</h1>
-        <Card />
-        <Button />
+        <Header />
+        <Dashboard />
+        <Footer />
     </div>
 );
 
