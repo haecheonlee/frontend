@@ -112,8 +112,9 @@ function renderNodes(
         .attr("fill", (d) => (d.data.main ? "#2563EB" : "#3B82F6"));
 
     node.append("text")
-        .attr("x", 20)
-        .attr("y", 5)
+        .attr("x", 0)
+        .attr("y", -25)
+        .attr("text-anchor", "middle")
         .attr("fill", "#fff")
         .text((d) => d.data.name)
         .style("pointer-events", "none");
