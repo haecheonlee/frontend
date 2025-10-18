@@ -41,7 +41,7 @@ function createTreeLayout(
     return d3
         .tree<GraphNode>()
         .size([width - 100, height - 100])
-        .separation((a, b) => (a.parent === b.parent ? 1 : 1.5));
+        .separation((a, b) => (a.parent === b.parent ? 1 : 1.05));
 }
 
 function generateTreeData(
