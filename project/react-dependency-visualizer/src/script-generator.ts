@@ -41,7 +41,7 @@ function createTreeLayout(
     return d3
         .tree<GraphNode>()
         .size([width - 100, height - 100])
-        .separation((a, b) => (a.parent === b.parent ? 1 : 1.05));
+        .separation((a, b) => (a.parent === b.parent ? 1.5 : 2));
 }
 
 function generateTreeData(
@@ -93,10 +93,28 @@ function renderLinks(
         );
 }
 
+function truncateText(text: string, maxLength: number = 20): string {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength - 3) + "...";
+}
+
+function getTextWidth(text: string, fontSize: number = 12): number {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (context) {
+        context.font = `${fontSize}px sans-serif`;
+        return context.measureText(text).width;
+    }
+    return text.length * fontSize * 0.6;
+}
+
 function renderNodes(
     g: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
     treeData: HierarchyNode
 ): void {
+    const maxTextWidth = 150;
+    const fontSize = 12;
+
     const node = g
         .append("g")
         .attr("class", "nodes")
@@ -111,13 +129,53 @@ function renderNodes(
         .attr("class", "node")
         .attr("fill", (d) => (d.data.main ? "#2563EB" : "#3B82F6"));
 
-    node.append("text")
+    const textElements = node
+        .append("text")
         .attr("x", 0)
         .attr("y", -25)
         .attr("text-anchor", "middle")
         .attr("fill", "#fff")
-        .text((d) => d.data.name)
+        .attr("font-size", `${fontSize}px`)
         .style("pointer-events", "none");
+
+    textElements.each(function (d) {
+        const textElement = d3.select(this);
+        let displayText = d.data.name;
+        let textWidth = getTextWidth(displayText, fontSize);
+
+        if (textWidth > maxTextWidth) {
+            let truncated = displayText;
+            while (
+                getTextWidth(truncated + "...", fontSize) > maxTextWidth &&
+                truncated.length > 0
+            ) {
+                truncated = truncated.substring(0, truncated.length - 1);
+            }
+            displayText = truncated + "...";
+        }
+
+        textElement.text(displayText);
+    });
+
+    node.append("title").text((d) => d.data.name);
+
+    node.each(function (d) {
+        const textNode = d3
+            .select(this)
+            .select("text")
+            .node() as SVGTextElement;
+        if (textNode) {
+            const bbox = textNode.getBBox();
+            d3.select(this)
+                .insert("rect", "text")
+                .attr("x", bbox.x - 4)
+                .attr("y", bbox.y - 2)
+                .attr("width", bbox.width + 8)
+                .attr("height", bbox.height + 4)
+                .attr("fill", "rgba(0, 0, 0, 0.7)")
+                .attr("rx", 3);
+        }
+    });
 }
 
 function drawGraph(
