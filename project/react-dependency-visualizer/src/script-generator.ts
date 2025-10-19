@@ -2,6 +2,8 @@ declare const graphData: GraphData;
 
 type HierarchyNode = d3.HierarchyPointNode<GraphNode>;
 
+let selectedComponentName: string | null = null;
+
 function buildHierarchy(
     data: GraphData
 ): GraphNode & { children?: GraphNode[] } {
@@ -108,6 +110,46 @@ function getTextWidth(text: string, fontSize: number = 12): number {
     return text.length * fontSize * 0.6;
 }
 
+function updateNodeHighlighting(
+    node: d3.Selection<SVGGElement, HierarchyNode, SVGGElement, unknown>
+): void {
+    node.selectAll<SVGGElement, HierarchyNode>("circle")
+        .attr("fill", (d) => {
+            if (selectedComponentName === null) {
+                return d.data.main ? "#2563EB" : "#3B82F6";
+            }
+            return d.data.name === selectedComponentName
+                ? "#F59E0B"
+                : "#4B5563";
+        })
+        .attr("stroke", (d) => {
+            return d.data.name === selectedComponentName ? "#FCD34D" : "none";
+        })
+        .attr("stroke-width", (d) => {
+            return d.data.name === selectedComponentName ? 3 : 0;
+        });
+
+    node.selectAll<SVGAElement, HierarchyNode>("rect").attr("fill", (d) => {
+        if (selectedComponentName === null) {
+            return "rgba(0, 0, 0, 0.7)";
+        }
+        return d.data.name === selectedComponentName
+            ? "rgba(245, 158, 11, 0.9)"
+            : "rgba(75, 85, 99, 0.7)";
+    });
+
+    node.selectAll<SVGAElement, HierarchyNode>("text")
+        .attr("fill", (d) => {
+            if (selectedComponentName === null) {
+                return "#fff";
+            }
+            return d.data.name === selectedComponentName ? "#fff" : "#9CA3AF";
+        })
+        .attr("font-weight", (d) => {
+            return d.data.name === selectedComponentName ? "bold" : "normal";
+        });
+}
+
 function renderNodes(
     g: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
     treeData: HierarchyNode
@@ -122,7 +164,8 @@ function renderNodes(
         .data(treeData.descendants())
         .enter()
         .append("g")
-        .attr("transform", (d) => `translate(${d.x},${d.y})`);
+        .attr("transform", (d) => `translate(${d.x},${d.y})`)
+        .style("cursor", "pointer");
 
     node.append("circle")
         .attr("r", 15)
@@ -174,6 +217,26 @@ function renderNodes(
                 .attr("height", bbox.height + 4)
                 .attr("fill", "rgba(0, 0, 0, 0.7)")
                 .attr("rx", 3);
+        }
+    });
+
+    node.on("click", function (event, d) {
+        event.stopPropagation();
+
+        if (selectedComponentName === d.data.name) {
+            selectedComponentName = null;
+        } else {
+            selectedComponentName = d.data.name;
+        }
+
+        updateNodeHighlighting(node);
+    });
+
+    const svg = d3.select<SVGSVGElement, unknown>("#dependency-graph");
+    svg.on("click", () => {
+        if (selectedComponentName !== null) {
+            selectedComponentName = null;
+            updateNodeHighlighting(node);
         }
     });
 }
