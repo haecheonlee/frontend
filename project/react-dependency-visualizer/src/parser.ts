@@ -6,6 +6,8 @@ import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 
 const allComponents = new Map<string, ComponentNode>();
+let pathMappings: Record<string, string[]> = {};
+let baseUrl: string = "";
 
 export async function start(
     rootComponentPath: string,
@@ -20,6 +22,8 @@ export async function start(
 
     const projectPath = path.dirname(resolvedPath);
     const rootFile = resolvedPath;
+
+    loadTsConfigPaths(projectPath);
 
     const rootNode = await traverseComponentTree(rootFile, projectPath);
     if (!rootNode) {
@@ -46,6 +50,59 @@ export async function start(
             `   Renders: ${data.renders.map((p) => p.name).join(", ")}`
         );
     });
+}
+
+function findProjectRoot(startDir: string): string {
+    let currentDir = startDir;
+    const root = path.parse(currentDir).root;
+
+    while (currentDir !== root) {
+        const tsconfigPath = path.join(currentDir, "tsconfig.json");
+        const packageJsonPath = path.join(currentDir, "package.json");
+
+        if (fs.existsSync(tsconfigPath) || fs.existsSync(packageJsonPath)) {
+            console.log(`Found project root at: ${currentDir}`);
+            return currentDir;
+        }
+
+        const parentDir = path.dirname(currentDir);
+
+        if (parentDir === currentDir) {
+            break;
+        }
+
+        currentDir = parentDir;
+    }
+
+    console.log(`No project root found, using: ${startDir}`);
+    return startDir;
+}
+
+function loadTsConfigPaths(projectPath: string) {
+    const basePath = findProjectRoot(projectPath);
+    const tsconfigPath = path.join(basePath, "tsconfig.json");
+
+    if (!fs.existsSync(tsconfigPath)) {
+        console.log(
+            "No tsconfig.json found at project root, skipping path mapping"
+        );
+        return;
+    }
+
+    try {
+        const tsconfigContent = fs.readFileSync(tsconfigPath, "utf-8");
+        const tsconfig = JSON.parse(tsconfigContent);
+
+        if (tsconfig.compilerOptions) {
+            baseUrl = tsconfig.compilerOptions.baseUrl || ".";
+            pathMappings = tsconfig.compilerOptions.paths || {};
+
+            console.log(`Loaded tsconfig from: ${tsconfigPath}`);
+            console.log("Path mappings:", Object.keys(pathMappings));
+        }
+    } catch (error) {
+        console.warn("Failed to parse tsconfig.json:", error);
+    }
 }
 
 async function traverseComponentTree(
