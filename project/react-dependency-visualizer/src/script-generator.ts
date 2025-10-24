@@ -7,7 +7,7 @@ let selectedComponentName: string | null = null;
 function buildHierarchy(
     data: GraphData
 ): GraphNode & { children?: GraphNode[] } {
-    const rootNode = data.nodes.find((n) => n.main) || data.nodes[0];
+    const rootNode = data.nodes[0];
     const nodeMap = new Map<string, GraphNode & { children?: GraphNode[] }>();
 
     data.nodes.forEach((node) => {
@@ -116,7 +116,7 @@ function updateNodeHighlighting(
     node.selectAll<SVGGElement, HierarchyNode>("circle")
         .attr("fill", (d) => {
             if (selectedComponentName === null) {
-                return d.data.main ? "#2563EB" : "#3B82F6";
+                return "#3B82F6";
             }
             return d.data.name === selectedComponentName
                 ? "#F59E0B"
@@ -170,7 +170,7 @@ function renderNodes(
     node.append("circle")
         .attr("r", 15)
         .attr("class", "node")
-        .attr("fill", (d) => (d.data.main ? "#2563EB" : "#3B82F6"));
+        .attr("fill", "#3B82F6");
 
     const textElements = node
         .append("text")

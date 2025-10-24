@@ -251,7 +251,6 @@ function processComponentData(
         if (!createdNodeIds.has(nodeId)) {
             nodes.push({
                 id: nodeId,
-                main: parentId === null,
                 name: component.name,
             });
 

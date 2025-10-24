@@ -14,7 +14,6 @@ interface CommandOptions {
 
 interface GraphNode {
     id: string;
-    main: boolean;
     name: string;
 }
 
