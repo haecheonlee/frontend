@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { glob } from "fast-glob";
 import { generateHtml } from "./html-generator";
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
