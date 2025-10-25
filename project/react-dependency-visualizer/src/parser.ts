@@ -7,6 +7,7 @@ import traverse from "@babel/traverse";
 const allComponents = new Map<string, ComponentNode>();
 let pathMappings: Record<string, string[]> = {};
 let baseUrl: string = "";
+let projectRoot: string = "";
 
 export async function start(
     rootComponentPath: string,
@@ -78,8 +79,8 @@ function findProjectRoot(startDir: string): string {
 }
 
 function loadTsConfigPaths(projectPath: string) {
-    const basePath = findProjectRoot(projectPath);
-    const tsconfigPath = path.join(basePath, "tsconfig.json");
+    projectRoot = findProjectRoot(projectPath);
+    const tsconfigPath = path.join(projectRoot, "tsconfig.json");
 
     if (!fs.existsSync(tsconfigPath)) {
         console.log(
@@ -93,10 +94,12 @@ function loadTsConfigPaths(projectPath: string) {
         const tsconfig = JSON.parse(tsconfigContent);
 
         if (tsconfig.compilerOptions) {
-            baseUrl = tsconfig.compilerOptions.baseUrl || ".";
+            const rawBaseUrl = tsconfig.compilerOptions.baseUrl || ".";
+            baseUrl = path.resolve(projectRoot, rawBaseUrl);
             pathMappings = tsconfig.compilerOptions.paths || {};
 
             console.log(`Loaded tsconfig from: ${tsconfigPath}`);
+            console.log(`Base URL resolved to: ${baseUrl}`);
             console.log("Path mappings:", Object.keys(pathMappings));
         }
     } catch (error) {
@@ -147,9 +150,22 @@ function resolveImportPath(
         return null;
     }
 
-    if (!importPath.startsWith(".")) {
-        return null;
+    if (importPath.startsWith(".")) {
+        return resolveRelativePath(importPath, currentDir);
     }
+
+    if (baseUrl && Object.keys(pathMappings).length > 0) {
+        const resolved = resolveTsConfigPath(importPath);
+        if (resolved) return resolved;
+    }
+
+    return null;
+}
+
+function resolveRelativePath(
+    importPath: string,
+    currentDir: string
+): string | null {
     const fullPath = path.resolve(currentDir, importPath);
     const extensions = [".tsx", ".jsx"];
 
@@ -161,6 +177,46 @@ function resolveImportPath(
     for (const ext of extensions) {
         const candidate = path.join(fullPath, `index${ext}`);
         if (fs.existsSync(candidate)) return candidate;
+    }
+
+    return null;
+}
+
+function resolveTsConfigPath(importPath: string): string | null {
+    for (const [pattern, replacements] of Object.entries(pathMappings)) {
+        const patternRegex = new RegExp(
+            "^" + pattern.replace(/\*/g, "(.*)") + "$"
+        );
+        const match = importPath.match(patternRegex);
+
+        if (match) {
+            for (const replacement of replacements) {
+                let resolvedPath = replacement;
+
+                if (match[1]) {
+                    resolvedPath = resolvedPath.replace(/\*/g, match[1]);
+                }
+
+                const fullPath = path.resolve(baseUrl, resolvedPath);
+
+                const resolved = resolveRelativePath(
+                    fullPath,
+                    path.dirname(fullPath)
+                );
+                if (resolved) return resolved;
+
+                const extensions = [".tsx", ".jsx", ".ts", ".js"];
+                for (const ext of extensions) {
+                    const candidate = `${fullPath}${ext}`;
+                    if (fs.existsSync(candidate)) return candidate;
+                }
+            }
+        }
+    }
+
+    if (baseUrl) {
+        const fullPath = path.resolve(baseUrl, importPath);
+        return resolveRelativePath(fullPath, path.dirname(fullPath));
     }
 
     return null;
