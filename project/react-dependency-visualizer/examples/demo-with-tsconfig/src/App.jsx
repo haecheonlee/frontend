@@ -1,5 +1,5 @@
 import React from "react";
-import Dashboard from "@/layout/Dashboard";
+import Dashboard from "@/pages/Dashboard";
 import { Header } from "@/layout/Header";
 import { Footer } from "@/layout/Footer";
 
