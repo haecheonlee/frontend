@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { generateHtml } from "./html-generator";
+import { generateHtml } from "../generators/html-generator";
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 
