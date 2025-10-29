@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { start } from "../core/parser";
+import { start } from "../core";
 
 const program = new Command();
 
