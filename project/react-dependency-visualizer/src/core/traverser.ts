@@ -43,6 +43,30 @@ export async function traverseComponentTree(
         }
     }
 
+    for (const hook of node.hooks) {
+        const hookPath = resolveImportPath(
+            hook.file,
+            path.dirname(filePath),
+            context
+        );
+
+        if (hookPath) {
+            const resolvedPath = path.resolve(hookPath);
+            const relativePath = `./${path.relative(
+                projectPath,
+                resolvedPath
+            )}`;
+            hook.file = relativePath;
+
+            await traverseComponentTree(
+                resolvedPath,
+                projectPath,
+                context,
+                allComponents
+            );
+        }
+    }
+
     return node;
 }
 
@@ -99,6 +123,12 @@ function traverse(
     for (const rendered of component.renders) {
         if (component.imports.includes(rendered.name)) {
             traverse(fileMap, nodeIds, nodes, links, rendered.file, nodeId);
+        }
+    }
+
+    for (const hook of component.hooks) {
+        if (component.imports.includes(hook.name)) {
+            traverse(fileMap, nodeIds, nodes, links, hook.file, nodeId);
         }
     }
 

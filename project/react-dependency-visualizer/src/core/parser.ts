@@ -10,6 +10,7 @@ export function parseComponentFile(
     const code = fs.readFileSync(filePath, "utf-8");
     const imports: string[] = [];
     const renders: Component[] = [];
+    const hooks: Component[] = [];
     const importMap: Record<string, string> = {};
 
     const ast = parse(code, {
@@ -22,7 +23,6 @@ export function parseComponentFile(
     traverse(ast, {
         ImportDeclaration(path) {
             const importPath = path.node.source.value;
-
             path.node.specifiers.forEach((specifier) => {
                 if (
                     specifier.type === "ImportDefaultSpecifier" ||
@@ -50,6 +50,33 @@ export function parseComponentFile(
                 }
             }
         },
+
+        CallExpression(path) {
+            const callee = path.node.callee;
+
+            if (callee.type !== "Identifier") {
+                return;
+            }
+
+            const functionName = callee.name;
+            if (
+                !functionName.startsWith("use") ||
+                isBuiltInReactHook(functionName)
+            ) {
+                return;
+            }
+
+            const importPath = importMap[functionName];
+
+            if (!importPath) {
+                return;
+            }
+
+            hooks.push({
+                name: functionName,
+                file: importPath,
+            });
+        },
     });
 
     const relativeFilePath = `./${path.relative(projectPath, filePath)}`;
@@ -58,6 +85,43 @@ export function parseComponentFile(
         file: relativeFilePath,
         name: baseFileName,
         imports: [...new Set(imports)],
-        renders: [...new Set(renders)],
+        renders: removeDuplicateComponents(renders),
+        hooks: removeDuplicateComponents(hooks),
     };
+}
+
+function isBuiltInReactHook(name: string): boolean {
+    const builtInHooks = [
+        "useState",
+        "useEffect",
+        "useContext",
+        "useReducer",
+        "useCallback",
+        "useMemo",
+        "useRef",
+        "useImperativeHandle",
+        "useLayoutEffect",
+        "useDebugValue",
+        "useDeferredValue",
+        "useTransition",
+        "useId",
+        "useSyncExternalStore",
+        "useInsertionEffect",
+        "useEvent",
+        "useOptimistic",
+        "useActionState",
+        "useEffectEvent",
+    ];
+
+    return builtInHooks.includes(name);
+}
+
+function removeDuplicateComponents(components: Component[]): Component[] {
+    const seen = new Set<string>();
+    return components.filter((comp) => {
+        const key = `${comp.name}:${comp.file}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
 }

@@ -51,5 +51,6 @@ export async function start(
         console.log(
             `   Renders: ${data.renders.map((p) => p.name).join(", ")}`
         );
+        console.log(`   Hooks: ${data.hooks.map((p) => p.name).join(", ")}`);
     });
 }
