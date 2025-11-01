@@ -4,6 +4,19 @@ type HierarchyNode = d3.HierarchyPointNode<GraphNode>;
 
 let selectedComponentName: string | null = null;
 
+function isHook(name: string): boolean {
+    const result =
+        name.startsWith("use") &&
+        name.length > 3 &&
+        name[3] === name[3].toUpperCase();
+
+    return (
+        name.startsWith("use") &&
+        name.length > 3 &&
+        name[3] === name[3].toUpperCase()
+    );
+}
+
 function buildHierarchy(
     data: GraphData
 ): GraphNode & { children?: GraphNode[] } {
@@ -83,9 +96,16 @@ function renderLinks(
         .append("path")
         .attr("class", "link")
         .attr("fill", "none")
-        .attr("stroke", "#fff")
+        .attr("stroke", (d) => {
+            return isHook(d.target.data.name) ? "#A78BFA" : "#fff";
+        })
         .attr("stroke-opacity", 0.6)
-        .attr("stroke-width", 2)
+        .attr("stroke-width", (d) => {
+            return isHook(d.target.data.name) ? 1.5 : 2;
+        })
+        .attr("stroke-dasharray", (d) => {
+            return isHook(d.target.data.name) ? "5,5" : "none";
+        })
         .attr(
             "d",
             d3
@@ -110,20 +130,42 @@ function getTextWidth(text: string, fontSize: number = 12): number {
     return text.length * fontSize * 0.6;
 }
 
+function getNodeRadius(name: string): number {
+    return isHook(name) ? 10 : 15;
+}
+
+function getNodeColor(
+    name: string,
+    isSelected: boolean,
+    hasSelection: boolean
+): string {
+    if (isSelected) {
+        return isHook(name) ? "#C084FC" : "#F59E0B";
+    }
+    if (hasSelection) {
+        return "#4B5563";
+    }
+    return isHook(name) ? "#8B5CF6" : "#3B82F6";
+}
+
+function getNodeStroke(name: string, isSelected: boolean): string {
+    if (!isSelected) return "none";
+    return isHook(name) ? "#DDD6FE" : "#FCD34D";
+}
+
 function updateNodeHighlighting(
     node: d3.Selection<SVGGElement, HierarchyNode, SVGGElement, unknown>
 ): void {
+    const hasSelection = selectedComponentName !== null;
+
     node.selectAll<SVGGElement, HierarchyNode>("circle")
         .attr("fill", (d) => {
-            if (selectedComponentName === null) {
-                return "#3B82F6";
-            }
-            return d.data.name === selectedComponentName
-                ? "#F59E0B"
-                : "#4B5563";
+            const isSelected = d.data.name === selectedComponentName;
+            return getNodeColor(d.data.name, isSelected, hasSelection);
         })
         .attr("stroke", (d) => {
-            return d.data.name === selectedComponentName ? "#FCD34D" : "none";
+            const isSelected = d.data.name === selectedComponentName;
+            return getNodeStroke(d.data.name, isSelected);
         })
         .attr("stroke-width", (d) => {
             return d.data.name === selectedComponentName ? 3 : 0;
@@ -131,11 +173,17 @@ function updateNodeHighlighting(
 
     node.selectAll<SVGAElement, HierarchyNode>("rect").attr("fill", (d) => {
         if (selectedComponentName === null) {
-            return "rgba(0, 0, 0, 0.7)";
+            return isHook(d.data.name)
+                ? "rgba(139, 92, 246, 0.8)"
+                : "rgba(0, 0, 0, 0.7)";
         }
-        return d.data.name === selectedComponentName
-            ? "rgba(245, 158, 11, 0.9)"
-            : "rgba(75, 85, 99, 0.7)";
+        const isSelected = d.data.name === selectedComponentName;
+        if (isSelected) {
+            return isHook(d.data.name)
+                ? "rgba(192, 132, 252, 0.9)"
+                : "rgba(245, 158, 11, 0.9)";
+        }
+        return "rgba(75, 85, 99, 0.7)";
     });
 
     node.selectAll<SVGAElement, HierarchyNode>("text")
@@ -168,9 +216,9 @@ function renderNodes(
         .style("cursor", "pointer");
 
     node.append("circle")
-        .attr("r", 15)
+        .attr("r", (d) => getNodeRadius(d.data.name))
         .attr("class", "node")
-        .attr("fill", "#3B82F6");
+        .attr("fill", (d) => getNodeColor(d.data.name, false, false));
 
     const textElements = node
         .append("text")
@@ -179,6 +227,7 @@ function renderNodes(
         .attr("text-anchor", "middle")
         .attr("fill", "#fff")
         .attr("font-size", `${fontSize}px`)
+        .attr("font-style", (d) => (isHook(d.data.name) ? "italic" : "normal"))
         .style("pointer-events", "none");
 
     textElements.each(function (d) {
@@ -200,7 +249,10 @@ function renderNodes(
         textElement.text(displayText);
     });
 
-    node.append("title").text((d) => d.data.name);
+    node.append("title").text((d) => {
+        const type = isHook(d.data.name) ? "Hook" : "Component";
+        return `${d.data.name} (${type})`;
+    });
 
     node.each(function (d) {
         const textNode = d3
@@ -215,7 +267,12 @@ function renderNodes(
                 .attr("y", bbox.y - 2)
                 .attr("width", bbox.width + 8)
                 .attr("height", bbox.height + 4)
-                .attr("fill", "rgba(0, 0, 0, 0.7)")
+                .attr(
+                    "fill",
+                    isHook(d.data.name)
+                        ? "rgba(139, 92, 246, 0.8)"
+                        : "rgba(0, 0, 0, 0.7)"
+                )
                 .attr("rx", 3);
         }
     });
