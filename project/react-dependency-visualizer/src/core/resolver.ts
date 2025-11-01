@@ -75,7 +75,7 @@ export function resolveRelativePath(
     currentDir: string
 ): string | null {
     const fullPath = path.resolve(currentDir, importPath);
-    const extensions = [".tsx", ".jsx"];
+    const extensions = [".tsx", ".jsx", ".ts", ".js"];
 
     for (const ext of extensions) {
         const candidate = `${fullPath}${ext}`;
