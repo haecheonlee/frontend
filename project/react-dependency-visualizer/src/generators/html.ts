@@ -115,7 +115,7 @@ export function generateHtml(graphData: GraphData): string {
             ),
             tag("script", { src: "assets/d3.v7.min.js" }),
             tag("script", {}, `const graphData = ${graphDataString};`),
-            tag("script", { src: "dist/script-generator.js" })
+            tag("script", { src: "dist/generators/script.js" })
         )
     );
 
