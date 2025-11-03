@@ -69,6 +69,13 @@ function setupZoom(
     const zoom = d3
         .zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.1, 4])
+        .filter((event) => {
+            if (event.type === "dblclick") {
+                const target = event.target;
+                return target instanceof Element && !target.closest(".nodes g");
+            }
+            return true;
+        })
         .on("zoom", (event) => {
             g.attr("transform", event.transform);
         });
