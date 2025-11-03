@@ -5,11 +5,6 @@ type HierarchyNode = d3.HierarchyPointNode<GraphNode>;
 let selectedComponentName: string | null = null;
 
 function isHook(name: string): boolean {
-    const result =
-        name.startsWith("use") &&
-        name.length > 3 &&
-        name[3] === name[3].toUpperCase();
-
     return (
         name.startsWith("use") &&
         name.length > 3 &&
