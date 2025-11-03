@@ -281,6 +281,9 @@ function renderNodes(
             selectedComponentName = d.data.name;
         }
 
+        const selectedNodes = node.filter((n) => n.data.name === d.data.name);
+        selectedNodes.raise();
+
         updateNodeHighlighting(node);
     });
 
@@ -289,6 +292,10 @@ function renderNodes(
         if (selectedComponentName !== null) {
             selectedComponentName = null;
             updateNodeHighlighting(node);
+
+            node.sort((a, b) => {
+                return (a.depth || 0) - (b.depth || 0);
+            });
         }
     });
 }
