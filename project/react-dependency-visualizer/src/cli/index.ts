@@ -13,7 +13,7 @@ program
     .option(
         "-o, --output <path>",
         "Output path for the HTML file",
-        "index.html"
+        "./dist/index.html"
     )
     .action(async (path, options: CommandOptions) => {
         try {
