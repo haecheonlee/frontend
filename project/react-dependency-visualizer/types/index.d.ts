@@ -7,6 +7,7 @@ interface ComponentNode extends Component {
     imports: string[];
     renders: Component[];
     hooks: Component[];
+    exports: string[];
 }
 
 interface CommandOptions {

@@ -11,6 +11,7 @@ export function parseComponentFile(
     const imports: string[] = [];
     const renders: Component[] = [];
     const hooks: Component[] = [];
+    const exports: string[] = [];
     const importMap: Record<string, string> = {};
 
     const ast = parse(code, {
@@ -33,6 +34,51 @@ export function parseComponentFile(
                     imports.push(name);
                 }
             });
+        },
+
+        ExportDefaultDeclaration(path) {
+            const declaration = path.node.declaration;
+            if (declaration.type === "Identifier") {
+                exports.push(declaration.name);
+            } else if (
+                declaration.type === "FunctionDeclaration" &&
+                declaration.id
+            ) {
+                exports.push(declaration.id.name);
+            } else {
+                exports.push(baseFileName);
+            }
+        },
+
+        ExportNamedDeclaration(path) {
+            const declaration = path.node.declaration;
+
+            if (path.node.specifiers.length > 0) {
+                path.node.specifiers.forEach((specifier) => {
+                    if (specifier.type === "ExportSpecifier") {
+                        const name =
+                            specifier.exported.type === "Identifier"
+                                ? specifier.exported.name
+                                : specifier.exported.value;
+                        exports.push(name);
+                    }
+                });
+            }
+
+            if (declaration) {
+                if (
+                    declaration.type === "FunctionDeclaration" &&
+                    declaration.id
+                ) {
+                    exports.push(declaration.id.name);
+                } else if (declaration.type === "VariableDeclaration") {
+                    declaration.declarations.forEach((declarator) => {
+                        if (declarator.id.type === "Identifier") {
+                            exports.push(declarator.id.name);
+                        }
+                    });
+                }
+            }
         },
 
         JSXOpeningElement(path) {
@@ -87,6 +133,7 @@ export function parseComponentFile(
         imports: [...new Set(imports)],
         renders: removeDuplicateComponents(renders),
         hooks: removeDuplicateComponents(hooks),
+        exports: [...new Set(exports)],
     };
 }
 

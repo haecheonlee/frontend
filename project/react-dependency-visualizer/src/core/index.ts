@@ -48,6 +48,7 @@ export async function start(
     componentData.forEach((data) => {
         console.log(`\nFile: ${data.file}`);
         console.log(`   Imports: ${data.imports.join(", ")}`);
+        console.log(`   Exports: ${data.exports.join(", ")}`);
         console.log(
             `   Renders: ${data.renders.map((p) => p.name).join(", ")}`
         );
