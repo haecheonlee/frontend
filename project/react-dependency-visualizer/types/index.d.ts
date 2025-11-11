@@ -1,3 +1,19 @@
+interface Dependency {
+    name: string;
+    file: string;
+    type: "component" | "hook";
+}
+
+interface ExportNode {
+    name: string;
+    dependencies: Dependency[];
+}
+
+interface FileNode {
+    file: string;
+    exports: ExportNode[];
+}
+
 interface Component {
     file: string;
     name: string;
