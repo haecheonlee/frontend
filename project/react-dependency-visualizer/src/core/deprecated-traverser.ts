@@ -169,10 +169,10 @@ export async function traverseComponentTree(
 export function processComponentData(
     componentData: ComponentNode[],
     startFile: string
-): GraphData {
+): DeprecatedGraphData {
     const fileMap = new Map(componentData.map((comp) => [comp.file, comp]));
     const nodeIds = new Set<string>();
-    const nodes: GraphNode[] = [];
+    const nodes: DeprecatedGraphNode[] = [];
     const links: GraphLink[] = [];
 
     traverse(fileMap, nodeIds, nodes, links, startFile, null);
@@ -187,7 +187,7 @@ function getNodeId(file: string, parentId: string | null): string {
 function traverse(
     fileMap: ReadonlyMap<string, ComponentNode>,
     nodeIds: Set<string>,
-    nodes: GraphNode[],
+    nodes: DeprecatedGraphNode[],
     links: GraphLink[],
     file: string,
     parentId: string | null

@@ -88,7 +88,7 @@ function generateStyles(): string {
     );
 }
 
-export function generateHtml(graphData: GraphData): string {
+export function generateHtml(graphData: DeprecatedGraphData): string {
     const graphDataString = JSON.stringify(graphData, null, 2);
 
     const htmlContent = tag(

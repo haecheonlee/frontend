@@ -2,7 +2,10 @@ import fs from "fs";
 import path from "path";
 import { generateHtml } from "../generators/html";
 import { loadTsConfigPaths } from "./resolver";
-import { traverseComponentTree, processComponentData } from "./traverser";
+import {
+    traverseComponentTree,
+    processComponentData,
+} from "./deprecated-traverser";
 
 export async function start(
     rootComponentPath: string,

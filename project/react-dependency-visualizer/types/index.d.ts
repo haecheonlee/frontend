@@ -30,11 +30,6 @@ interface CommandOptions {
     output: string;
 }
 
-interface GraphNode {
-    id: string;
-    name: string;
-}
-
 interface GraphLink {
     source: string;
     target: string;
@@ -42,5 +37,15 @@ interface GraphLink {
 
 interface GraphData {
     nodes: GraphNode[];
+    links: GraphLink[];
+}
+
+interface DeprecatedGraphNode {
+    id: string;
+    name: string;
+}
+
+interface DeprecatedGraphData {
+    nodes: DeprecatedGraphNode[];
     links: GraphLink[];
 }

@@ -1,6 +1,6 @@
-declare const graphData: GraphData;
+declare const graphData: DeprecatedGraphData;
 
-type HierarchyNode = d3.HierarchyPointNode<GraphNode>;
+type HierarchyNode = d3.HierarchyPointNode<DeprecatedGraphNode>;
 
 let selectedComponentName: string | null = null;
 
@@ -13,10 +13,13 @@ function isHook(name: string): boolean {
 }
 
 function buildHierarchy(
-    data: GraphData
-): GraphNode & { children?: GraphNode[] } {
+    data: DeprecatedGraphData
+): DeprecatedGraphNode & { children?: DeprecatedGraphNode[] } {
     const rootNode = data.nodes[0];
-    const nodeMap = new Map<string, GraphNode & { children?: GraphNode[] }>();
+    const nodeMap = new Map<
+        string,
+        DeprecatedGraphNode & { children?: DeprecatedGraphNode[] }
+    >();
 
     data.nodes.forEach((node) => {
         nodeMap.set(node.id, { ...node, children: [] });
@@ -47,16 +50,16 @@ function getSvgDimensions(
 function createTreeLayout(
     width: number,
     height: number
-): d3.TreeLayout<GraphNode> {
+): d3.TreeLayout<DeprecatedGraphNode> {
     return d3
-        .tree<GraphNode>()
+        .tree<DeprecatedGraphNode>()
         .size([width - 100, height - 100])
         .separation((a, b) => (a.parent === b.parent ? 1.5 : 2));
 }
 
 function generateTreeData(
-    root: GraphNode & { children?: GraphNode[] },
-    treeLayout: d3.TreeLayout<GraphNode>
+    root: DeprecatedGraphNode & { children?: DeprecatedGraphNode[] },
+    treeLayout: d3.TreeLayout<DeprecatedGraphNode>
 ): HierarchyNode {
     const hierarchy = d3.hierarchy(root);
     return treeLayout(hierarchy);
@@ -92,7 +95,9 @@ function renderLinks(
 ): void {
     g.append("g")
         .attr("class", "links")
-        .selectAll<SVGPathElement, d3.HierarchyPointLink<GraphNode>>("path")
+        .selectAll<SVGPathElement, d3.HierarchyPointLink<DeprecatedGraphNode>>(
+            "path"
+        )
         .data(treeData.links())
         .enter()
         .append("path")
@@ -111,7 +116,10 @@ function renderLinks(
         .attr(
             "d",
             d3
-                .linkVertical<d3.HierarchyPointLink<GraphNode>, HierarchyNode>()
+                .linkVertical<
+                    d3.HierarchyPointLink<DeprecatedGraphNode>,
+                    HierarchyNode
+                >()
                 .x((d) => d.x)
                 .y((d) => d.y)
         );
@@ -309,7 +317,7 @@ function renderNodes(
 
 function drawGraph(
     svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
-    data: GraphData
+    data: DeprecatedGraphData
 ): void {
     svg.selectAll("*").remove();
 
