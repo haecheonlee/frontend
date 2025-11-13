@@ -1,18 +1,17 @@
 import fs from "fs";
 import path from "path";
 import { parse } from "@babel/parser";
-import traverse from "@babel/traverse";
+import traverse, { NodePath } from "@babel/traverse";
+import type * as t from "@babel/types";
 
 export function parseComponentFile(
     filePath: string,
     projectPath: string
-): ComponentNode {
+): FileNode {
     const code = fs.readFileSync(filePath, "utf-8");
-    const imports: string[] = [];
-    const renders: Component[] = [];
-    const hooks: Component[] = [];
-    const exports: string[] = [];
     const importMap: Record<string, string> = {};
+    const exportNodes = new Map<string, ExportNode>();
+    const functionScopes = new Map<string, Dependency[]>();
 
     const ast = parse(code, {
         sourceType: "module",
@@ -31,23 +30,48 @@ export function parseComponentFile(
                 ) {
                     const name = specifier.local.name;
                     importMap[name] = importPath;
-                    imports.push(name);
                 }
             });
         },
 
+        FunctionDeclaration(path) {
+            if (path.node.id) {
+                const functionName = path.node.id.name;
+                const deps = analyzeFunctionBody(path, importMap);
+                functionScopes.set(functionName, deps);
+            }
+        },
+
+        VariableDeclarator(path) {
+            if (
+                path.node.id.type === "Identifier" &&
+                (path.node.init?.type === "ArrowFunctionExpression" ||
+                    path.node.init?.type === "FunctionExpression")
+            ) {
+                const functionName = path.node.id.name;
+                const functionPath = path.get("init");
+                const deps = analyzeFunctionBody(functionPath, importMap);
+                functionScopes.set(functionName, deps);
+            }
+        },
+
         ExportDefaultDeclaration(path) {
             const declaration = path.node.declaration;
+            let exportName = baseFileName;
+
             if (declaration.type === "Identifier") {
-                exports.push(declaration.name);
+                exportName = declaration.name;
             } else if (
                 declaration.type === "FunctionDeclaration" &&
                 declaration.id
             ) {
-                exports.push(declaration.id.name);
-            } else {
-                exports.push(baseFileName);
+                exportName = declaration.id.name;
             }
+
+            exportNodes.set(exportName, {
+                name: exportName,
+                dependencies: functionScopes.get(exportName) || [],
+            });
         },
 
         ExportNamedDeclaration(path) {
@@ -56,11 +80,16 @@ export function parseComponentFile(
             if (path.node.specifiers.length > 0) {
                 path.node.specifiers.forEach((specifier) => {
                     if (specifier.type === "ExportSpecifier") {
-                        const name =
+                        const localName = specifier.local.name;
+                        const exportName =
                             specifier.exported.type === "Identifier"
                                 ? specifier.exported.name
                                 : specifier.exported.value;
-                        exports.push(name);
+
+                        exportNodes.set(exportName, {
+                            name: exportName,
+                            dependencies: functionScopes.get(localName) || [],
+                        });
                     }
                 });
             }
@@ -70,29 +99,62 @@ export function parseComponentFile(
                     declaration.type === "FunctionDeclaration" &&
                     declaration.id
                 ) {
-                    exports.push(declaration.id.name);
+                    const exportName = declaration.id.name;
+                    exportNodes.set(exportName, {
+                        name: exportName,
+                        dependencies: functionScopes.get(exportName) || [],
+                    });
                 } else if (declaration.type === "VariableDeclaration") {
                     declaration.declarations.forEach((declarator) => {
                         if (declarator.id.type === "Identifier") {
-                            exports.push(declarator.id.name);
+                            const exportName = declarator.id.name;
+                            exportNodes.set(exportName, {
+                                name: exportName,
+                                dependencies:
+                                    functionScopes.get(exportName) || [],
+                            });
                         }
                     });
                 }
             }
         },
+    });
 
+    const relativeFilePath = `./${path.relative(projectPath, filePath)}`;
+
+    return {
+        file: relativeFilePath,
+        exports: Array.from(exportNodes.values()),
+    };
+}
+
+function analyzeFunctionBody(
+    functionPath:
+        | NodePath<t.Expression | null | undefined>
+        | NodePath<t.FunctionDeclaration>,
+    importMap: Record<string, string>
+): Dependency[] {
+    const dependencies: Dependency[] = [];
+    const seen = new Set<string>();
+
+    functionPath.traverse({
         JSXOpeningElement(path) {
             const jsx = path.node.name;
             if (jsx && jsx.type === "JSXIdentifier") {
                 const componentName = jsx.name;
-
                 if (componentName[0] === componentName[0].toUpperCase()) {
-                    const resolved = importMap[componentName];
-
-                    renders.push({
-                        file: resolved,
-                        name: componentName,
-                    });
+                    const file = importMap[componentName];
+                    if (file) {
+                        const key = `${componentName}:${file}`;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            dependencies.push({
+                                name: componentName,
+                                file,
+                                type: "component",
+                            });
+                        }
+                    }
                 }
             }
         },
@@ -104,37 +166,25 @@ export function parseComponentFile(
                 return;
             }
 
-            const functionName = callee.name;
-            if (
-                !functionName.startsWith("use") ||
-                isBuiltInReactHook(functionName)
-            ) {
-                return;
+            const name = callee.name;
+            if (name.startsWith("use") && !isBuiltInReactHook(name)) {
+                const file = importMap[name];
+                if (file) {
+                    const key = `${name}:${file}`;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        dependencies.push({
+                            name,
+                            file,
+                            type: "hook",
+                        });
+                    }
+                }
             }
-
-            const importPath = importMap[functionName];
-
-            if (!importPath) {
-                return;
-            }
-
-            hooks.push({
-                name: functionName,
-                file: importPath,
-            });
         },
     });
 
-    const relativeFilePath = `./${path.relative(projectPath, filePath)}`;
-
-    return {
-        file: relativeFilePath,
-        name: baseFileName,
-        imports: [...new Set(imports)],
-        renders: removeDuplicateComponents(renders),
-        hooks: removeDuplicateComponents(hooks),
-        exports: [...new Set(exports)],
-    };
+    return dependencies;
 }
 
 function isBuiltInReactHook(name: string): boolean {
@@ -161,14 +211,4 @@ function isBuiltInReactHook(name: string): boolean {
     ];
 
     return builtInHooks.includes(name);
-}
-
-function removeDuplicateComponents(components: Component[]): Component[] {
-    const seen = new Set<string>();
-    return components.filter((comp) => {
-        const key = `${comp.name}:${comp.file}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
 }
