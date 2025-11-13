@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { TsConfigContext, resolveImportPath } from "./resolver";
+import { resolveImportPath } from "./resolver";
 import { parseComponentFile } from "./deprecated-parser";
 
 function isBarrelFile(filePath: string): boolean {

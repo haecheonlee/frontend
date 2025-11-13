@@ -40,6 +40,12 @@ interface GraphData {
     links: GraphLink[];
 }
 
+interface TsConfigContext {
+    baseUrl: string;
+    pathMappings: Record<string, string[]>;
+    projectRoot: string;
+}
+
 interface DeprecatedGraphNode {
     id: string;
     name: string;

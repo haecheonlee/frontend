@@ -1,12 +1,6 @@
 import fs from "fs";
 import path from "path";
 
-export interface TsConfigContext {
-    baseUrl: string;
-    pathMappings: Record<string, string[]>;
-    projectRoot: string;
-}
-
 export function findProjectRoot(startDir: string): string {
     let currentDir = startDir;
     const root = path.parse(currentDir).root;
