@@ -35,6 +35,12 @@ interface GraphLink {
     target: string;
 }
 
+interface GraphNode {
+    id: string;
+    name: string;
+    type: "component" | "hook";
+}
+
 interface GraphData {
     nodes: GraphNode[];
     links: GraphLink[];
