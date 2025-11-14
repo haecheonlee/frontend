@@ -12,6 +12,7 @@ export function parseComponentFile(
     const importMap: Record<string, string> = {};
     const exportNodes = new Map<string, ExportNode>();
     const functionScopes = new Map<string, Dependency[]>();
+    const hocRelations = new Map<string, string>();
 
     const ast = parse(code, {
         sourceType: "module",
@@ -43,34 +44,54 @@ export function parseComponentFile(
         },
 
         VariableDeclarator(path) {
-            if (
-                path.node.id.type === "Identifier" &&
-                (path.node.init?.type === "ArrowFunctionExpression" ||
-                    path.node.init?.type === "FunctionExpression")
-            ) {
-                const functionName = path.node.id.name;
-                const functionPath = path.get("init");
-                const deps = analyzeFunctionBody(functionPath, importMap);
-                functionScopes.set(functionName, deps);
+            if (path.node.id.type === "Identifier") {
+                const variableName = path.node.id.name;
+
+                if (
+                    path.node.init?.type === "ArrowFunctionExpression" ||
+                    path.node.init?.type === "FunctionExpression"
+                ) {
+                    const functionPath = path.get("init");
+                    const deps = analyzeFunctionBody(functionPath, importMap);
+                    functionScopes.set(variableName, deps);
+                } else if (path.node.init?.type === "CallExpression") {
+                    const wrappedComponent = unwrapHOC(path.node.init);
+                    if (wrappedComponent) {
+                        hocRelations.set(variableName, wrappedComponent);
+                    }
+                }
             }
         },
 
         ExportDefaultDeclaration(path) {
             const declaration = path.node.declaration;
             let exportName = baseFileName;
+            let deps: Dependency[] = [];
 
             if (declaration.type === "Identifier") {
                 exportName = declaration.name;
+                deps = resolveDependencies(
+                    declaration.name,
+                    functionScopes,
+                    hocRelations
+                );
             } else if (
                 declaration.type === "FunctionDeclaration" &&
                 declaration.id
             ) {
                 exportName = declaration.id.name;
+                deps = functionScopes.get(exportName) || [];
+            } else if (
+                declaration.type === "ArrowFunctionExpression" ||
+                declaration.type === "FunctionExpression"
+            ) {
+                const functionPath = path.get("declaration");
+                deps = analyzeFunctionBody(functionPath, importMap);
             }
 
             exportNodes.set(exportName, {
                 name: exportName,
-                dependencies: functionScopes.get(exportName) || [],
+                dependencies: deps,
             });
         },
 
@@ -86,9 +107,14 @@ export function parseComponentFile(
                                 ? specifier.exported.name
                                 : specifier.exported.value;
 
+                        const deps = resolveDependencies(
+                            localName,
+                            functionScopes,
+                            hocRelations
+                        );
                         exportNodes.set(exportName, {
                             name: exportName,
-                            dependencies: functionScopes.get(localName) || [],
+                            dependencies: deps,
                         });
                     }
                 });
@@ -100,18 +126,53 @@ export function parseComponentFile(
                     declaration.id
                 ) {
                     const exportName = declaration.id.name;
+                    let deps = functionScopes.get(exportName);
+
+                    if (!deps) {
+                        const functionPath = path.get(
+                            "declaration"
+                        ) as NodePath<t.FunctionDeclaration>;
+                        deps = analyzeFunctionBody(functionPath, importMap);
+                    }
+
                     exportNodes.set(exportName, {
                         name: exportName,
-                        dependencies: functionScopes.get(exportName) || [],
+                        dependencies: deps || [],
                     });
                 } else if (declaration.type === "VariableDeclaration") {
-                    declaration.declarations.forEach((declarator) => {
+                    declaration.declarations.forEach((declarator, index) => {
                         if (declarator.id.type === "Identifier") {
                             const exportName = declarator.id.name;
+                            let deps = functionScopes.get(exportName);
+
+                            if (
+                                !deps &&
+                                (declarator.init?.type ===
+                                    "ArrowFunctionExpression" ||
+                                    declarator.init?.type ===
+                                        "FunctionExpression")
+                            ) {
+                                const varPath = path.get(
+                                    "declaration"
+                                ) as NodePath<t.VariableDeclaration>;
+                                const declarations =
+                                    varPath.get("declarations");
+                                const declPath = Array.isArray(declarations)
+                                    ? declarations[index]
+                                    : declarations;
+
+                                if (declPath) {
+                                    const initPath = declPath.get("init");
+                                    deps = analyzeFunctionBody(
+                                        initPath,
+                                        importMap
+                                    );
+                                }
+                            }
+
                             exportNodes.set(exportName, {
                                 name: exportName,
-                                dependencies:
-                                    functionScopes.get(exportName) || [],
+                                dependencies: deps || [],
                             });
                         }
                     });
@@ -128,10 +189,52 @@ export function parseComponentFile(
     };
 }
 
+function unwrapHOC(node: t.CallExpression): string | null {
+    let current: t.Expression = node;
+
+    while (current.type === "CallExpression") {
+        const args: Array<
+            t.Expression | t.ArgumentPlaceholder | t.SpreadElement
+        > = current.arguments;
+        if (args.length > 0) {
+            const lastArg = args[args.length - 1];
+            if (lastArg.type === "Identifier") {
+                return lastArg.name;
+            } else if (lastArg.type === "CallExpression") {
+                current = lastArg;
+                continue;
+            }
+        }
+        break;
+    }
+
+    return null;
+}
+
+function resolveDependencies(
+    componentName: string,
+    functionScopes: Map<string, Dependency[]>,
+    hocRelations: Map<string, string>
+): Dependency[] {
+    const directDeps = functionScopes.get(componentName);
+    if (directDeps) {
+        return directDeps;
+    }
+
+    const wrappedComponent = hocRelations.get(componentName);
+    if (wrappedComponent) {
+        return resolveDependencies(
+            wrappedComponent,
+            functionScopes,
+            hocRelations
+        );
+    }
+
+    return [];
+}
+
 function analyzeFunctionBody(
-    functionPath:
-        | NodePath<t.Expression | null | undefined>
-        | NodePath<t.FunctionDeclaration>,
+    functionPath: NodePath<t.Declaration | t.Expression | undefined | null>,
     importMap: Record<string, string>
 ): Dependency[] {
     const dependencies: Dependency[] = [];
