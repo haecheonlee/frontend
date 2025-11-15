@@ -14,18 +14,6 @@ interface FileNode {
     exports: ExportNode[];
 }
 
-interface Component {
-    file: string;
-    name: string;
-}
-
-interface ComponentNode extends Component {
-    imports: string[];
-    renders: Component[];
-    hooks: Component[];
-    exports: string[];
-}
-
 interface CommandOptions {
     output: string;
 }
@@ -50,14 +38,4 @@ interface TsConfigContext {
     baseUrl: string;
     pathMappings: Record<string, string[]>;
     projectRoot: string;
-}
-
-interface DeprecatedGraphNode {
-    id: string;
-    name: string;
-}
-
-interface DeprecatedGraphData {
-    nodes: DeprecatedGraphNode[];
-    links: GraphLink[];
 }
