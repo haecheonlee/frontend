@@ -2,10 +2,7 @@ import fs from "fs";
 import path from "path";
 import { generateHtml } from "../generators/html";
 import { loadTsConfigPaths } from "./resolver";
-import {
-    traverseComponentTree,
-    processComponentData,
-} from "./deprecated-traverser";
+import { processComponentData, traverseComponentTree } from "./traverser";
 
 export async function start(
     rootComponentPath: string,
@@ -23,12 +20,12 @@ export async function start(
 
     const tsConfigContext = loadTsConfigPaths(projectPath);
 
-    const allComponents = new Map<string, ComponentNode>();
+    const allFiles = new Map<string, FileNode>();
     const rootNode = await traverseComponentTree(
         rootFile,
         projectPath,
         tsConfigContext,
-        allComponents
+        allFiles
     );
 
     if (!rootNode) {
@@ -36,7 +33,7 @@ export async function start(
         return;
     }
 
-    const componentData = Array.from(allComponents.values());
+    const componentData = Array.from(allFiles.values());
     const rootRelativePath = `./${path.relative(projectPath, rootFile)}`;
 
     if (options.output) {
@@ -50,11 +47,11 @@ export async function start(
 
     componentData.forEach((data) => {
         console.log(`\nFile: ${data.file}`);
-        console.log(`   Imports: ${data.imports.join(", ")}`);
-        console.log(`   Exports: ${data.exports.join(", ")}`);
         console.log(
-            `   Renders: ${data.renders.map((p) => p.name).join(", ")}`
+            `   Dependencies: ${data.exports
+                .flatMap((p) => p.dependencies)
+                .map((p) => `[${p.name} (${p.type})]`)
+                .join(", ")}`
         );
-        console.log(`   Hooks: ${data.hooks.map((p) => p.name).join(", ")}`);
     });
 }
