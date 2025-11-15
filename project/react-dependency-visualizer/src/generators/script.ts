@@ -1,25 +1,14 @@
-declare const graphData: DeprecatedGraphData;
+declare const graphData: GraphData;
 
-type HierarchyNode = d3.HierarchyPointNode<DeprecatedGraphNode>;
+type HierarchyNode = d3.HierarchyPointNode<GraphNode>;
 
 let selectedComponentName: string | null = null;
 
-function isHook(name: string): boolean {
-    return (
-        name.startsWith("use") &&
-        name.length > 3 &&
-        name[3] === name[3].toUpperCase()
-    );
-}
-
 function buildHierarchy(
-    data: DeprecatedGraphData
-): DeprecatedGraphNode & { children?: DeprecatedGraphNode[] } {
+    data: GraphData
+): GraphNode & { children?: GraphNode[] } {
     const rootNode = data.nodes[0];
-    const nodeMap = new Map<
-        string,
-        DeprecatedGraphNode & { children?: DeprecatedGraphNode[] }
-    >();
+    const nodeMap = new Map<string, GraphNode & { children?: GraphNode[] }>();
 
     data.nodes.forEach((node) => {
         nodeMap.set(node.id, { ...node, children: [] });
@@ -50,16 +39,16 @@ function getSvgDimensions(
 function createTreeLayout(
     width: number,
     height: number
-): d3.TreeLayout<DeprecatedGraphNode> {
+): d3.TreeLayout<GraphNode> {
     return d3
-        .tree<DeprecatedGraphNode>()
+        .tree<GraphNode>()
         .size([width - 100, height - 100])
         .separation((a, b) => (a.parent === b.parent ? 1.5 : 2));
 }
 
 function generateTreeData(
-    root: DeprecatedGraphNode & { children?: DeprecatedGraphNode[] },
-    treeLayout: d3.TreeLayout<DeprecatedGraphNode>
+    root: GraphNode & { children?: GraphNode[] },
+    treeLayout: d3.TreeLayout<GraphNode>
 ): HierarchyNode {
     const hierarchy = d3.hierarchy(root);
     return treeLayout(hierarchy);
@@ -95,39 +84,29 @@ function renderLinks(
 ): void {
     g.append("g")
         .attr("class", "links")
-        .selectAll<SVGPathElement, d3.HierarchyPointLink<DeprecatedGraphNode>>(
-            "path"
-        )
+        .selectAll<SVGPathElement, d3.HierarchyPointLink<GraphNode>>("path")
         .data(treeData.links())
         .enter()
         .append("path")
         .attr("class", "link")
         .attr("fill", "none")
         .attr("stroke", (d) => {
-            return isHook(d.target.data.name) ? "#A78BFA" : "#fff";
+            return d.target.data.type === "hook" ? "#A78BFA" : "#fff";
         })
         .attr("stroke-opacity", 0.6)
         .attr("stroke-width", (d) => {
-            return isHook(d.target.data.name) ? 1.5 : 2;
+            return d.target.data.type === "hook" ? 1.5 : 2;
         })
         .attr("stroke-dasharray", (d) => {
-            return isHook(d.target.data.name) ? "5,5" : "none";
+            return d.target.data.type === "hook" ? "5,5" : "none";
         })
         .attr(
             "d",
             d3
-                .linkVertical<
-                    d3.HierarchyPointLink<DeprecatedGraphNode>,
-                    HierarchyNode
-                >()
+                .linkVertical<d3.HierarchyPointLink<GraphNode>, HierarchyNode>()
                 .x((d) => d.x)
                 .y((d) => d.y)
         );
-}
-
-function truncateText(text: string, maxLength: number = 20): string {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - 3) + "...";
 }
 
 function getTextWidth(text: string, fontSize: number = 12): number {
@@ -140,27 +119,30 @@ function getTextWidth(text: string, fontSize: number = 12): number {
     return text.length * fontSize * 0.6;
 }
 
-function getNodeRadius(name: string): number {
-    return isHook(name) ? 10 : 15;
+function getNodeRadius(type: "component" | "hook"): number {
+    return type === "hook" ? 10 : 15;
 }
 
 function getNodeColor(
-    name: string,
+    type: "component" | "hook",
     isSelected: boolean,
     hasSelection: boolean
 ): string {
     if (isSelected) {
-        return isHook(name) ? "#C084FC" : "#F59E0B";
+        return type === "hook" ? "#C084FC" : "#F59E0B";
     }
     if (hasSelection) {
         return "#4B5563";
     }
-    return isHook(name) ? "#8B5CF6" : "#3B82F6";
+    return type === "hook" ? "#8B5CF6" : "#3B82F6";
 }
 
-function getNodeStroke(name: string, isSelected: boolean): string {
+function getNodeStroke(
+    type: "component" | "hook",
+    isSelected: boolean
+): string {
     if (!isSelected) return "none";
-    return isHook(name) ? "#DDD6FE" : "#FCD34D";
+    return type === "hook" ? "#DDD6FE" : "#FCD34D";
 }
 
 function updateNodeHighlighting(
@@ -171,11 +153,11 @@ function updateNodeHighlighting(
     node.selectAll<SVGGElement, HierarchyNode>("circle")
         .attr("fill", (d) => {
             const isSelected = d.data.name === selectedComponentName;
-            return getNodeColor(d.data.name, isSelected, hasSelection);
+            return getNodeColor(d.data.type, isSelected, hasSelection);
         })
         .attr("stroke", (d) => {
             const isSelected = d.data.name === selectedComponentName;
-            return getNodeStroke(d.data.name, isSelected);
+            return getNodeStroke(d.data.type, isSelected);
         })
         .attr("stroke-width", (d) => {
             return d.data.name === selectedComponentName ? 3 : 0;
@@ -183,13 +165,13 @@ function updateNodeHighlighting(
 
     node.selectAll<SVGAElement, HierarchyNode>("rect").attr("fill", (d) => {
         if (selectedComponentName === null) {
-            return isHook(d.data.name)
+            return d.data.type === "hook"
                 ? "rgba(139, 92, 246, 0.8)"
                 : "rgba(0, 0, 0, 0.7)";
         }
         const isSelected = d.data.name === selectedComponentName;
         if (isSelected) {
-            return isHook(d.data.name)
+            return d.data.type === "hook"
                 ? "rgba(192, 132, 252, 0.9)"
                 : "rgba(245, 158, 11, 0.9)";
         }
@@ -226,9 +208,9 @@ function renderNodes(
         .style("cursor", "pointer");
 
     node.append("circle")
-        .attr("r", (d) => getNodeRadius(d.data.name))
+        .attr("r", (d) => getNodeRadius(d.data.type))
         .attr("class", "node")
-        .attr("fill", (d) => getNodeColor(d.data.name, false, false));
+        .attr("fill", (d) => getNodeColor(d.data.type, false, false));
 
     const textElements = node
         .append("text")
@@ -237,7 +219,9 @@ function renderNodes(
         .attr("text-anchor", "middle")
         .attr("fill", "#fff")
         .attr("font-size", `${fontSize}px`)
-        .attr("font-style", (d) => (isHook(d.data.name) ? "italic" : "normal"))
+        .attr("font-style", (d) =>
+            d.data.type === "hook" ? "italic" : "normal"
+        )
         .style("pointer-events", "none");
 
     textElements.each(function (d) {
@@ -260,7 +244,7 @@ function renderNodes(
     });
 
     node.append("title").text((d) => {
-        const type = isHook(d.data.name) ? "Hook" : "Component";
+        const type = d.data.type === "hook" ? "Hook" : "Component";
         return `${d.data.name} (${type})`;
     });
 
@@ -279,7 +263,7 @@ function renderNodes(
                 .attr("height", bbox.height + 4)
                 .attr(
                     "fill",
-                    isHook(d.data.name)
+                    d.data.type === "hook"
                         ? "rgba(139, 92, 246, 0.8)"
                         : "rgba(0, 0, 0, 0.7)"
                 )
@@ -317,7 +301,7 @@ function renderNodes(
 
 function drawGraph(
     svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
-    data: DeprecatedGraphData
+    data: GraphData
 ): void {
     svg.selectAll("*").remove();
 
