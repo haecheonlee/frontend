@@ -25,7 +25,8 @@ export async function start(
         rootFile,
         projectPath,
         tsConfigContext,
-        allFiles
+        allFiles,
+        options.exclude?.split(",").map((path) => path.trim()) || []
     );
 
     if (!rootNode) {

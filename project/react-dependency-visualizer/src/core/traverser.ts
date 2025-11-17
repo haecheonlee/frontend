@@ -3,6 +3,37 @@ import path from "path";
 import { parseComponentFile } from "./parser";
 import { resolveImportPath } from "./resolver";
 
+function excludePath(
+    absolutePath: string,
+    projectPath: string,
+    excludeFolders: string[]
+): boolean {
+    if (excludeFolders.length === 0) {
+        return false;
+    }
+
+    const relativePath = path.relative(projectPath, absolutePath);
+
+    return excludeFolders.some((excludePattern) => {
+        const normalizedPattern = excludePattern.replace(/^\/+|\/+$/g, "");
+
+        if (
+            normalizedPattern.includes("/") ||
+            normalizedPattern.includes(path.sep)
+        ) {
+            return (
+                relativePath.includes(normalizedPattern) ||
+                relativePath.includes(
+                    normalizedPattern.replace(/\//g, path.sep)
+                )
+            );
+        }
+
+        const pathParts = relativePath.split(path.sep);
+        return pathParts.includes(normalizedPattern);
+    });
+}
+
 function isBarrelFile(filePath: string): boolean {
     const fileName = path.basename(filePath);
     return (
@@ -90,12 +121,17 @@ export async function traverseComponentTree(
     filePath: string,
     projectPath: string,
     context: TsConfigContext,
-    allFiles: Map<string, FileNode>
+    allFiles: Map<string, FileNode>,
+    excludeFolders: string[] = []
 ): Promise<FileNode | null> {
     const absolutePath = path.resolve(filePath);
 
     if (allFiles.has(absolutePath) || !fs.existsSync(absolutePath)) {
         return allFiles.get(absolutePath) ?? null;
+    }
+
+    if (excludePath(absolutePath, projectPath, excludeFolders)) {
+        return null;
     }
 
     const node = parseComponentFile(absolutePath, projectPath);
@@ -117,6 +153,11 @@ export async function traverseComponentTree(
                 );
 
                 const resolvedPath = path.resolve(actualPath || depPath);
+
+                if (excludePath(resolvedPath, projectPath, excludeFolders)) {
+                    continue;
+                }
+
                 const relativePath = `./${path.relative(
                     projectPath,
                     resolvedPath
@@ -128,7 +169,8 @@ export async function traverseComponentTree(
                     resolvedPath,
                     projectPath,
                     context,
-                    allFiles
+                    allFiles,
+                    excludeFolders
                 );
             }
         }
