@@ -16,6 +16,7 @@ interface FileNode {
 
 interface CommandOptions {
     output: string;
+    exclude?: string;
 }
 
 interface GraphLink {

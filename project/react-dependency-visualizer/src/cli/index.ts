@@ -15,6 +15,10 @@ program
         "Output path for the HTML file",
         "./dist/index.html"
     )
+    .option(
+        "-e, --exclude <folders>",
+        "Comma-separated folders to exclude from analysis (e.g., node_modules,dist,components/ui)"
+    )
     .action(async (path, options: CommandOptions) => {
         try {
             await start(path, options);
