@@ -119,12 +119,12 @@ function getTextWidth(text: string, fontSize: number = 12): number {
     return text.length * fontSize * 0.6;
 }
 
-function getNodeRadius(type: "component" | "hook"): number {
+function getNodeRadius(type: DependencyType): number {
     return type === "hook" ? 10 : 15;
 }
 
 function getNodeColor(
-    type: "component" | "hook",
+    type: DependencyType,
     isSelected: boolean,
     hasSelection: boolean
 ): string {
@@ -137,10 +137,7 @@ function getNodeColor(
     return type === "hook" ? "#8B5CF6" : "#3B82F6";
 }
 
-function getNodeStroke(
-    type: "component" | "hook",
-    isSelected: boolean
-): string {
+function getNodeStroke(type: DependencyType, isSelected: boolean): string {
     if (!isSelected) return "none";
     return type === "hook" ? "#DDD6FE" : "#FCD34D";
 }

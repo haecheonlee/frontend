@@ -1,7 +1,9 @@
+type DependencyType = "component" | "hook";
+
 interface Dependency {
     name: string;
     file: string;
-    type: "component" | "hook";
+    type: DependencyType;
 }
 
 interface ExportNode {
@@ -27,7 +29,7 @@ interface GraphLink {
 interface GraphNode {
     id: string;
     name: string;
-    type: "component" | "hook";
+    type: DependencyType;
 }
 
 interface GraphData {
