@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 declare const graphData: GraphData;
 
 type HierarchyNode = d3.HierarchyPointNode<GraphNode>;

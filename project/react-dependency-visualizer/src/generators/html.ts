@@ -113,9 +113,8 @@ export function generateHtml(graphData: GraphData): string {
                 { class: "graph-container" },
                 tag("svg", { id: "dependency-graph" })
             ),
-            tag("script", { src: "../assets/d3.v7.min.js" }),
             tag("script", {}, `const graphData = ${graphDataString};`),
-            tag("script", { src: "./generators/script.js" })
+            tag("script", { src: "./script.bundle.js" })
         )
     );
 

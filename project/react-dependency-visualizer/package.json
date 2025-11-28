@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "tsc",
+        "bundle-script": "node scripts/bundle-script.js",
+        "build": "npm run bundle-script && tsc",
         "start": "node dist/cli/index.js"
     },
     "bin": {
@@ -18,6 +19,8 @@
         "@babel/parser": "^7.28.4",
         "@babel/traverse": "^7.28.4",
         "commander": "^14.0.0",
+        "d3": "^7.9.0",
+        "esbuild": "^0.27.0",
         "fast-glob": "^3.3.3",
         "typescript": "^5.9.2"
     },
