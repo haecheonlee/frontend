@@ -8,5 +8,5 @@
         "esModuleInterop": true
     },
     "include": ["src/**/*", "types"],
-    "exclude": ["examples"]
+    "exclude": ["examples", "src/generators/script.ts"]
 }

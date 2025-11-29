@@ -1,3 +1,5 @@
+/// <reference path="../../types/index.d.ts" />
+
 import * as d3 from "d3";
 
 declare const graphData: GraphData;
