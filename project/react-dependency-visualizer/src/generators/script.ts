@@ -123,8 +123,8 @@ function getTextWidth(text: string, fontSize: number = 12): number {
     return text.length * fontSize * 0.6;
 }
 
-function getNodeRadius(type: DependencyType): number {
-    return type === "hook" ? 10 : 15;
+function getNodeRadius(): number {
+    return 10;
 }
 
 function getNodeColor(
@@ -209,7 +209,7 @@ function renderNodes(
         .style("cursor", "pointer");
 
     node.append("circle")
-        .attr("r", (d) => getNodeRadius(d.data.type))
+        .attr("r", () => getNodeRadius())
         .attr("class", "node")
         .attr("fill", (d) => getNodeColor(d.data.type, false, false));
 
