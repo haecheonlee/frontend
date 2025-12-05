@@ -8,7 +8,6 @@ esbuild
         format: "iife",
         platform: "browser",
         target: "es2020",
-        tsconfig: "tsconfig.json",
     })
     .then(() => {
         console.log("Script bundled successfully");
