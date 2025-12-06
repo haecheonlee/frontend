@@ -8,6 +8,7 @@ esbuild
         format: "iife",
         platform: "browser",
         target: "es2020",
+        minify: true,
     })
     .then(() => {
         console.log("Script bundled successfully");
